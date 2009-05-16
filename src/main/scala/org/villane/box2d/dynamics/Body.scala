@@ -334,11 +334,18 @@ class Body(bd: BodyDef, val world: World) {
 
   /** For internal use only. */
   @inline def synchronizeTransform() {
-    val rot = sweep.a
-    val vx = sweep.c.x - rot * sweep.localCenter.x
-    val vy = sweep.c.y - rot * sweep.localCenter.y
     //sweep.c - (rot * sweep.localCenter)
-    _transform = Transform2f(Vector2f(vx,vy), rot)
+    //val rot = sweep.a
+    //val vx = sweep.c.x - rot * sweep.localCenter.x
+    //val vy = sweep.c.y - rot * sweep.localCenter.y
+
+    //m_xf.position.x = m_sweep.c.x - (m_xf.R.col1.x * v1.x + m_xf.R.col2.x * v1.y);
+    //m_xf.position.y = m_sweep.c.y - (m_xf.R.col1.y * v1.x + m_xf.R.col2.y * v1.y);
+    val r = Matrix2f.rotation(sweep.a)
+    val v1 = sweep.localCenter
+    val vx = sweep.c.x - (r.col1.x * v1.x + r.col2.x * v1.y)
+    val vy = sweep.c.y - (r.col1.y * v1.x + r.col2.y * v1.y)
+    _transform = Transform2f(Vector2f(vx,vy), r)
   }
 
   /**

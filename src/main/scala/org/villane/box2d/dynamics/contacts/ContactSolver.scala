@@ -279,13 +279,13 @@ class ContactSolver(contacts: Seq[Contact]) {
 
         ccp.tangentImpulse = newImpulse
       }
-      b1.linearVelocity = (v1x,v1y)
+      b1.linearVelocity = Vector2f(v1x, v1y)
       b1.angularVelocity = w1
-      b2.linearVelocity = (v2x,v2y)
+      b2.linearVelocity = Vector2f(v2x, v2y)
       b2.angularVelocity = w2
     }
   }
-  
+
   @inline def finalizeVelocityConstraints() {
     var i = 0
     while (i < constraints.length) {
@@ -324,14 +324,24 @@ class ContactSolver(contacts: Seq[Contact]) {
         val ccp = c.points(iCCP)
         iCCP += 1
 
-        val r1 = b1.transform.rot * (ccp.localAnchor1 - b1.localCenter)
-        val r2 = b2.transform.rot * (ccp.localAnchor2 - b2.localCenter)
+        //val r1 = b1.transform.rot * (ccp.localAnchor1 - b1.localCenter)
+        //val r2 = b2.transform.rot * (ccp.localAnchor2 - b2.localCenter)
+        // matrix * v, x = col1.x * v.x + col2.x * v.y
+        // matrix * v, y = col1.y * v.x + col2.y * v.y
+        val r1x2 = ccp.localAnchor1.x - b1.localCenter.x
+        val r1y2 = ccp.localAnchor1.y - b1.localCenter.y
+        val r1x = b1.transform.rot.col1.x * r1x2 + b1.transform.rot.col2.x * r1y2 
+        val r1y = b1.transform.rot.col1.y * r1x2 + b1.transform.rot.col2.y * r1y2 
+        val r2x2 = ccp.localAnchor2.x - b1.localCenter.x
+        val r2y2 = ccp.localAnchor2.y - b1.localCenter.y
+        val r2x = b2.transform.rot.col1.x * r2x2 + b2.transform.rot.col2.x * r2y2 
+        val r2y = b2.transform.rot.col1.y * r2x2 + b2.transform.rot.col2.y * r2y2 
 
         //Vec2 p1 = b1.m_sweep.c + r1;
         //Vec2 p2 = b2.m_sweep.c + r2;
         //Vec2 dp = p2 - p1;
-        val dpx = b2.sweep.c.x + r2.x - b1.sweep.c.x - r1.x
-        val dpy = b2.sweep.c.y + r2.y - b1.sweep.c.y - r1.y
+        val dpx = b2.sweep.c.x + r2x - b1.sweep.c.x - r1x
+        val dpy = b2.sweep.c.y + r2y - b1.sweep.c.y - r1y
 
 
         // Approximate the current separation.
@@ -351,14 +361,18 @@ class ContactSolver(contacts: Seq[Contact]) {
         ccp.positionImpulse = MathUtil.max(impulse0 + dImpulse, 0f)
         dImpulse = ccp.positionImpulse - impulse0
 
-        val impulse = normal * dImpulse
+        //val impulse = normal * dImpulse
+        val impulsex = normal.x * dImpulse
+        val impulsey = normal.y * dImpulse
 
-        b1.sweep.c -= impulse * invMass1
-        b1.sweep.a -= invI1 * (r1.x*impulse.y - r1.y*impulse.x)//(r1 × impulse);
+        //b1.sweep.c -= impulse * invMass1
+        b1.sweep.c -= Vector2f(impulsex * invMass1, impulsey * invMass1)
+        b1.sweep.a -= invI1 * (r1x*impulsey - r1y*impulsex)//(r1 × impulse);
         b1.synchronizeTransform()
 
-        b2.sweep.c += impulse * invMass2 
-        b2.sweep.a += invI2 * (r2.x*impulse.y - r2.y*impulse.x)//(r2 × impulse);
+        //b2.sweep.c += impulse * invMass2 
+        b2.sweep.c += Vector2f(impulsex * invMass2, impulsey * invMass2)
+        b2.sweep.a += invI2 * (r2x*impulsey - r2y*impulsex)//(r2 × impulse);
         b2.synchronizeTransform()
       }
     }
