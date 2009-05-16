@@ -107,7 +107,11 @@ class ContactManager extends PairListener {
 
   def collide() {
     // Update awake contacts.
-    for (c <- world.contactList) {
+    var iC = 0
+    while (iC < world.contactList.length) {
+      val c = world.contactList(iC)
+      iC += 1
+
       val body1 = c.shape1.body
       val body2 = c.shape2.body
       if (!body1.isSleeping || !body2.isSleeping) {

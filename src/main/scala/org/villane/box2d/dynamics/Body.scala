@@ -333,7 +333,7 @@ class Body(bd: BodyDef, val world: World) {
   }
 
   /** For internal use only. */
-  def synchronizeTransform() {
+  @inline def synchronizeTransform() {
     val rot = sweep.a
     val vx = sweep.c.x - rot * sweep.localCenter.x
     val vy = sweep.c.y - rot * sweep.localCenter.y

@@ -267,7 +267,11 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
     val futures = new ArrayList[Future[Int]]
     */
 
-    for (seed <- bodyList) {
+    var iBody = 0
+    while (iBody < bodyList.length) {
+      val seed = bodyList(iBody)
+      iBody += 1
+
       if (((seed.flags & (BodyFlags.island | BodyFlags.sleep | BodyFlags.frozen)) == 0) && !seed.isStatic) {
 
       // Reset island and stack.
@@ -291,7 +295,11 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
         // propagate islands across static bodies.
         if (!b.isStatic) {
           // Search all contacts connected to this body.
-          for (cn <- b.contactList) {
+          var iCN = 0
+          while (iCN < b.contactList.length) {
+            val cn = b.contactList(iCN)
+            iCN += 1
+
             // Has this contact already been added to an island?
             if ((cn.contact.flags & (ContactFlags.island | ContactFlags.nonSolid)) == 0 &&
               // Is this contact touching?
@@ -312,7 +320,11 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
           }
 
           // Search all joints connect to this body.
-          for (jn <- b.jointList) {
+          var iJN = 0
+          while (iJN < b.jointList.length) {
+            val jn = b.jointList(iJN)
+            iJN += 1
+
             if (!jn.joint.islandFlag) {
               island.add(jn.joint)
               jn.joint.islandFlag = true
