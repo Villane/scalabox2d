@@ -12,7 +12,8 @@ class ContactSolver(contacts: Iterator[Contact]) {
   @inline def initConstraints(contacts: Iterator[Contact]) = {
     val tmpConstraints = new collection.mutable.ArrayBuffer[ContactConstraint]
 
-    for (contact <- contacts) {
+    while (contacts.hasNext) {
+      val contact = contacts.next
       assert(contact.solid)
       val b1 = contact.shape1.body
       val b2 = contact.shape2.body

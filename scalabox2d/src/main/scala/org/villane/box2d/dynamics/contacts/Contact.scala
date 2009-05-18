@@ -39,6 +39,7 @@ object Contact {
     }
   }
 
+  class WorldContact(val contact: Contact) extends common.DoublyLinkedListItem[WorldContact] {}
 }
 
 /**
@@ -48,6 +49,8 @@ object Contact {
 abstract class Contact(val shape1: Shape, val shape2: Shape) extends common.DoublyLinkedListItem[Contact] {
   /** The parent world. */
   //var world: World = null // TODO getCurrentWOlrd?
+
+  val worldContact = new Contact.WorldContact(this)
 
   /** Node for connecting bodies. */
   val node1 = if (shape2 != null) ContactEdge(shape2.body, this) else null

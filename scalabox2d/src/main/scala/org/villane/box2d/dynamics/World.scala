@@ -25,7 +25,7 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
   
   val bodyList = new ArrayList[Body]
   /** Do not access, won't be useful! */
-  val contactList = new ArrayList[Contact] 
+  var contactList: Contact.WorldContact = null 
   val jointList = new ArrayList[Joint]
 
   var allowSleep = doSleep
@@ -245,14 +245,16 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
     positionIterationCount = 0
 
     // Size the island for the worst case.
-    val island = new Island(bodyList.size, contactList.size, jointList.size, contactListener)
+    val island = new Island(bodyList.size, 0, jointList.size, contactListener)
 
     // Clear all the island flags.
     for (b <- bodyList) {
       b.flags &= ~BodyFlags.island
     }
-    for (c <- contactList) {
-      c.flags &= ~ContactFlags.island
+    var c = contactList
+    while (c != null) {
+      c.contact.flags &= ~ContactFlags.island
+      c = c.next
     }
     for (j <- jointList) {
       j.islandFlag = false
@@ -410,9 +412,11 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
       b.sweep.t0 = 0f
     }
 
-    for (c <- contactList) {
+    var c = contactList
+    while (c != null) {
       // Invalidate TOI
-      c.flags &= ~(ContactFlags.toi | ContactFlags.island)
+      c.contact.flags &= ~(ContactFlags.toi | ContactFlags.island)
+      c = c.next
     }
 
     // Find TOI events and solve them.
@@ -422,10 +426,10 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
       var minContact: Contact = null
       var minTOI = 1f
 
-      var iCo = 0
-      while (iCo < contactList.length) {
-        val c = contactList(iCo)
-        iCo += 1
+      if (contactList != null) {
+      var iterCont = contactList.elements
+      while (iterCont.hasNext) {
+        val c = iterCont.next.contact
 
         if ((c.flags & (ContactFlags.slow | ContactFlags.nonSolid)) == 0) {
         // simulate continue
@@ -477,6 +481,7 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
             minTOI = toi
           } 
         }
+      }
       }
       }
 
@@ -589,10 +594,13 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
             }
           }
 
-          if (island.contacts != null)
-          for (c <- island.contacts) {
-            // Allow contacts to participate in future TOI islands.
-            c.flags &= ~(ContactFlags.toi | ContactFlags.island)
+          if (island.contacts != null) {
+            val cs = island.contacts.elements
+            while (cs.hasNext) {
+              val c = cs.next
+              // Allow contacts to participate in future TOI islands.
+              c.flags &= ~(ContactFlags.toi | ContactFlags.island)
+            }
           }
 
           // Commit shape proxy movements to the broad-phase so that new contacts are created.
