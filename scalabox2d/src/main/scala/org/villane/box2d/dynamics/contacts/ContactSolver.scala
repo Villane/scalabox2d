@@ -6,13 +6,17 @@ import settings.Settings.ε
 import vecmath._
 import vecmath.Preamble._
 
-class ContactSolver(contacts: Iterator[Contact]) {
+class ContactSolver(contacts: Seq[Contact]) {
   val constraints = initConstraints(contacts)
   
-  @inline def initConstraints(contacts: Iterator[Contact]) = {
+  @inline def initConstraints(contacts: Seq[Contact]) = {
     val tmpConstraints = new collection.mutable.ArrayBuffer[ContactConstraint]
 
-    for (contact <- contacts) {
+    var iContact = 0
+    while (iContact < contacts.length) {
+      val contact = contacts(iContact)
+      iContact += 1
+
       assert(contact.solid)
       val b1 = contact.shape1.body
       val b2 = contact.shape2.body

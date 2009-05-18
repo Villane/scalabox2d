@@ -589,7 +589,6 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
             }
           }
 
-          if (island.contacts != null)
           for (c <- island.contacts) {
             // Allow contacts to participate in future TOI islands.
             c.flags &= ~(ContactFlags.toi | ContactFlags.island)

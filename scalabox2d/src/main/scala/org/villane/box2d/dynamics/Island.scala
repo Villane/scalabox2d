@@ -18,7 +18,7 @@ class Island(val bodyCapacity: Int,
              val listener: ContactListener) {
   // XXX To reduce code size, replaced the three fixed-size arrays with listbuffers. Perhaps should return later?
   val bodies = new ArrayList[Body]//(new java.util.ArrayList[Body](bodyCapacity))
-  var contacts: Contact = null//(new java.util.ArrayList[Contact](contactCapacity))
+  var contacts = new ArrayList[Contact]//(new java.util.ArrayList[Contact](contactCapacity))
   var joints = new ArrayList[Joint]//(new java.util.ArrayList[Joint](jointCapacity))
 
   // ERKKI: This was static, but that seemed like a bug
@@ -28,13 +28,12 @@ class Island(val bodyCapacity: Int,
 
   def clear() {
     bodies.clear()
-    contacts = null
-    // contacts.clear()
+    contacts.clear()
     joints.clear()
   }
 
   def add(body: Body) = bodies += body
-  def add(contact: Contact) = contact.add(contacts,contacts_=)//contacts += contact
+  def add(contact: Contact) = contacts += contact
   def add(joint: Joint) = joints += joint
 
   def solve(step: TimeStep, gravity: Vector2f, correctPositions: Boolean, allowSleep: Boolean) {
@@ -74,7 +73,7 @@ class Island(val bodyCapacity: Int,
       }
     }
 
-    val contactSolver = new ContactSolver(if (contacts != null) contacts.elements else Nil.elements)
+    val contactSolver = new ContactSolver(contacts)
 
     // Initialize velocity constraints.
     contactSolver.initVelocityConstraints(step)
@@ -188,7 +187,7 @@ class Island(val bodyCapacity: Int,
   }
 
   def solveTOI(subStep: TimeStep) {
-    val contactSolver = new ContactSolver(if (contacts != null) contacts.elements else Nil.elements)
+    val contactSolver = new ContactSolver(contacts)
 
     // No warm starting needed for TOI events.
 
@@ -238,9 +237,8 @@ class Island(val bodyCapacity: Int,
       return
     }
 
-    var c = contacts
-    var i = 0
-    while (c != null) {
+    for (i <- 0 until contacts.length) {
+      val c = contacts(i)
       val cc = constraints(i)
       val shape1 = c.shape1
       val shape2 = c.shape2
@@ -260,8 +258,6 @@ class Island(val bodyCapacity: Int,
           listener.result(cr)
         }
       }
-      i += 1
-      c = c.next
     }
   }
 }
