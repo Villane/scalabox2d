@@ -1,6 +1,6 @@
 package org.villane.box2d.common
 
-trait DoublyLinkedListItem[T >: Null <: DoublyLinkedListItem[T]] { self: T =>
+trait DoublyLinkedListItem[T >: Null <: DoublyLinkedListItem[T]] extends Iterable[T] { self: T =>
   var prev: T = null
   var next: T = null
   type Setter = (T => Unit)
@@ -27,16 +27,15 @@ trait DoublyLinkedListItem[T >: Null <: DoublyLinkedListItem[T]] { self: T =>
   }
 
   def elements: Iterator[T] = new Iterator[T] {
-    var a = self
-    def hasNext = a.next != null
+    var nextElem = self
+    def hasNext = nextElem != null
     def next = {
-      a = a.next
-      if (a == null)
+      val res = nextElem
+      if (nextElem != null) nextElem = nextElem.next
+      if (res == null)
         throw new NoSuchElementException("no more elements")
       else
-        a
+        res
     }
   }
-  
-  def foreach(f: T => Unit): Unit = elements.foreach(f)
 }

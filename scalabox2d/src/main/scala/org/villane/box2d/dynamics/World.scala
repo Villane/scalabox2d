@@ -589,11 +589,8 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
             }
           }
 
-          var iC = 0
-          while (iC < island.contacts.length) {
-            val c = island.contacts(iC)
-            iC += 1
-
+          if (island.contacts != null)
+          for (c <- island.contacts) {
             // Allow contacts to participate in future TOI islands.
             c.flags &= ~(ContactFlags.toi | ContactFlags.island)
           }

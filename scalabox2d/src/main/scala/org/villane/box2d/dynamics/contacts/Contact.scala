@@ -45,7 +45,7 @@ object Contact {
  * Base class for contacts between shapes.
  * @author ewjordan
  */
-abstract class Contact(val shape1: Shape, val shape2: Shape) {
+abstract class Contact(val shape1: Shape, val shape2: Shape) extends common.DoublyLinkedListItem[Contact] {
   /** The parent world. */
   //var world: World = null // TODO getCurrentWOlrd?
 
