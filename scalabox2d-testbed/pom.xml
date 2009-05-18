@@ -10,4 +10,11 @@
 	<artifactId>scalabox2d-testbed</artifactId>
 	<name>ScalaBox2D - 2D Physics Engine for Games (Test Bed)</name>
 	<version>2.0.1-SNAPSHOT</version>
+	<dependencies>
+		<dependency>
+			<groupId>org.villane.box2d</groupId>
+			<artifactId>scalabox2d</artifactId>
+			<version>2.0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
 </project>
