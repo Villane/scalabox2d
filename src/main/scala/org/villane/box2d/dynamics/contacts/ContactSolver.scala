@@ -9,10 +9,14 @@ import vecmath.Preamble._
 class ContactSolver(contacts: Seq[Contact]) {
   val constraints = initConstraints(contacts)
   
-  def initConstraints(contacts: Seq[Contact]) = {
+  @inline def initConstraints(contacts: Seq[Contact]) = {
     val tmpConstraints = new collection.mutable.ArrayBuffer[ContactConstraint]
 
-    for (contact <- contacts) {
+    var iContact = 0
+    while (iContact < contacts.length) {
+      val contact = contacts(iContact)
+      iContact += 1
+
       assert(contact.solid)
       val b1 = contact.shape1.body
       val b2 = contact.shape2.body
@@ -25,7 +29,11 @@ class ContactSolver(contacts: Seq[Contact]) {
       val w1 = b1.angularVelocity
       val w2 = b2.angularVelocity
 
-      for (manifold <- manifolds) {
+      var iMF = 0
+      while (iMF < manifolds.length) {
+        val manifold = manifolds(iMF)
+        iMF += 1
+
         assert (manifold.points.length > 0, "Manifold has length 0")
         val normal = manifold.normal
 
@@ -38,11 +46,14 @@ class ContactSolver(contacts: Seq[Contact]) {
         c.friction = friction
         c.restitution = restitution
 
-        for (k <- 0 until c.points.length) {
+        var k = 0
+        while (k < c.points.length) {
           val cp = manifold.points(k)
           val ccp = new ContactConstraintPoint
           c.points(k) = ccp
 
+          k += 1
+          
           ccp.normalImpulse = cp.normalImpulse
           ccp.tangentImpulse = cp.tangentImpulse
           ccp.separation = cp.separation
@@ -104,11 +115,15 @@ class ContactSolver(contacts: Seq[Contact]) {
     tmpConstraints.toArray
   }
   
-  def initVelocityConstraints(step: TimeStep) {
+  @inline def initVelocityConstraints(step: TimeStep) {
     // Zero temp objects created - ewjordan
 
     // Warm start.
-    for (c <- constraints) {
+    var iConstraints = 0
+    while (iConstraints < constraints.length) {
+      val c = constraints(iConstraints)
+      iConstraints += 1
+
       val b1 = c.body1
       val b2 = c.body2
       val invMass1 = b1.invMass
@@ -119,7 +134,11 @@ class ContactSolver(contacts: Seq[Contact]) {
       val tangent = normal.tangent
 
       if (step.warmStarting) {
-        for (ccp <- c.points) {
+        var iCCP = 0
+        while (iCCP < c.points.length) {
+          val ccp = c.points(iCCP)
+          iCCP += 1
+
           //Inlined all vector ops here
           ccp.normalImpulse *= step.dtRatio
           ccp.tangentImpulse *= step.dtRatio
@@ -132,7 +151,11 @@ class ContactSolver(contacts: Seq[Contact]) {
           b2.linearVelocity += p * invMass2
         }
       } else {
-        for (ccp <- c.points) {
+        var iCCP = 0
+        while (iCCP < c.points.length) {
+          val ccp = c.points(iCCP)
+          iCCP += 1
+
           ccp.normalImpulse = 0f
           ccp.tangentImpulse = 0f
         }
@@ -140,15 +163,21 @@ class ContactSolver(contacts: Seq[Contact]) {
     }
   }
   
-  def solveVelocityConstraints() {
+  @inline def solveVelocityConstraints() {
     // (4*constraints + 6*points) temp Vec2s - BOTTLENECK!
-    for (c <- constraints) {
+    var iConstraints = 0
+    while (iConstraints < constraints.length) {
+      val c = constraints(iConstraints)
+      iConstraints += 1
+      
       val b1 = c.body1
       val b2 = c.body2
       var w1 = b1.angularVelocity
       var w2 = b2.angularVelocity
-      var v1 = b1.linearVelocity
-      var v2 = b2.linearVelocity
+      var v1x = b1.linearVelocity.x
+      var v1y = b1.linearVelocity.y
+      var v2x = b2.linearVelocity.x
+      var v2y = b2.linearVelocity.y
       val invMass1 = b1.invMass
       val invI1 = b1.invI
       val invMass2 = b2.invMass
@@ -166,14 +195,18 @@ class ContactSolver(contacts: Seq[Contact]) {
             //}
             
       // Solver normal constraints
-      for (ccp <- c.points) {
+      var iCCP = 0
+      while (iCCP < c.points.length) {
+        val ccp = c.points(iCCP)
+        iCCP += 1
+        
         // Relative velocity at contact
         //Vec2 dv = v2.add((w2 × ccp.r2));
         //dv.subLocal(v1);
         //Vec2 a = ccp.r1;
         //dv.subLocal(new Vec2(-w1 * a.y, w1 * a.x));
-        val dvx = v2.x - w2 * ccp.r2.y - v1.x + w1*ccp.r1.y
-        val dvy = v2.y + w2 * ccp.r2.x - v1.y - w1*ccp.r1.x
+        val dvx = v2x - w2 * ccp.r2.y - v1x + w1*ccp.r1.y
+        val dvy = v2y + w2 * ccp.r2.x - v1y - w1*ccp.r1.x
 
         // Compute normal impulse
         val vn = dvx*normal.x + dvy*normal.y;//(dv ∙ normal)
@@ -184,12 +217,16 @@ class ContactSolver(contacts: Seq[Contact]) {
         λ = newImpulse - ccp.normalImpulse
 
         // Apply contact impulse
-        val P = normal * λ
-        v1 -= P * invMass1
-        w1 -= invI1 * (ccp.r1.x * P.y - ccp.r1.y * P.x) //(ccp.r1 × P);
+        //val P = normal * λ
+        val Px = normal.x * λ
+        val Py = normal.y * λ
+        v1x -= Px * invMass1
+        v1y -= Py * invMass1
+        w1 -= invI1 * (ccp.r1.x * Py - ccp.r1.y * Px) //(ccp.r1 × P);
 
-        v2 += P * invMass2
-        w2 += invI2 * (ccp.r2.x * P.y - ccp.r2.y * P.x) //(ccp.r2 × P);
+        v2x += Px * invMass2
+        v2y += Py * invMass2
+        w2 += invI2 * (ccp.r2.x * Py - ccp.r2.y * Px) //(ccp.r2 × P);
 
         ccp.normalImpulse = newImpulse;
       }
@@ -202,13 +239,17 @@ class ContactSolver(contacts: Seq[Contact]) {
 //    		// #endif
 
       // Solver tangent constraints
-      for (ccp <- c.points) {
+      iCCP = 0
+      while (iCCP < c.points.length) {
+        val ccp = c.points(iCCP)
+        iCCP += 1
+
         // Relative velocity at contact
         //Vec2 dv = v2.add((w2 × ccp.r2));
         //dv.subLocal(v1);
         //dv.subLocal((w1 × ccp.r1));
-        val dvx = v2.x - w2 * ccp.r2.y - v1.x + w1*ccp.r1.y
-        val dvy = v2.y + w2 * ccp.r2.x - v1.y - w1*ccp.r1.x
+        val dvx = v2x - w2 * ccp.r2.y - v1x + w1*ccp.r1.y
+        val dvy = v2y + w2 * ccp.r2.x - v1y - w1*ccp.r1.x
 
         // Compute tangent force
         val vt = dvx * tangent.x + dvy * tangent.y
@@ -220,40 +261,54 @@ class ContactSolver(contacts: Seq[Contact]) {
         λ = newImpulse - ccp.tangentImpulse
 
         // Apply contact impulse
-        val P = tangent * λ
+        //val P = tangent * λ
+        val Px = tangent.x * λ 
+        val Py = tangent.y * λ 
 
         // b1.m_linearVelocity.subLocal(P.mul(invMass1));
-        v1 -= P * invMass1
+        v1x -= Px * invMass1
+        v1y -= Py * invMass1
         // b1.m_angularVelocity -= invI1 * (r1 × P);
-        w1 -= invI1 * (ccp.r1.x * P.y - ccp.r1.y * P.x)
+        w1 -= invI1 * (ccp.r1.x * Py - ccp.r1.y * Px)
 
         // b2.m_linearVelocity.addLocal(P.mul(invMass2));
-        v2 += P * invMass2
+        v2x += Px * invMass2
+        v2y += Py * invMass2
         // b2.m_angularVelocity += invI2 * (r2 × P);
-        w2 += invI2 * (ccp.r2.x * P.y - ccp.r2.y * P.x)
+        w2 += invI2 * (ccp.r2.x * Py - ccp.r2.y * Px)
 
         ccp.tangentImpulse = newImpulse
       }
-      b1.linearVelocity = v1
+      b1.linearVelocity = Vector2f(v1x, v1y)
       b1.angularVelocity = w1
-      b2.linearVelocity = v2
+      b2.linearVelocity = Vector2f(v2x, v2y)
       b2.angularVelocity = w2
     }
   }
-  
-  def finalizeVelocityConstraints() {
-    for (c <- constraints) {
+
+  @inline def finalizeVelocityConstraints() {
+    var i = 0
+    while (i < constraints.length) {
+      val c = constraints(i)
+      i += 1
+
       val m = c.manifold
-      for (j <- 0 until c.points.length) {
+      var j = 0
+      while (j < c.points.length) {
         m.points(j).normalImpulse = c.points(j).normalImpulse
         m.points(j).tangentImpulse = c.points(j).tangentImpulse
+        j += 1
       }
     }
   }
   
-  def solvePositionConstraints(baumgarte: Float): Boolean = {
+  @inline def solvePositionConstraints(baumgarte: Float): Boolean = {
     var minSeparation = 0f
-    for (c <- constraints) {
+    var iConstraints = 0 
+    while (iConstraints < constraints.length) {
+      val c = constraints(iConstraints)
+      iConstraints += 1
+
       val b1 = c.body1
       val b2 = c.body2
       val invMass1 = b1.mass * b1.invMass
@@ -264,15 +319,29 @@ class ContactSolver(contacts: Seq[Contact]) {
 	  val normal = c.normal
 
       // Solver normal constraints
-      for (ccp <- c.points) {
-        val r1 = b1.transform.rot * (ccp.localAnchor1 - b1.localCenter)
-        val r2 = b2.transform.rot * (ccp.localAnchor2 - b2.localCenter)
+      var iCCP = 0 
+      while (iCCP < c.points.length) {
+        val ccp = c.points(iCCP)
+        iCCP += 1
+
+        //val r1 = b1.transform.rot * (ccp.localAnchor1 - b1.localCenter)
+        //val r2 = b2.transform.rot * (ccp.localAnchor2 - b2.localCenter)
+        // matrix * v, x = col1.x * v.x + col2.x * v.y
+        // matrix * v, y = col1.y * v.x + col2.y * v.y
+        val r1x2 = ccp.localAnchor1.x - b1.localCenter.x
+        val r1y2 = ccp.localAnchor1.y - b1.localCenter.y
+        val r1x = b1.transform.rot.col1.x * r1x2 + b1.transform.rot.col2.x * r1y2 
+        val r1y = b1.transform.rot.col1.y * r1x2 + b1.transform.rot.col2.y * r1y2 
+        val r2x2 = ccp.localAnchor2.x - b1.localCenter.x
+        val r2y2 = ccp.localAnchor2.y - b1.localCenter.y
+        val r2x = b2.transform.rot.col1.x * r2x2 + b2.transform.rot.col2.x * r2y2 
+        val r2y = b2.transform.rot.col1.y * r2x2 + b2.transform.rot.col2.y * r2y2 
 
         //Vec2 p1 = b1.m_sweep.c + r1;
         //Vec2 p2 = b2.m_sweep.c + r2;
         //Vec2 dp = p2 - p1;
-        val dpx = b2.sweep.c.x + r2.x - b1.sweep.c.x - r1.x
-        val dpy = b2.sweep.c.y + r2.y - b1.sweep.c.y - r1.y
+        val dpx = b2.sweep.c.x + r2x - b1.sweep.c.x - r1x
+        val dpy = b2.sweep.c.y + r2y - b1.sweep.c.y - r1y
 
 
         // Approximate the current separation.
@@ -292,14 +361,18 @@ class ContactSolver(contacts: Seq[Contact]) {
         ccp.positionImpulse = MathUtil.max(impulse0 + dImpulse, 0f)
         dImpulse = ccp.positionImpulse - impulse0
 
-        val impulse = normal * dImpulse
+        //val impulse = normal * dImpulse
+        val impulsex = normal.x * dImpulse
+        val impulsey = normal.y * dImpulse
 
-        b1.sweep.c -= impulse * invMass1
-        b1.sweep.a -= invI1 * (r1.x*impulse.y - r1.y*impulse.x)//(r1 × impulse);
+        //b1.sweep.c -= impulse * invMass1
+        b1.sweep.c -= Vector2f(impulsex * invMass1, impulsey * invMass1)
+        b1.sweep.a -= invI1 * (r1x*impulsey - r1y*impulsex)//(r1 × impulse);
         b1.synchronizeTransform()
 
-        b2.sweep.c += impulse * invMass2 
-        b2.sweep.a += invI2 * (r2.x*impulse.y - r2.y*impulse.x)//(r2 × impulse);
+        //b2.sweep.c += impulse * invMass2 
+        b2.sweep.c += Vector2f(impulsex * invMass2, impulsey * invMass2)
+        b2.sweep.a += invI2 * (r2x*impulsey - r2y*impulsex)//(r2 × impulse);
         b2.synchronizeTransform()
       }
     }

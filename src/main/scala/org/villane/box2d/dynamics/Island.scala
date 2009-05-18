@@ -83,10 +83,17 @@ class Island(val bodyCapacity: Int,
     }
 
     // Solve velocity constraints.
-    for (i <- 0 until step.maxIterations) {
+    var i = 0
+    while (i < step.maxIterations) {
+      i += 1
+
       contactSolver.solveVelocityConstraints()
 
-      for (joint <- joints) {
+      var j = 0
+      while (j < joints.length) {
+        val joint = joints(j)
+        j += 1
+        
         joint.solveVelocityConstraints(step)
       }
     }

@@ -267,7 +267,11 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
     val futures = new ArrayList[Future[Int]]
     */
 
-    for (seed <- bodyList) {
+    var iBody = 0
+    while (iBody < bodyList.length) {
+      val seed = bodyList(iBody)
+      iBody += 1
+
       if (((seed.flags & (BodyFlags.island | BodyFlags.sleep | BodyFlags.frozen)) == 0) && !seed.isStatic) {
 
       // Reset island and stack.
@@ -371,7 +375,10 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
     //m_broadPhase.commit();
 
     // Synchronize shapes, check for out of range bodies.
-    for (b <- bodyList) {
+    var iB = 0
+    while (iB < bodyList.size) {
+      val b = bodyList(iB)
+      iB += 1
       if ((b.flags & (BodyFlags.sleep | BodyFlags.frozen)) == 0 && !b.isStatic) {
         // Update shapes (for broad-phase). If the shapes go out of
         // the world AABB then shapes and contacts may be destroyed,
@@ -415,7 +422,11 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
       var minContact: Contact = null
       var minTOI = 1f
 
-      for (c <- contactList) {
+      var iCo = 0
+      while (iCo < contactList.length) {
+        val c = contactList(iCo)
+        iCo += 1
+
         if ((c.flags & (ContactFlags.slow | ContactFlags.nonSolid)) == 0) {
         // simulate continue
         var skip = false
@@ -551,7 +562,11 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
           island.solveTOI(subStep)
     		
           // Post solve cleanup.
-          for (b <- island.bodies) {
+          var iB = 0
+          while (iB < island.bodies.length) {
+            val b = island.bodies(iB)
+            iB += 1
+
             b.flags &= ~BodyFlags.island
             if ((b.flags & (BodyFlags.sleep | BodyFlags.frozen)) == 0 && !b.isStatic) {
               // Allow bodies to participate in future TOI islands.
@@ -574,7 +589,11 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
             }
           }
 
-          for (c <- island.contacts) {
+          var iC = 0
+          while (iC < island.contacts.length) {
+            val c = island.contacts(iC)
+            iC += 1
+
             // Allow contacts to participate in future TOI islands.
             c.flags &= ~(ContactFlags.toi | ContactFlags.island)
           }

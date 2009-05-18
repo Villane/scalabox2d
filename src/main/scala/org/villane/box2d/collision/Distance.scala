@@ -119,13 +119,15 @@ object Distance {
 
   def inPoints(w: Vector2f, points: Array[Vector2f], pointCount: Int): Boolean = {
     val k_tolerance = 100.0f * ε
-    for (i <- 0 until pointCount) {
+    var i = 0
+    while (i < pointCount) {
       val d = (w - points(i)).abs 
       val m = Vector2f.max(w.abs, points(i).abs)
 
       if (d.x < k_tolerance * (m.x + 1.0f) && d.y < k_tolerance * (m.y + 1.0f)) {
         return true
       }
+      i += 1
     }
 
     return false
@@ -155,7 +157,8 @@ object Distance {
 
     val vSqr = 0.0f
     val maxIterations = 20
-    for (iter <- 0 until maxIterations) {
+    var iter = 0
+    while (iter < maxIterations) {
       var v = x2 - x1
       val w1 = shape1.support(xf1, v)
       val w2 = shape2.support(xf2, -v)
@@ -206,8 +209,10 @@ object Distance {
       }
 
       var maxSqr = -Float.MaxValue
-      for (i <- 0 until pointCount) {
+      var i = 0
+      while (i < pointCount) {
         maxSqr = MathUtil.max(maxSqr, points(i) ∙ points(i))
+        i += 1
       }
 
       if (pointCount == 3 || vSqr <= 100.0f * ε * maxSqr) {
@@ -217,6 +222,7 @@ object Distance {
 
         return (MathUtil.sqrt(vSqr), x1, x2)
       }
+      iter += 1
     }
 
     g_GJK_Iterations = maxIterations;

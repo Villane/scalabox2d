@@ -92,7 +92,8 @@ class BroadPhase(val worldAABB: AABB, callback: PairListener) {
   }
 
   def testOverlap(p1: Proxy, p2: Proxy): Boolean = {
-    for (axis <- 0 to 1) {
+    var axis = 0
+    while (axis <= 1) {
       val bounds = m_bounds(axis)
 
       assert(p1.lowerBounds(axis) < 2 * proxyCount)
@@ -105,13 +106,15 @@ class BroadPhase(val worldAABB: AABB, callback: PairListener) {
 
       if (bounds(p1.upperBounds(axis)).value < bounds(p2.lowerBounds(axis)).value)
         return false
+      axis += 1
     }
 
     return true
   }
 
   def testOverlap(b: BoundValues, p: Proxy): Boolean = {
-    for (axis <- 0 to 1) {
+    var axis = 0
+    while (axis <= 1) {
       val bounds = m_bounds(axis)
 
       assert(p.lowerBounds(axis) < 2 * proxyCount)
@@ -122,6 +125,7 @@ class BroadPhase(val worldAABB: AABB, callback: PairListener) {
 
       if (b.upperValues(axis) < bounds(p.lowerBounds(axis)).value)
         return false
+      axis += 1
     }
 
     return true
@@ -178,8 +182,10 @@ class BroadPhase(val worldAABB: AABB, callback: PairListener) {
 
             System.arraycopy(m_bounds(axis), upperIndex, m_bounds(axis),
                     upperIndex + 2, boundCount - upperIndex)
-            for (i <- 0 until boundCount - upperIndex) {
+            var i = 0
+            while (i < boundCount - upperIndex) {
                 m_bounds(axis)(upperIndex + 2 + i) = new Bound(m_bounds(axis)(upperIndex + 2 + i))
+                i += 1
             }
 
             // memmove(bounds[lowerIndex + 1], bounds[lowerIndex],
@@ -187,9 +193,11 @@ class BroadPhase(val worldAABB: AABB, callback: PairListener) {
             // System.out.println(lowerIndex+" "+upperIndex);
             System.arraycopy(m_bounds(axis), lowerIndex, m_bounds(axis),
                     lowerIndex + 1, upperIndex - lowerIndex);
-            for (i <- 0 until upperIndex - lowerIndex) {
+            i = 0
+            while (i < upperIndex - lowerIndex) {
                 m_bounds(axis)(lowerIndex + 1 + i) = new Bound(
                         m_bounds(axis)(lowerIndex + 1 + i))
+                i += 1
             }
 
             // The upper index has increased because of the lower bound
@@ -216,12 +224,15 @@ class BroadPhase(val worldAABB: AABB, callback: PairListener) {
             // \n",lowerValues[axis],proxyId,upperValues[axis],proxyId);
 
             // Adjust the stabbing count between the new bounds.
-            for (index <- lowerIndex until upperIndex) {
+            var index = lowerIndex
+            while (index < upperIndex) {
                 bounds(index).stabbingCount += 1
+                index += 1
             }
 
             // Adjust the all the affected bound indices.
-            for (index <- lowerIndex until boundCount + 2) {
+            index = lowerIndex
+            while (index < boundCount + 2) {
                 val proxyn = proxyPool(bounds(index).proxyId)
                 if (bounds(index).isLower) {
                     proxyn.lowerBounds(axis) = index
@@ -229,6 +240,7 @@ class BroadPhase(val worldAABB: AABB, callback: PairListener) {
                 else {
                     proxyn.upperBounds(axis) = index
                 }
+                index += 1
             }
         }
 
@@ -236,11 +248,13 @@ class BroadPhase(val worldAABB: AABB, callback: PairListener) {
 
         assert(queryResultCount < Settings.maxProxies)
         // Create pairs if the AABB is in range.
-        for (i <- 0 until queryResultCount) {
+        var i = 0
+        while (i < queryResultCount) {
             assert(queryResults(i) < Settings.maxProxies)
             assert(proxyPool(queryResults(i)).isValid)
 
             pairManager.addBufferedPair(proxyId, queryResults(i))
+            i += 1
         }
 
         pairManager.commit()
@@ -285,12 +299,15 @@ class BroadPhase(val worldAABB: AABB, callback: PairListener) {
             // (edgeCount - upperIndex - 1) * sizeof(b2Bound));
             System.arraycopy(m_bounds(axis), upperIndex + 1, m_bounds(axis),
                     upperIndex - 1, boundCount - upperIndex - 1);
-            for (i <- 0 until boundCount - upperIndex - 1) {
+            var i = 0
+            while (i < boundCount - upperIndex - 1) {
                 bounds(upperIndex - 1 + i) = new Bound(bounds(upperIndex - 1 + i));
+                i += 1
             }
 
             // Fix bound indices.
-            for (index <- lowerIndex until boundCount - 2) {
+            var index = lowerIndex
+            while (index < boundCount - 2) {
                 val proxyn = proxyPool(bounds(index).proxyId)
                 if (bounds(index).isLower) {
                     proxyn.lowerBounds(axis) = index
@@ -298,11 +315,14 @@ class BroadPhase(val worldAABB: AABB, callback: PairListener) {
                 else {
                     proxyn.upperBounds(axis) = index
                 }
+                index += 1
             }
 
             // Fix stabbing count.
-            for (index <- lowerIndex until upperIndex - 1) {
+            index = lowerIndex
+            while (index < upperIndex - 1) {
                 bounds(index).stabbingCount -= 1
+                index += 1
             }
 
             // Query for pairs to be removed. lowerIndex and upperIndex are not
@@ -313,9 +333,11 @@ class BroadPhase(val worldAABB: AABB, callback: PairListener) {
 
         assert (queryResultCount < Settings.maxProxies)
 
-        for (i <- 0 until queryResultCount) {
+        var i = 0
+        while (i < queryResultCount) {
             assert(proxyPool(queryResults(i)).isValid)
             pairManager.removeBufferedPair(proxyId, queryResults(i))
+            i += 1
         }
         
         pairManager.commit()
@@ -608,7 +630,8 @@ class BroadPhase(val worldAABB: AABB, callback: PairListener) {
             val boundCount = 2 * proxyCount
             var stabbingCount = 0
 
-            for (i <- 0 until boundCount) {
+            var i = 0
+            while (i < boundCount) {
                 val bound = bounds(i)
                 assert(i == 0 || bounds(i-1).value <= bound.value)
                 assert(bound.proxyId != PairManager.NullProxy)
@@ -626,6 +649,7 @@ class BroadPhase(val worldAABB: AABB, callback: PairListener) {
                 }
 
                 assert (bound.stabbingCount == stabbingCount);
+                i += 1
             }
         }
 
