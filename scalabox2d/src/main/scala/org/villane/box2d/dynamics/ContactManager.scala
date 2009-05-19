@@ -41,7 +41,7 @@ class ContactManager extends PairListener {
     }
 
     // Insert into the world.
-    c.worldContact.add(world.contactList, world.contactList_=)
+    world.contactList.add(c.inWorld)
     // world.contactCount += 1
 
     c
@@ -92,7 +92,7 @@ class ContactManager extends PairListener {
     // Contact lists should be optimized for random removal as well
     // Remove from the world.
     //world.contactList -= c
-    c.worldContact.remove(world.contactList, world.contactList_=)
+    world.contactList.remove(c.inWorld)
     val body1 = shape1.body
     val body2 = shape2.body
 
@@ -108,17 +108,15 @@ class ContactManager extends PairListener {
 
   def collide() {
     // Update awake contacts.
-    if (world.contactList != null) {
     val iterCont = world.contactList.elements
     while (iterCont.hasNext) {
-      val c = iterCont.next.contact
+      val c = iterCont.next
 
       val body1 = c.shape1.body
       val body2 = c.shape2.body
       if (!body1.isSleeping || !body2.isSleeping) {
         c.update(world.contactListener)
       }
-    }
     }
   }
 }

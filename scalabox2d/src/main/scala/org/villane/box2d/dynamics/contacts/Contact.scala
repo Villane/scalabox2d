@@ -4,6 +4,7 @@ import collection.mutable
 import vecmath._
 import shapes._
 import collision._
+import common._
 
 object ContactFlags {
   val nonSolid = 0x0001
@@ -38,19 +39,18 @@ object Contact {
       contact.shape2.body.wakeUp()
     }
   }
-
-  class WorldContact(val contact: Contact) extends common.DoublyLinkedListItem[WorldContact] {}
 }
 
 /**
  * Base class for contacts between shapes.
  * @author ewjordan
  */
-abstract class Contact(val shape1: Shape, val shape2: Shape) extends common.DoublyLinkedListItem[Contact] {
+abstract class Contact(val shape1: Shape, val shape2: Shape) {
   /** The parent world. */
   //var world: World = null // TODO getCurrentWOlrd?
 
-  val worldContact = new Contact.WorldContact(this)
+  val inWorld = new DLLItem(this)
+  val inIsland = new DLLItem(this)
 
   /** Node for connecting bodies. */
   val node1 = if (shape2 != null) ContactEdge(shape2.body, this) else null

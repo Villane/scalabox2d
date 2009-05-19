@@ -8,6 +8,7 @@ import collision._
 import joints._
 import settings.Settings
 import settings.Settings.ε
+import common._
 
 import collection.jcl.ArrayList
 
@@ -25,7 +26,7 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
   
   val bodyList = new ArrayList[Body]
   /** Do not access, won't be useful! */
-  var contactList: Contact.WorldContact = null 
+  var contactList = new DLLHead[Contact](null) 
   val jointList = new ArrayList[Joint]
 
   var allowSleep = doSleep
@@ -251,10 +252,10 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
     for (b <- bodyList) {
       b.flags &= ~BodyFlags.island
     }
-    var c = contactList
-    while (c != null) {
-      c.contact.flags &= ~ContactFlags.island
-      c = c.next
+    val cIter = contactList.elements
+    while (cIter.hasNext) {
+      val c = cIter.next
+      c.flags &= ~ContactFlags.island
     }
     for (j <- jointList) {
       j.islandFlag = false
@@ -412,11 +413,11 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
       b.sweep.t0 = 0f
     }
 
-    var c = contactList
-    while (c != null) {
+    val cIter = contactList.elements
+    while (cIter.hasNext) {
+      val c = cIter.next
       // Invalidate TOI
-      c.contact.flags &= ~(ContactFlags.toi | ContactFlags.island)
-      c = c.next
+      c.flags &= ~(ContactFlags.toi | ContactFlags.island)
     }
 
     // Find TOI events and solve them.
@@ -426,10 +427,9 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
       var minContact: Contact = null
       var minTOI = 1f
 
-      if (contactList != null) {
       var iterCont = contactList.elements
       while (iterCont.hasNext) {
-        val c = iterCont.next.contact
+        val c = iterCont.next
 
         if ((c.flags & (ContactFlags.slow | ContactFlags.nonSolid)) == 0) {
         // simulate continue
@@ -481,7 +481,6 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
             minTOI = toi
           } 
         }
-      }
       }
       }
 
