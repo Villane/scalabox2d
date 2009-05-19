@@ -56,12 +56,14 @@ object PolygonCollider {
     // Find support vertex on poly2 for -normal.
     var index = 0
     var minDot = Float.MaxValue
-    for (i <- 0 until count2) {
+    var i = 0
+    while (i < count2) {
       val dot = vertices2(i) ∙ normal1
       if (dot < minDot) {
         minDot = dot
         index = i
       }
+      i += 1
     }
 
     val v1 = xf1 * vertices1(edge1)
@@ -87,12 +89,14 @@ object PolygonCollider {
     // Find edge normal on poly1 that has the largest projection onto d.
     var edge = 0
     var maxDot = -Float.MaxValue
-    for (i <- 0 until count1) {
+    var i = 0
+    while (i < count1) {
       val dot = normals1(i) ∙ dLocal1
       if (dot > maxDot) {
         maxDot = dot
         edge = i
       }
+      i += 1
     }
 
     // Get the separation for the edge normal.
@@ -165,12 +169,14 @@ object PolygonCollider {
     // Find the incident edge on poly2.
     var index = 0
     var minDot = Float.MaxValue
-    for (i <- 0 until count2) {
+    var i = 0
+    while (i < count2) {
       val dot = normal1 ∙ normals2(i)
       if (dot < minDot) {
         minDot = dot
         index = i
       }
+      i += 1
     }
 
     // Build the clip vertices for the incident edge.
@@ -258,9 +264,7 @@ object PolygonCollider {
 
     // Now clipPoints2 contains the clipped points.
 
-    val points = new collection.mutable.ArrayBuffer[ManifoldPoint] {
-      override def initialSize = cp2len
-    }
+    val points = new collection.mutable.ListBuffer[ManifoldPoint]
     for (cp2 <- clipPoints2) {
       val separation = (frontNormal ∙ cp2.v) - frontOffset
 
@@ -276,6 +280,6 @@ object PolygonCollider {
     if (points.length == 0)
       None
     else
-      Some(Manifold(points.toArray, if (flip) -frontNormal else frontNormal))
+      Some(Manifold(points.toList, if (flip) -frontNormal else frontNormal))
   }
 }

@@ -232,14 +232,19 @@ class Island(val bodyCapacity: Int,
     report(contactSolver.constraints)
   }
 
-  def report(constraints: Seq[ContactConstraint]): Unit = {
+  def report(constraints: List[ContactConstraint]): Unit = {
     if (listener == null) {
       return
     }
 
-    for (i <- 0 until contacts.length) {
+    var iConstraints = constraints
+    var i = 0
+    while (i < contacts.length) {
       val c = contacts(i)
-      val cc = constraints(i)
+      val cc = iConstraints.head
+      iConstraints = iConstraints.tail
+      i += 1
+
       val shape1 = c.shape1
       val shape2 = c.shape2
       val b1 = shape1.body

@@ -5,6 +5,9 @@ package org.villane.box2d.dynamics.contacts
  * 
  * TODO perhaps move this to a preamble?
  */
-object EventType extends Enumeration {
-  val Add, Persist, Remove = Value
+object EventType {
+  object Add extends EventType
+  object Persist extends EventType
+  object Remove extends EventType
 }
+sealed trait EventType

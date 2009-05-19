@@ -10,7 +10,7 @@ class ContactSolver(contacts: Seq[Contact]) {
   val constraints = initConstraints(contacts)
   
   @inline def initConstraints(contacts: Seq[Contact]) = {
-    val tmpConstraints = new collection.mutable.ArrayBuffer[ContactConstraint]
+    val tmpConstraints = new collection.mutable.ListBuffer[ContactConstraint]
 
     var iContact = 0
     while (iContact < contacts.length) {
@@ -81,10 +81,14 @@ class ContactSolver(contacts: Seq[Contact]) {
           assert(kEqualized > ε)
           ccp.equalizedMass = 1 / kEqualized
 
-          val tangent = normal.tangent
+          //val tangent = normal.tangent
+          val tangentx = normal.y
+          val tangenty = -normal.x
 
-          var rt1 = ccp.r1 × tangent
-          var rt2 = ccp.r2 × tangent
+          //var rt1 = ccp.r1 × tangent
+          //var rt2 = ccp.r2 × tangent
+          var rt1 = ccp.r1.x * tangenty - ccp.r1.y * tangentx
+          var rt2 = ccp.r2.x * tangenty - ccp.r2.y * tangentx
           rt1 *= rt1
           rt2 *= rt2
 
@@ -112,17 +116,17 @@ class ContactSolver(contacts: Seq[Contact]) {
       }
     }
 
-    tmpConstraints.toArray
+    tmpConstraints.toList
   }
   
   @inline def initVelocityConstraints(step: TimeStep) {
     // Zero temp objects created - ewjordan
 
     // Warm start.
-    var iConstraints = 0
-    while (iConstraints < constraints.length) {
-      val c = constraints(iConstraints)
-      iConstraints += 1
+    var iConstraints = constraints
+    while (!iConstraints.isEmpty) {
+      val c = iConstraints.head
+      iConstraints = iConstraints.tail
 
       val b1 = c.body1
       val b2 = c.body2
@@ -131,7 +135,9 @@ class ContactSolver(contacts: Seq[Contact]) {
       val invMass2 = b2.invMass
       val invI2 = b2.invI
       val normal = c.normal
-      val tangent = normal.tangent
+      //val tangent = normal.tangent
+      val tangentx = normal.y
+      val tangenty = -normal.x
 
       if (step.warmStarting) {
         var iCCP = 0
@@ -143,12 +149,14 @@ class ContactSolver(contacts: Seq[Contact]) {
           ccp.normalImpulse *= step.dtRatio
           ccp.tangentImpulse *= step.dtRatio
 
-          val p = ccp.normalImpulse * normal + ccp.tangentImpulse * tangent
+          //val p = ccp.normalImpulse * normal + ccp.tangentImpulse * tangent
+          val px = ccp.normalImpulse * normal.x + ccp.tangentImpulse * tangentx
+          val py = ccp.normalImpulse * normal.y + ccp.tangentImpulse * tangenty
 
-          b1.angularVelocity -= invI1 * (ccp.r1.x * p.y - ccp.r1.y * p.x)
-          b1.linearVelocity -= p * invMass1
-          b2.angularVelocity += invI2 * (ccp.r2.x * p.y - ccp.r2.y * p.x)
-          b2.linearVelocity += p * invMass2
+          b1.angularVelocity -= invI1 * (ccp.r1.x * py - ccp.r1.y * px)
+          b1.linearVelocity -= Vector2f(px * invMass1, py * invMass1)
+          b2.angularVelocity += invI2 * (ccp.r2.x * py - ccp.r2.y * px)
+          b2.linearVelocity += Vector2f(px * invMass2, py * invMass2)
         }
       } else {
         var iCCP = 0
@@ -165,11 +173,11 @@ class ContactSolver(contacts: Seq[Contact]) {
   
   @inline def solveVelocityConstraints() {
     // (4*constraints + 6*points) temp Vec2s - BOTTLENECK!
-    var iConstraints = 0
-    while (iConstraints < constraints.length) {
-      val c = constraints(iConstraints)
-      iConstraints += 1
-      
+    var iConstraints = constraints
+    while (!iConstraints.isEmpty) {
+      val c = iConstraints.head
+      iConstraints = iConstraints.tail
+
       val b1 = c.body1
       val b2 = c.body2
       var w1 = b1.angularVelocity
@@ -183,7 +191,9 @@ class ContactSolver(contacts: Seq[Contact]) {
       val invMass2 = b2.invMass
       val invI2 = b2.invI
       val normal = c.normal
-      val tangent = normal.tangent
+      //val tangent = normal.tangent
+      val tangentx = normal.y
+      val tangenty = -normal.x
       val friction = c.friction
             
             //final boolean DEFERRED_UPDATE = false;
@@ -252,7 +262,7 @@ class ContactSolver(contacts: Seq[Contact]) {
         val dvy = v2y + w2 * ccp.r2.x - v1y - w1*ccp.r1.x
 
         // Compute tangent force
-        val vt = dvx * tangent.x + dvy * tangent.y
+        val vt = dvx * tangentx + dvy * tangenty
         var λ = ccp.tangentMass * (-vt)
 
         // b2Clamp the accumulated force
@@ -262,8 +272,8 @@ class ContactSolver(contacts: Seq[Contact]) {
 
         // Apply contact impulse
         //val P = tangent * λ
-        val Px = tangent.x * λ 
-        val Py = tangent.y * λ 
+        val Px = tangentx * λ 
+        val Py = tangenty * λ 
 
         // b1.m_linearVelocity.subLocal(P.mul(invMass1));
         v1x -= Px * invMass1
@@ -287,10 +297,10 @@ class ContactSolver(contacts: Seq[Contact]) {
   }
 
   @inline def finalizeVelocityConstraints() {
-    var i = 0
-    while (i < constraints.length) {
-      val c = constraints(i)
-      i += 1
+    var ic = constraints
+    while (!ic.isEmpty) {
+      val c = ic.head
+      ic = ic.tail
 
       val m = c.manifold
       var j = 0
@@ -304,10 +314,10 @@ class ContactSolver(contacts: Seq[Contact]) {
   
   @inline def solvePositionConstraints(baumgarte: Float): Boolean = {
     var minSeparation = 0f
-    var iConstraints = 0 
-    while (iConstraints < constraints.length) {
-      val c = constraints(iConstraints)
-      iConstraints += 1
+    var iConstraints = constraints
+    while (!iConstraints.isEmpty) {
+      val c = iConstraints.head
+      iConstraints = iConstraints.tail
 
       val b1 = c.body1
       val b2 = c.body2

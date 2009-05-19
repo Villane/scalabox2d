@@ -11,7 +11,7 @@ trait SingleManifoldContact extends Contact {
   var manifoldHolder: Option[Manifold] = None
   def manifolds = if (manifoldHolder.isEmpty) Nil else manifoldHolder.get :: Nil
 
-  def notifyListener(listener: ContactListener, mp: ManifoldPoint, normal: Vector2f, event: EventType.Value) {
+  def notifyListener(listener: ContactListener, mp: ManifoldPoint, normal: Vector2f, event: EventType) {
     if (listener != null) {
       val b1 = shape1.body
       val b2 = shape2.body

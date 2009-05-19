@@ -12,8 +12,9 @@ trait MultiPointSingleManifoldContact extends SingleManifoldContact {
       val manifold = manifoldHolder.get
       // Match old contact ids to new contact ids and copy the
       // stored impulses to warm start the solver.
-      for (i <- 0 until manifold.points.length) {
-        val mp = manifold.points(i)
+      val mpIter = manifold.points.elements
+      while (mpIter.hasNext) {
+        val mp = mpIter.next
         mp.normalImpulse = 0.0f
         mp.tangentImpulse = 0.0f
         var found = false
@@ -21,9 +22,12 @@ trait MultiPointSingleManifoldContact extends SingleManifoldContact {
 
         if (oldMH.isDefined) {
           val m0 = oldMH.get
-          for (j <- 0 until m0.points.length) {
+          var j = 0
+          val mp0Iter = m0.points.elements
+          while (mp0Iter.hasNext) {
+            val mp0 = mp0Iter.next
             if (!persisted(j) && !found) {
-              val mp0 = m0.points(j)
+              //val mp0 = m0.points(j)
 
               if (mp0.id == id) {
                 persisted(j) = true
@@ -37,6 +41,7 @@ trait MultiPointSingleManifoldContact extends SingleManifoldContact {
                 notifyListener(listener, mp, manifold.normal, EventType.Persist)
               }
             }
+            j += 1
           }
         }
 
@@ -49,9 +54,13 @@ trait MultiPointSingleManifoldContact extends SingleManifoldContact {
     if (oldMH.isDefined) {
       // Report removed points.
       val m0 = oldMH.get
-      for (i <- 0 until m0.points.length) {
+      val mp0Iter = m0.points.elements
+      var i = 0
+      while (mp0Iter.hasNext) {
+        val mp = mp0Iter.next
         if (!persisted(i))
-          notifyListener(listener, m0.points(i), m0.normal, EventType.Remove)
+          notifyListener(listener, mp, m0.normal, EventType.Remove)
+        i += 1
       }
     }
   }

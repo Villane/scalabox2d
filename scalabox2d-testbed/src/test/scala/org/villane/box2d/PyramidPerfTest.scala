@@ -19,27 +19,29 @@ object PyramidPerfTest {
   def main(args: Array[String]) {
     createWorld
     create
-    var x = 0
-    m_world.bodyList foreach { b => if (!b.isStatic) x += 1 }
+    //var x = 0
+    //m_world.bodyList foreach { b => if (!b.isStatic) x += 1 }
     //println("bodycount: " + x)
     //println("press enter")
+    //Console.readLine
     var start = System.currentTimeMillis
-    /*var i = 0
-    while (i < 100) {
+    var i = 0
+    while (i < 1000) {
       if (i == 99) {
         Console.readLine
         start = System.currentTimeMillis
       }
       step
       i += 1
-    }*/
-    while (m_world.bodyList exists { b =>
+    }
+    /*while (m_world.bodyList exists { b =>
       !b.isSleeping && !b.isStatic
     }) {
       step
-    }
+    }*/
     val end = System.currentTimeMillis
     println((end - start) + " ms")
+    println("vectors created:" + Vector2f.count)
   }
 
 	/** Override this if you need to create a different world AABB or gravity vector */
