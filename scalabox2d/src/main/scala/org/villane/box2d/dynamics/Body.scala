@@ -139,6 +139,11 @@ class Body(bd: BodyDef, val world: World) {
   
   /** The current world rotation angle in radians. */
   def angle = sweep.a
+  def angle_=(a: Float) {
+    sweep.a = a
+    synchronizeTransform()
+  }
+
   /** Get a copy of the world position of the center of mass. */
   def worldCenter = sweep.c
   /** Get a copy of the local position of the center of mass. */
