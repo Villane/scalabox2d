@@ -32,7 +32,7 @@ class PairManager(val broadPhase: BroadPhase, val callback: PairListener) {
       case Some(pair) => pair
       case None =>
         assert(pairCount < Settings.maxPairs, "Too many pairs (shape AABB overlaps) - this usually means you have too many bodies, or you need to increase Settings.maxPairs.")
-        val pair = Pair(proxyId1, proxyId2)
+        val pair = Pair(proxies._1, proxies._2)
         hashTable += proxies -> pair
         pairCount += 1
         pair
