@@ -10,12 +10,11 @@ class ContactSolver(contacts: Seq[Contact]) {
   val constraints = initConstraints(contacts)
   
   @inline def initConstraints(contacts: Seq[Contact]) = {
-    val tmpConstraints = new collection.mutable.ListBuffer[ContactConstraint]
+    val tmpConstraints = new Array[ContactConstraint](contacts.length)
 
     var iContact = 0
     while (iContact < contacts.length) {
       val contact = contacts(iContact)
-      iContact += 1
 
       assert(contact.solid)
       val b1 = contact.shape1.body
@@ -112,21 +111,22 @@ class ContactSolver(contacts: Seq[Contact]) {
 
         }
 
-        tmpConstraints += c
+        tmpConstraints(iContact) = c
+        iContact += 1
       }
     }
 
-    tmpConstraints.toList
+    tmpConstraints
   }
   
   @inline def initVelocityConstraints(step: TimeStep) {
     // Zero temp objects created - ewjordan
 
     // Warm start.
-    var iConstraints = constraints
-    while (!iConstraints.isEmpty) {
-      val c = iConstraints.head
-      iConstraints = iConstraints.tail
+    var iConstraints = 0
+    while (iConstraints < constraints.length) {
+      val c = constraints(iConstraints)
+      iConstraints += 1
 
       val b1 = c.body1
       val b2 = c.body2
@@ -173,10 +173,10 @@ class ContactSolver(contacts: Seq[Contact]) {
   
   @inline def solveVelocityConstraints() {
     // (4*constraints + 6*points) temp Vec2s - BOTTLENECK!
-    var iConstraints = constraints
-    while (!iConstraints.isEmpty) {
-      val c = iConstraints.head
-      iConstraints = iConstraints.tail
+    var iConstraints = 0
+    while (iConstraints < constraints.length) {
+      val c = constraints(iConstraints)
+      iConstraints += 1
 
       val b1 = c.body1
       val b2 = c.body2
@@ -297,10 +297,10 @@ class ContactSolver(contacts: Seq[Contact]) {
   }
 
   @inline def finalizeVelocityConstraints() {
-    var ic = constraints
-    while (!ic.isEmpty) {
-      val c = ic.head
-      ic = ic.tail
+    var ic = 0
+    while (ic < constraints.length) {
+      val c = constraints(ic)
+      ic += 1
 
       val m = c.manifold
       var j = 0
@@ -314,10 +314,10 @@ class ContactSolver(contacts: Seq[Contact]) {
   
   @inline def solvePositionConstraints(baumgarte: Float): Boolean = {
     var minSeparation = 0f
-    var iConstraints = constraints
-    while (!iConstraints.isEmpty) {
-      val c = iConstraints.head
-      iConstraints = iConstraints.tail
+    var iConstraints = 0
+    while (iConstraints < constraints.length) {
+      val c = constraints(iConstraints)
+      iConstraints += 1
 
       val b1 = c.body1
       val b2 = c.body2
