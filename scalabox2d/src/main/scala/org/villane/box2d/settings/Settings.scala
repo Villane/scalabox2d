@@ -105,4 +105,6 @@ object Settings {
   /** Maximum number of contacts to be handled to solve a TOI island. */
   val maxTOIContactsPerIsland = 32
 
+  var threadedIslandSolving = true
+  var numThreads = 3//Runtime.getRuntime.availableProcessors
 }

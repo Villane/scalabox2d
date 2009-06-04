@@ -108,7 +108,7 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
     m_debugDraw.g = g;
     m_debugDraw.container = container;
     //background(0);
-    Vector2f.count = 0;
+    Vector2f.creationCount = 0;
 
     /* Make sure we've got a valid test to run and reset it if needed */
     getCurrentTest match {
@@ -144,7 +144,7 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
     /* ==== Vec2 creation and FPS reporting ==== */
     if (currentTest.settings.drawStats) {
       //g.setColor(AbstractExample.white)
-      g.drawString("Vec2 creations/frame: "+Vector2f.count, 5, currentTest.m_textLine);
+      g.drawString("Vec2 creations/frame: "+Vector2f.creationCount, 5, currentTest.m_textLine);
       currentTest.m_textLine += AbstractExample.textLineHeight;
     }
 

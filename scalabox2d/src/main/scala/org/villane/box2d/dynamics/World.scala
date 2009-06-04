@@ -9,6 +9,7 @@ import joints._
 import settings.Settings
 import settings.Settings.ε
 
+import java.util.concurrent._
 import collection.jcl.ArrayList
 
 /**
@@ -245,7 +246,7 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
     positionIterationCount = 0
 
     // Size the island for the worst case.
-    val island = new Island(bodyList.size, contactList.size, jointList.size, contactListener)
+    var island = new Island(bodyList.size, contactList.size, jointList.size, contactListener)
 
     // Clear all the island flags.
     for (b <- bodyList) {
@@ -262,10 +263,10 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
     var stackSize = bodyList.length
     val stack = new Array[Body](stackSize)
 
-    /* XXX threaded island solving
-    import java.util.concurrent._
-    val futures = new ArrayList[Future[Int]]
-    */
+    val futures = if (Settings.threadedIslandSolving)
+      new collection.mutable.ListBuffer[Future[Int]]
+    else
+      null
 
     var iBody = 0
     while (iBody < bodyList.length) {
@@ -333,26 +334,10 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
         }
       }
 
-      /* XXX Non-threaded solving */
-      island.solve(step, gravity, positionCorrection, allowSleep)
-      positionIterationCount = MathUtil.max(positionIterationCount, island.positionIterationCount).toInt 
-      /* XXX Non-threaded solving */
-
-      /* XXX threaded island solving
-      //if (island.bodies.length > 300) {
-      if (false) {
-        val task = new FutureTask(new Callable[Int] {
-          def call = {
-            island.solve(step, gravity, positionCorrection, allowSleep)
-            island.positionIterationCount
-          }
-        })
-        futures.add(task)
-      } else {
+      if (!Settings.threadedIslandSolving) {
         island.solve(step, gravity, positionCorrection, allowSleep)
         positionIterationCount = MathUtil.max(positionIterationCount, island.positionIterationCount).toInt
       }
-      */
 
       // Post solve cleanup.
       for (b <- island.bodies) {
@@ -361,16 +346,28 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
           b.flags &= ~BodyFlags.island
         }
       }
+
+      if (Settings.threadedIslandSolving) {
+        val taskIsland = island
+        val task = new FutureTask(new Callable[Int] {
+          def call = {
+            taskIsland.solve(step, gravity, positionCorrection, allowSleep)
+            taskIsland.positionIterationCount
+          }
+        })
+        futures += task
+        IslandSolverWorker.workQueue.put(task)
+        island = new Island(bodyList.size, contactList.size, jointList.size, contactListener)
+      }
+      
       }
     }
 
-    /* XXX threaded island solving
-    for (f <- futures) Executors.defaultThreadFactory.newThread(f.asInstanceOf[Runnable]).start
-    //for (f <- futures) f.asInstanceOf[Runnable].run
-    for (f <- futures) {
-      positionIterationCount = MathUtil.max(positionIterationCount, f.get).toInt
+    if (Settings.threadedIslandSolving) {
+      for (f <- futures) {
+        positionIterationCount = MathUtil.max(positionIterationCount, f.get).toInt
+      }
     }
-    */
 
     //m_broadPhase.commit();
 

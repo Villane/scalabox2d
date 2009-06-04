@@ -32,9 +32,7 @@ object PyramidPerfTest {
     i = 0
     var s100 = 0L
     while (i < 1000) {
-      if (i == 99) {
-        s100 = System.currentTimeMillis
-      }
+      if (i == 99) s100 = System.currentTimeMillis
       step
       i += 1
     }
@@ -47,7 +45,8 @@ object PyramidPerfTest {
     println((end - start) + " ms")
     println(" first 100: " + (s100 - start) + " ms")
     println(" last  900: " + (end - s100) + " ms")
-    println("vectors created:" + Vector2f.count)
+    println("vectors created:" + Vector2f.creationCount)
+    //IslandSolverWorker.stopWorkers
   }
 
 	/** Override this if you need to create a different world AABB or gravity vector */

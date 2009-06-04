@@ -1,16 +1,23 @@
 package org.villane.vecmath
 
 /**
- * The vecmath package includes geometry classes useful for 2D graphics and physics engines.
+ * The vecmath package includes geometry classes useful for 2D graphics and
+ * physics engines.
+ *
+ * This preamble contains implicit conversions from tuples to vectors and matrices
+ * and extension methods for Float.
  * 
- * Vector2f is an immutable implementation of a 2D vector consisting of two floats
- * Matrix2f is an immutable implementation of a 2D matrix consisiting of two vectors 
+ * Vector2f is an immutable implementation of a 2D vector of two floats
+ * Matrix2f is an immutable implementation of a 2D matrix of two vectors 
  * Transform2f is a transformation, consisting of a point (vector) and it's rotation (matrix)
  * MathUtil contains useful math with floats.
  * FloatExtensions allows some operations to be used with the float on the left side.
  */
 object Preamble {
-  implicit def tuple2f2Vector2f(xy: (Float, Float)) = Vector2f(xy._1, xy._2)
-  implicit def tuple2vector2f2Matrix2f(m: (Vector2f, Vector2f)) = Matrix2f(m._1, m._2)
-  implicit def float2floatExtensions(a: Float) = new FloatExtensions(a)
+  implicit def tuple2fToVector2f(xy: (Float, Float)) = Vector2f(xy._1, xy._2)
+  implicit def tuple2vector2fToMatrix2f(m: (Vector2f, Vector2f)) = Matrix2f(m._1, m._2)
+  implicit def floatToFloatExtensions(a: Float) = new FloatExtensions(a)
+
+  def min(a: Vector2f, b: Vector2f) = Vector2f(MathUtil.min(a.x, b.x), MathUtil.min(a.y, b.y))
+  def max(a: Vector2f, b: Vector2f) = Vector2f(MathUtil.max(a.x, b.x), MathUtil.max(a.y, b.y))
 }

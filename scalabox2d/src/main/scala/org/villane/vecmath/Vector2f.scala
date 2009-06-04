@@ -1,55 +1,59 @@
 package org.villane.vecmath
 
+/**
+ * Vector2f creation methods and often used constant values.
+ */
 object Vector2f {
   val Zero = new Vector2f(0, 0)
   val One = Vector2f(1, 1)
   val XUnit = Vector2f(1, 0)
   val YUnit = Vector2f(0, 1)
-  def min(a: Vector2f, b: Vector2f) = Vector2f(MathUtil.min(a.x, b.x), MathUtil.min(a.y, b.y))
-  def max(a: Vector2f, b: Vector2f) = Vector2f(MathUtil.max(a.x, b.x), MathUtil.max(a.y, b.y))
   def polar(r: Float, theta: Float) = Vector2f(MathUtil.cos(theta) * r, MathUtil.sin(theta) * r)
 
   // for debugging only
-  var count = 0L
+  var creationCount = 0L
 }
 
 /**
- * This is an implementation of immutable 2D vector and matrix. JBox2D was used for inspiration.
+ * An immutable 2D Vector represented as x and y coordinates in single precision
+ * floating point numbers.
  * 
- * Design notes:
+ * TODO Design ideas:
  * 
  * Vector2f could extend Tuple2(x, y), but this causes inefficiency:
  * tuple2 will store x,y as objects, causing boxing. Otherwise we could add:
  *   extends Tuple2(x, y) { override def swap = Vector2f(y, x) }
  * 
+ * Reconsider with Scala 2.8 @specialized
+ * 
  * Idea: provide mutable version for big computations
  */
 case class Vector2f(x: Float, y: Float) {
-  @inline def +(a: Float) = Vector2f(x + a, y + a)
-  @inline def -(a: Float) = Vector2f(x - a, y - a)
-  @inline def *(a: Float) = Vector2f(x * a, y * a)
-  @inline def /(a: Float) = Vector2f(x / a, y / a)
+  def +(a: Float) = Vector2f(x + a, y + a)
+  def -(a: Float) = Vector2f(x - a, y - a)
+  def *(a: Float) = Vector2f(x * a, y * a)
+  def /(a: Float) = Vector2f(x / a, y / a)
 
-  @inline def cross(a: Float) = Vector2f(a * y, -a * x)
-  @inline def ×(a: Float) = Vector2f(a * y, -a * x)
+  def cross(a: Float) = Vector2f(a * y, -a * x)
+  def ×(a: Float) = Vector2f(a * y, -a * x)
 
-  @inline def +(v: Vector2f) = Vector2f(x + v.x, y + v.y)
-  @inline def -(v: Vector2f) = Vector2f(x - v.x, y - v.y)
+  def +(v: Vector2f) = Vector2f(x + v.x, y + v.y)
+  def -(v: Vector2f) = Vector2f(x - v.x, y - v.y)
 
-  @inline def dot(v: Vector2f) = x * v.x + y * v.y
-  @inline def ∙(v: Vector2f) = x * v.x + y * v.y
+  def dot(v: Vector2f) = x * v.x + y * v.y
+  def ∙(v: Vector2f) = x * v.x + y * v.y
 
-  @inline def cross(v: Vector2f) = x * v.y - y * v.x
-  @inline def ×(v: Vector2f) = x * v.y - y * v.x
+  def cross(v: Vector2f) = x * v.y - y * v.x
+  def ×(v: Vector2f) = x * v.y - y * v.x
 
-  @inline def tangent = Vector2f(y, -x) // = ×(1)
-  @inline def unary_- = Vector2f(-x, -y)
-  @inline def swap = Vector2f(y, x)
-  @inline def abs = Vector2f(x.abs, y.abs)
+  def tangent = Vector2f(y, -x) // = ×(1)
+  def unary_- = Vector2f(-x, -y)
+  def swap = Vector2f(y, x)
+  def abs = Vector2f(x.abs, y.abs)
 
   /** Polar coordinates */
-  @inline def theta = Math.atan2(y, x).toFloat
-  @inline def θ = Math.atan2(y, x).toFloat
+  def theta = Math.atan2(y, x).toFloat
+  def θ = Math.atan2(y, x).toFloat
 
   /**
    * Since normalization is a simple operation, in cases where speed is desired, but the length before normalization is also needed,
@@ -57,14 +61,15 @@ case class Vector2f(x: Float, y: Float) {
    * val l = v.length
    * v /= l
    */
-  @inline def normalize = this / length
+  def normalize = this / length
 
-  @inline def length = MathUtil.sqrt(x * x + y * y)
-  @inline def lengthSquared = x * x + y * y
+  def length = MathUtil.sqrt(x * x + y * y)
+  def lengthSquared = x * x + y * y
 
-  // Unlike with float extensions, calling clamp on an existing vector doesn't affect performance, so this shouldn't be static.
-  @inline def clamp(low: Vector2f, high: Vector2f) = Vector2f.max(low, Vector2f.min(this, high))
+  // Unlike with float extensions, calling clamp on an existing vector doesn't effect performance, so this shouldn't be static.
+  def clamp(low: Vector2f, high: Vector2f) = Preamble.max(low, Preamble.min(this, high))
 
+  // TODO remove this if Scala 2.8 allows Vector to extend Tuple2 without performance hit
   def tuple = (x, y)
 
   // Inlined for performance
@@ -74,5 +79,5 @@ case class Vector2f(x: Float, y: Float) {
   override def productPrefix = ""
   
   // for debugging only
-  Vector2f.count += 1 
+  Vector2f.creationCount += 1 
 }
