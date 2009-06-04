@@ -602,7 +602,7 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
     }
   }
 
-  private def drawDebugData() {
+  def drawDebugData() {
     if (debugDraw != null) {
       debugDraw.drawDebugData(bodyList, jointList, broadPhase)
     }

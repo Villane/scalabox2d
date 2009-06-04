@@ -19,17 +19,21 @@ object PyramidPerfTest {
   def main(args: Array[String]) {
     createWorld
     create
+    var i = 0
+    while (i < 1000) { step; i += 1 }
+    createWorld
+    create
     //var x = 0
     //m_world.bodyList foreach { b => if (!b.isStatic) x += 1 }
     //println("bodycount: " + x)
     //println("press enter")
     //Console.readLine
     var start = System.currentTimeMillis
-    var i = 0
+    i = 0
+    var s100 = 0L
     while (i < 1000) {
       if (i == 99) {
-        Console.readLine
-        start = System.currentTimeMillis
+        s100 = System.currentTimeMillis
       }
       step
       i += 1
@@ -41,6 +45,8 @@ object PyramidPerfTest {
     }*/
     val end = System.currentTimeMillis
     println((end - start) + " ms")
+    println(" first 100: " + (s100 - start) + " ms")
+    println(" last  900: " + (end - s100) + " ms")
     println("vectors created:" + Vector2f.count)
   }
 
