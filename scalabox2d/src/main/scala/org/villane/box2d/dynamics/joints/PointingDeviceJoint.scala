@@ -68,7 +68,8 @@ class PointingDeviceJoint(defn: PointingDeviceJointDef) extends Joint(defn) {
                       -invI * r.x * r.y, invI * r.x * r.x)
 
 	var K = K1 + K2
-    K = Matrix2f(K.col1 + (gamma,0), K.col2 + (0,gamma))
+    K = Matrix2f(K._00 + gamma, K._01,
+                 K._10, K._11 + gamma)
 
     mass = K.invert
 

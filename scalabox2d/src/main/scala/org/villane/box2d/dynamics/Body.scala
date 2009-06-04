@@ -348,8 +348,8 @@ class Body(bd: BodyDef, val world: World) {
     //m_xf.position.y = m_sweep.c.y - (m_xf.R.col1.y * v1.x + m_xf.R.col2.y * v1.y);
     val r = Matrix2f.rotation(sweep.a)
     val v1 = sweep.localCenter
-    val vx = sweep.c.x - (r.col1.x * v1.x + r.col2.x * v1.y)
-    val vy = sweep.c.y - (r.col1.y * v1.x + r.col2.y * v1.y)
+    val vx = sweep.c.x - (r._00 * v1.x + r._01 * v1.y)
+    val vy = sweep.c.y - (r._10 * v1.x + r._11 * v1.y)
     _transform = Transform2f(Vector2f(vx,vy), r)
   }
 

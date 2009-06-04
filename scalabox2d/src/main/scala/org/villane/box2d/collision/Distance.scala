@@ -122,7 +122,7 @@ object Distance {
     var i = 0
     while (i < pointCount) {
       val d = (w - points(i)).abs 
-      val m = Vector2f.max(w.abs, points(i).abs)
+      val m = max(w.abs, points(i).abs)
 
       if (d.x < k_tolerance * (m.x + 1.0f) && d.y < k_tolerance * (m.y + 1.0f)) {
         return true
