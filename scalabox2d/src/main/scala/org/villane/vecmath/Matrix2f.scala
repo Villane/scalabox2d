@@ -49,7 +49,8 @@ case class Matrix2f(_00: Float, _01: Float, _10: Float, _11: Float) {
    * @param v
    * @return
    */
-  def **(v: Vector2f) = Vector2f(v ∙ col1, v ∙ col2)
+  def **(v: Vector2f) = Vector2f(_00 * v.x + _10 * v.y,
+                                 _01 * v.x + _11 * v.y)
 
   /**
    * Solve A * x = b where A = this matrix.
@@ -68,15 +69,23 @@ case class Matrix2f(_00: Float, _01: Float, _10: Float, _11: Float) {
    * @param m
    * @return
    */
-  def *(m: Matrix2f): Matrix2f = Matrix2f(this * m.col1, this * m.col2)
+  // Matrix2f(this * m.col1, this * m.col2)
+  def *(m: Matrix2f): Matrix2f = Matrix2f(
+    Vector2f(_00 * m._00 + _01 * m._10,
+             _10 * m._00 + _11 * m._10),
+    Vector2f(_00 * m._01 + _01 * m._11,
+             _10 * m._01 + _11 * m._11)
+  )
 
   /**
    * Multiply another matrix by the transpose of this one (transpose of this one on left).
    * @param B
    * @return
    */
-  def **(m: Matrix2f): Matrix2f = Matrix2f(Vector2f(col1 ∙ m.col1, col2 ∙ m.col1),
-                                           Vector2f(col1 ∙ m.col2, col2 ∙ m.col2))
+  def **(m: Matrix2f): Matrix2f = Matrix2f(
+    Vector2f(_00 * m._00 + _10 * m._10, _01 * m._00 + _11 * m._10),
+    Vector2f(_00 * m._01 + _10 * m._11, _01 * m._01 + _11 * m._11)
+  )
   //TODO def transpose = Matrix2f(Vector2f(col1.x, col2.x), Vector2f(col1.y, col2.y))
 
   def abs = Matrix2f(col1.abs, col2.abs)

@@ -17,8 +17,6 @@ object PyramidPerfTest {
   val settings = new TestSettings
 
   def main(args: Array[String]) {
-    Settings.threadedIslandSolving = false
-    Settings.numThreads = 2
     createWorld
     create
     var i = 0
@@ -48,7 +46,7 @@ object PyramidPerfTest {
     println(" first 100: " + (s100 - start) + " ms")
     println(" last  900: " + (end - s100) + " ms")
     println("vectors created:" + Vector2f.creationCount)
-    IslandSolverWorker.stopWorkers
+    //IslandSolverWorker.stopWorkers
   }
 
 	/** Override this if you need to create a different world AABB or gravity vector */
