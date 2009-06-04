@@ -15,7 +15,8 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.tests.AntiAliasTest;
-import box2d.testbed._ 
+import box2d.testbed._
+import fenggui.FengWrapper
 
 object TestbedRunner {
   def main(args: Array[String]) {
@@ -35,7 +36,7 @@ object TestbedRunner {
  * @author ewjordan
  *
  */
-class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with TestbedMain {
+class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with TestbedMain with FengWrapper {
 
   val m_debugDraw = new SlickDebugDraw(null,null)
 
@@ -57,26 +58,30 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
   var mousePosOld = Vector2f.Zero
   var gameContainer: GameContainer = null
 
-    /** FPS that we want to achieve */
-    val targetFPS = 60.0f;
-    /** Number of frames to average over when computing real FPS */
-    val fpsAverageCount = 100; 
-    /** Array of timings */
-    var nanos: Array[Long]= null;
-    /** When we started the nanotimer */
-    var nanoStart = 0L; //
+  /** FPS that we want to achieve */
+  val targetFPS = 60.0f;
+  /** Number of frames to average over when computing real FPS */
+  val fpsAverageCount = 100;
+  /** Array of timings */
+  var nanos: Array[Long]= null;
+  /** When we started the nanotimer */
+  var nanoStart = 0L; //
     
-    /** Number of frames since we started this example. */
+  /** Number of frames since we started this example. */
 	var frameCount = 0L;
 
   val tests = new collection.mutable.ListBuffer[AbstractExample]
   var currentTestIndex = -1
   def getCurrentTest = if (tests.isDefinedAt(currentTestIndex))
-    Some(tests(currentTestIndex))
+  Some(tests(currentTestIndex))
   else
-    None
+  None
 
   def init(container: GameContainer) {
+
+    m_debugDraw.g = container.getGraphics
+    m_debugDraw.container = container
+
     gameContainer = container
     container.setTargetFrameRate(60)
 
@@ -100,14 +105,14 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
       nanos(i) = nanos(i+1) - nanosPerFrameGuess;
     }
     nanoStart = System.nanoTime();
+
+    initWrapper(container)
   }
 
   def update(container: GameContainer, delta: Int) {}
 
   def render(container: GameContainer, g: Graphics) {
-    m_debugDraw.g = g;
-    m_debugDraw.container = container;
-    //background(0);
+
     Vector2f.count = 0;
 
     /* Make sure we've got a valid test to run and reset it if needed */
@@ -151,150 +156,152 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
     for (i <- 0 until fpsAverageCount-1) {
       nanos(i) = nanos(i+1)
     }
-    		nanos(fpsAverageCount-1) = System.nanoTime();
-    		val averagedFPS = ( (fpsAverageCount-1) * 1000000000.0 / (nanos(fpsAverageCount-1)-nanos(0)));
-    		frameCount += 1
-    		val totalFPS = (frameCount * 1000000000 / (1.0*(System.nanoTime()-nanoStart)));        
-    		if (currentTest.settings.drawStats) {
+    nanos(fpsAverageCount-1) = System.nanoTime();
+    val averagedFPS = ( (fpsAverageCount-1) * 1000000000.0 / (nanos(fpsAverageCount-1)-nanos(0)));
+    frameCount += 1
+    val totalFPS = (frameCount * 1000000000 / (1.0*(System.nanoTime()-nanoStart)));
+    if (currentTest.settings.drawStats) {
       //g.setColor(AbstractExample.white)
-    		  g.drawString("Average FPS ("+fpsAverageCount+" frames): "+averagedFPS, 5, currentTest.m_textLine);
-    			currentTest.m_textLine += AbstractExample.textLineHeight;
+      g.drawString("Average FPS ("+fpsAverageCount+" frames): "+averagedFPS, 5, currentTest.m_textLine);
+      currentTest.m_textLine += AbstractExample.textLineHeight;
       //g.setColor(AbstractExample.white)
-    			g.drawString("Average FPS (entire test): "+totalFPS, 5, currentTest.m_textLine);
-    			currentTest.m_textLine += AbstractExample.textLineHeight;
-    		}
+      g.drawString("Average FPS (entire test): "+totalFPS, 5, currentTest.m_textLine);
+      currentTest.m_textLine += AbstractExample.textLineHeight;
+    }
+    
+    draw
   }
 
 	
-    /**
-     * Handle mouseDown events.
-     * @param p The screen location that the mouse is down at.
-     */
-    override def mousePressed(b: Int, x: Int, y: Int) {
-      mouseButton = b
-      mousePressed = true
-      mousePosOld = mousePos
-      mousePos = (x,y)
-      getCurrentTest match {
-        case Some(test) =>
-          test.mouseDown(mousePos)
-        case None =>
-      }
+  /**
+   * Handle mouseDown events.
+   * @param p The screen location that the mouse is down at.
+   */
+  override def mousePressed(b: Int, x: Int, y: Int) {
+    mouseButton = b
+    mousePressed = true
+    mousePosOld = mousePos
+    mousePos = (x,y)
+    getCurrentTest match {
+      case Some(test) =>
+        test.mouseDown(mousePos)
+      case None =>
     }
+  }
 
-    /**
-     * Handle mouseUp events.
-     */
-    override def mouseReleased(b: Int, x: Int, y: Int) {
-      mousePosOld = mousePos
-      mousePos = (x,y)
-      mousePressed = false
-      getCurrentTest match {
-        case Some(test) =>
-          test.mouseUp()
-        case None =>
-      }
+  /**
+   * Handle mouseUp events.
+   */
+  override def mouseReleased(b: Int, x: Int, y: Int) {
+    mousePosOld = mousePos
+    mousePos = (x,y)
+    mousePressed = false
+    getCurrentTest match {
+      case Some(test) =>
+        test.mouseUp()
+      case None =>
     }
+  }
 
-    /**
-     * Handle mouseMove events (TestbedMain also sends mouseDragged events here)
-     * @param p The new mouse location (screen coordinates)
-     */
-    override def mouseMoved(oldX: Int, oldY: Int, x: Int, y: Int) {
-      mousePosOld = mousePos
-      mousePos = (x,y)
-      getCurrentTest match {
-        case Some(test) =>
-          test.mouseMove(mousePos)
-        case None =>
-      }
+  /**
+   * Handle mouseMove events (TestbedMain also sends mouseDragged events here)
+   * @param p The new mouse location (screen coordinates)
+   */
+  override def mouseMoved(oldX: Int, oldY: Int, x: Int, y: Int) {
+    mousePosOld = mousePos
+    mousePos = (x,y)
+    getCurrentTest match {
+      case Some(test) =>
+        test.mouseMove(mousePos)
+      case None =>
     }
+  }
 
-    /**
-     * Apply keyboard shortcuts, do keypress handling, and then
-     * send the key event to the current test if appropriate.
-     */
+  /**
+   * Apply keyboard shortcuts, do keypress handling, and then
+   * send the key event to the current test if appropriate.
+   */
 	override def keyPressed(keyCode: Int, key: Char) {
 	  import org.newdawn.slick.Input
-   if (keyCode == Input.KEY_LSHIFT) {
-     shiftDown = true
-   }
-    	if (keyCode == Input.KEY_RIGHT) {
-    		currentTestIndex += 1
-    		if (currentTestIndex >= tests.size) currentTestIndex = 0;
-    		getCurrentTest.get.needsReset = true;
-    		return;
-    	} else if (keyCode == Input.KEY_LEFT) {
-    		currentTestIndex -= 1
-    		if (currentTestIndex < 0) currentTestIndex = tests.size-1;
-    		getCurrentTest.get.needsReset = true;
-    		return;
-    	}
-       getCurrentTest match {
-         case None => 
-         case Some(currentTest) => 
-    	if (key == 'r') currentTest.needsReset = true;
-    	if (key == ' ') currentTest.launchBomb();
-    	if (key == 'p') {
-    		currentTest.settings.pause = !currentTest.settings.pause;
-    	}
-    	if (key == '+' && currentTest.settings.pause) {
+    if (keyCode == Input.KEY_LSHIFT) {
+      shiftDown = true
+    }
+    if (keyCode == Input.KEY_RIGHT) {
+      currentTestIndex += 1
+      if (currentTestIndex >= tests.size) currentTestIndex = 0;
+      getCurrentTest.get.needsReset = true;
+      return;
+    } else if (keyCode == Input.KEY_LEFT) {
+      currentTestIndex -= 1
+      if (currentTestIndex < 0) currentTestIndex = tests.size-1;
+      getCurrentTest.get.needsReset = true;
+      return;
+    }
+    getCurrentTest match {
+      case None =>
+      case Some(currentTest) =>
+        if (key == 'r') currentTest.needsReset = true;
+        if (key == ' ') currentTest.launchBomb();
+        if (key == 'p') {
+          currentTest.settings.pause = !currentTest.settings.pause;
+        }
+        if (key == '+' && currentTest.settings.pause) {
         	currentTest.settings.singleStep = true;
         }
-    	if (key == 's') currentTest.settings.drawStats = !currentTest.settings.drawStats;
-    	if (key == 'c') currentTest.settings.drawContactPoints = !currentTest.settings.drawContactPoints;
-    	if (key == 'b') currentTest.settings.drawAABBs = !currentTest.settings.drawAABBs;
-       }
+        if (key == 's') currentTest.settings.drawStats = !currentTest.settings.drawStats;
+        if (key == 'c') currentTest.settings.drawContactPoints = !currentTest.settings.drawContactPoints;
+        if (key == 'b') currentTest.settings.drawAABBs = !currentTest.settings.drawAABBs;
     }
+  }
  
-    override def keyReleased(keyCode: Int, key: Char) {
+  override def keyReleased(keyCode: Int, key: Char) {
 	  import org.newdawn.slick.Input
-   if (keyCode == Input.KEY_LSHIFT) {
-     shiftDown = false
-   }
+    if (keyCode == Input.KEY_LSHIFT) {
+      shiftDown = false
     }
+  }
 
-    override def mouseWheelMoved(amount: Int) {
-      getCurrentTest match {
-        case Some(test) =>
-            		val d = m_debugDraw
-            		val notches = amount
-                	val oldCenter = d.screenToWorld(width / 2.0f, height / 2.0f)
-                	//Change the zoom and clamp it to reasonable values 
-                	if (notches < 0) {
-                		d.scaleFactor = Math.min(300f, d.scaleFactor * 1.05f);
-                	}
-                	else if (notches > 0) {
-                		d.scaleFactor = Math.max(.02f, d.scaleFactor / 1.05f);
-                	}
-                	val newCenter = d.screenToWorld(width / 2.0f, height / 2.0f);
-                	d.transX -= (oldCenter.x - newCenter.x) * d.scaleFactor;
-                	d.transY -= (oldCenter.y - newCenter.y) * d.scaleFactor;
-                	test.cachedCamScale = d.scaleFactor;
-        case None =>
+  override def mouseWheelMoved(amount: Int) {
+    getCurrentTest match {
+      case Some(test) =>
+        val d = m_debugDraw
+        val notches = amount
+        val oldCenter = d.screenToWorld(width / 2.0f, height / 2.0f)
+        //Change the zoom and clamp it to reasonable values
+        if (notches < 0) {
+          d.scaleFactor = Math.min(300f, d.scaleFactor * 1.05f);
+        }
+        else if (notches > 0) {
+          d.scaleFactor = Math.max(.02f, d.scaleFactor / 1.05f);
+        }
+        val newCenter = d.screenToWorld(width / 2.0f, height / 2.0f);
+        d.transX -= (oldCenter.x - newCenter.x) * d.scaleFactor;
+        d.transY -= (oldCenter.y - newCenter.y) * d.scaleFactor;
+        test.cachedCamScale = d.scaleFactor;
+      case None =>
+    }
+  }
+  /**
+   * Allows the world to be dragged with a right-click.
+   */
+  def handleCanvasDrag() {
+    //Handle mouse dragging stuff
+    //Left mouse attaches mouse joint to object.
+    //Right mouse drags canvas.
+    val d = m_debugDraw
+		
+    //Vec2 mouseWorld = d.screenToWorld(mouseX, mouseY);
+    if (mouseButton == 1) {
+      if (mousePressed) {
+        d.transX += mouseX - pmouseX;
+        d.transY -= mouseY - pmouseY;
+        val v = d.screenToWorld(width*.5f,height*.5f);
+        getCurrentTest.get.cachedCamX = v.x;
+        getCurrentTest.get.cachedCamY = v.y;
       }
     }
-    /**
-     * Allows the world to be dragged with a right-click.
-     */
-    def handleCanvasDrag() {
-    	//Handle mouse dragging stuff
-        //Left mouse attaches mouse joint to object.
-        //Right mouse drags canvas.
-        val d = m_debugDraw
-		
-        //Vec2 mouseWorld = d.screenToWorld(mouseX, mouseY);
-        if (mouseButton == 1) {
-            if (mousePressed) {
-                d.transX += mouseX - pmouseX;
-                d.transY -= mouseY - pmouseY;
-                val v = d.screenToWorld(width*.5f,height*.5f);
-                getCurrentTest.get.cachedCamX = v.x;
-                getCurrentTest.get.cachedCamY = v.y;
-            }
-        }
     
-    }
+  }
     
     
 }
