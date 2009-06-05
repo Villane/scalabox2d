@@ -3,6 +3,7 @@ package org.villane.box2d.testbed.fenggui
 import org.fenggui.{FengGUI,Label,Display, Button, Container}
 import org.fenggui.layout.{RowExLayout, RowExLayoutData, RowLayout, FormLayout}
 import org.fenggui.util.{Alignment, Spacing}
+import org.fenggui.binding.render.Binding
 import org.fenggui.binding.render.lwjgl.{LWJGLBinding,EventHelper}
 import org.fenggui.event.mouse.MouseButton
 import org.fenggui.theme.{DefaultTheme, XMLTheme}
@@ -27,8 +28,9 @@ trait FengWrapper extends InputListener {
 
   def buildGUI {
     
-    FengGUI.setTheme(new DefaultTheme())
-    //FengGUI.setTheme(new XMLTheme("themes/QtCurve/QtCurve.xml"))
+    //FengGUI.setTheme(new DefaultTheme())
+    Binding.getInstance().setUseClassLoader(true)
+    FengGUI.setTheme(new XMLTheme("themes/QtCurve/QtCurve.xml"))
     val w = FengGUI.createWindow(false, false)
     w.setTitle("ScalaBox2D TestBed")
     w.getContentContainer.setLayoutManager(new RowLayout(false))

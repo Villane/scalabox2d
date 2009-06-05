@@ -238,10 +238,10 @@ object PolygonCollider {
     //v12 = XForm.mul(xf1, v12);
     //val Vector2f(v11x, v11y) = xf1 * v11
     //val Vector2f(v12x, v12y) = xf1 * v12
-    val v11x = xf1.pos.x + xf1.rot._00 * v11.x + xf1.rot._01 * v11.y
-    val v11y = xf1.pos.y + xf1.rot._10 * v11.x + xf1.rot._11 * v11.y
-    val v12x = xf1.pos.x + xf1.rot._00 * v12.x + xf1.rot._01 * v12.y 
-    val v12y = xf1.pos.y + xf1.rot._10 * v12.x + xf1.rot._11 * v12.y
+    val v11x = xf1.pos.x + xf1.rot.a11 * v11.x + xf1.rot.a12 * v11.y
+    val v11y = xf1.pos.y + xf1.rot.a21 * v11.x + xf1.rot.a22 * v11.y
+    val v12x = xf1.pos.x + xf1.rot.a11 * v12.x + xf1.rot.a12 * v12.y 
+    val v12y = xf1.pos.y + xf1.rot.a21 * v12.x + xf1.rot.a22 * v12.y
 
     val frontOffset = frontNormal.x * v11x + frontNormal.y * v11y
     val sideOffset1 = -(sideNormal.x * v11x + sideNormal.y * v11y)

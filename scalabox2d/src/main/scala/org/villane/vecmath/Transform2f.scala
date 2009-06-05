@@ -11,12 +11,12 @@ object Transform2f {
 
 case class Transform2f(pos: Vector2f, rot: Matrix2f) {
   def *(v: Vector2f) = Vector2f(
-    pos.x + rot._00 * v.x + rot._01 * v.y, 
-    pos.y + rot._10 * v.x + rot._11 * v.y
+    pos.x + rot.a11 * v.x + rot.a12 * v.y, 
+    pos.y + rot.a21 * v.x + rot.a22 * v.y
   ) // = pos + (rot * v)
   def **(v: Vector2f) = {
 	val v1x = v.x - pos.x
 	val v1y = v.y - pos.y
-	Vector2f(v1x * rot._00 + v1y * rot._10, v1x * rot._01 + v1y * rot._11)
+	Vector2f(v1x * rot.a11 + v1y * rot.a21, v1x * rot.a12 + v1y * rot.a22)
   } // = rot ** (v - pos)
 }
