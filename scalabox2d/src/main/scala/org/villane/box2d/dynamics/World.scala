@@ -300,7 +300,7 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
             // Has this contact already been added to an island?
             if ((cn.contact.flags & (ContactFlags.island | ContactFlags.nonSolid)) == 0 &&
               // Is this contact touching?
-              cn.contact.manifolds.length > 0)
+              !cn.contact.manifolds.isEmpty)
             {
               island.add(cn.contact)
               cn.contact.flags |= ContactFlags.island
@@ -493,7 +493,7 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
         minContact.update(contactListener)
         minContact.flags &= ~ContactFlags.toi
 
-        if (minContact.manifolds.length == 0) {
+        if (minContact.manifolds.isEmpty) {
           // This shouldn't happen. Numerical error?
           //b2Assert(false);
         } else {
@@ -527,7 +527,7 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
                 // Has this contact already been added to an island? Skip slow or non-solid contacts.
                 if ((cn.contact.flags & (ContactFlags.island | ContactFlags.slow | ContactFlags.nonSolid)) == 0 &&
                   // Is this contact touching? For performance we are not updating this contact.
-                  cn.contact.manifolds.length > 0)
+                  !cn.contact.manifolds.isEmpty)
                 {
                 island.add(cn.contact)
                 cn.contact.flags |= ContactFlags.island
