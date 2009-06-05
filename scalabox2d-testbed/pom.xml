@@ -16,8 +16,8 @@
 			<url>http://slick.cokeandcode.com/mavenrepo/</url>
 		</repository>
 		<repository>
-			<id>some-repo-which-happened-to-have-lwjgl</id>
-			<url>http://nifty-gui.sourceforge.net/nifty-maven-repo/</url>
+			<id>villane.org</id>
+			<url>http://villane.org/mavenrepo/</url>
 		</repository>
 	</repositories>
 	<dependencies>
@@ -32,17 +32,17 @@
 			<version>259</version>
 		</dependency>
 		<dependency>
-			<groupId>lwjgl</groupId>
+			<groupId>org.lwjgl</groupId>
 			<artifactId>lwjgl</artifactId>
 			<version>2.1.0</version>
 		</dependency>
-    <dependency>
-			<groupId>lwjgl_util</groupId>
-			<artifactId>lwjgl_util</artifactId>
+		<dependency>
+			<groupId>org.lwjgl</groupId>
+			<artifactId>lwjgl-util</artifactId>
 			<version>2.1.0</version>
 		</dependency>
-    <dependency>
-			<groupId>fenggui</groupId>
+		<dependency>
+			<groupId>org.fenggui</groupId>
 			<artifactId>fenggui</artifactId>
 			<version>643</version>
 		</dependency>
