@@ -340,12 +340,12 @@ class ContactSolver(contacts: Seq[Contact]) {
         // matrix * v, y = col1.y * v.x + col2.y * v.y
         val r1x2 = ccp.localAnchor1.x - b1.localCenter.x
         val r1y2 = ccp.localAnchor1.y - b1.localCenter.y
-        val r1x = b1.transform.rot.col1.x * r1x2 + b1.transform.rot.col2.x * r1y2 
-        val r1y = b1.transform.rot.col1.y * r1x2 + b1.transform.rot.col2.y * r1y2 
+        val r1x = b1.transform.rot._00 * r1x2 + b1.transform.rot._01 * r1y2 
+        val r1y = b1.transform.rot._10 * r1x2 + b1.transform.rot._11 * r1y2 
         val r2x2 = ccp.localAnchor2.x - b1.localCenter.x
         val r2y2 = ccp.localAnchor2.y - b1.localCenter.y
-        val r2x = b2.transform.rot.col1.x * r2x2 + b2.transform.rot.col2.x * r2y2 
-        val r2y = b2.transform.rot.col1.y * r2x2 + b2.transform.rot.col2.y * r2y2 
+        val r2x = b2.transform.rot._00 * r2x2 + b2.transform.rot._01 * r2y2 
+        val r2y = b2.transform.rot._10 * r2x2 + b2.transform.rot._11 * r2y2 
 
         //Vec2 p1 = b1.m_sweep.c + r1;
         //Vec2 p2 = b2.m_sweep.c + r2;

@@ -36,8 +36,8 @@ class Circle(defn: CircleDef) extends Shape(defn) {
   def computeSweptAABB(t1: Transform2f, t2: Transform2f) = {
     val p1 = t1 * pos
     val p2 = t2 * pos
-    val lower = Vector2f.min(p1, p2)
-    val upper = Vector2f.max(p1, p2)
+    val lower = min(p1, p2)
+    val upper = max(p1, p2)
     AABB(lower - radius, upper + radius)
     //System.out.println("Circle swept AABB: " + aabb.lowerBound + " " + aabb.upperBound);
     //System.out.println("Transforms: "+transform1.position+ " " + transform2.position+"\n");

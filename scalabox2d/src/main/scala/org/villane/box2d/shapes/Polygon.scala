@@ -77,8 +77,8 @@ object Polygon {
 			for (j <- 0 until count) {
 				val d = p(j) - root
 				val r = Vector2f(ux ∙ d, uy ∙ d)
-				lower = Vector2f.min(lower, r);
-				upper = Vector2f.max(upper, r);
+				lower = min(lower, r);
+				upper = max(upper, r);
 			}
 
 			val area = (upper.x - lower.x) * (upper.y - lower.y);
@@ -180,7 +180,7 @@ class Polygon(defn: PolygonDef) extends Shape(defn) with SupportsGenericDistance
   def computeSweptAABB(t1: Transform2f, t2: Transform2f) = {
 	val aabb1 = computeAABB(t1)
 	val aabb2 = computeAABB(t2)
-    AABB(Vector2f.min(aabb1.lowerBound, aabb2.lowerBound), Vector2f.max(aabb1.upperBound, aabb2.upperBound))
+    AABB(min(aabb1.lowerBound, aabb2.lowerBound), max(aabb1.upperBound, aabb2.upperBound))
   }
 
   def computeMass() = {
