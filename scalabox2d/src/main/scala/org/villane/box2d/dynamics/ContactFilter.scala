@@ -9,7 +9,7 @@ import shapes.Shape
 trait ContactFilter {
   /**
    * Return true if contact calculations should be performed between these two shapes.
-   * <BR><BR><em>Warning</em>: for performance reasons this is only called when the AABBs begin to overlap.
+   * @warning for performance reasons this is only called when the AABBs begin to overlap.
    */
-  def shouldCollide(shape1: Shape, shape2: Shape): Boolean
+  def shouldCollide(fixture1: Fixture, fixture2: Fixture): Boolean
 }

@@ -11,9 +11,9 @@ object DefaultContactFilter extends ContactFilter {
    * Return true if contact calculations should be performed between these two shapes.
    * If you implement your own collision filter you may want to build from this implementation.
    */
-  def shouldCollide(shape1: Shape, shape2: Shape) = {
-    val filter1 = shape1.filter
-    val filter2 = shape2.filter
+  def shouldCollide(fixture1: Fixture, fixture2: Fixture) = {
+    val filter1 = fixture1.filter
+    val filter2 = fixture2.filter
 
     if (filter1.groupIndex == filter2.groupIndex && filter1.groupIndex != 0)
       filter1.groupIndex > 0

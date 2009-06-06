@@ -18,4 +18,12 @@ object MathUtil {
   def cos(a: Float) = Math.cos(a).toFloat
 
   def clamp(a: Float, low: Float, high: Float) = max(low, min(a, high))
+
+  def distance(a: Vector2f, b: Vector2f) = (a - b).length
+
+  def distanceSquared(a: Vector2f, b: Vector2f) = {
+    val d = a - b
+    d dot d
+  }
+
 }

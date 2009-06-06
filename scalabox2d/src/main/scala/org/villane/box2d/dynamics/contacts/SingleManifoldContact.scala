@@ -13,13 +13,13 @@ trait SingleManifoldContact extends Contact {
 
   def notifyListener(listener: ContactListener, mp: ManifoldPoint, normal: Vector2f, event: EventType) {
     if (listener != null) {
-      val b1 = shape1.body
-      val b2 = shape2.body
+      val b1 = fixture1.body
+      val b2 = fixture2.body
       val v1 = b1.getLinearVelocityFromLocalPoint(mp.localPoint1)
       val v2 = b2.getLinearVelocityFromLocalPoint(mp.localPoint2)
       val cp = ContactPoint(
-        shape1,
-        shape2,
+        fixture1,
+        fixture2,
         b1.toWorldPoint(mp.localPoint1),
         v2 - v1,
         normal,

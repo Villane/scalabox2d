@@ -1,4 +1,4 @@
-package org.villane.box2d.shapes
+package org.villane.box2d.dynamics
 
 object FilterData {
   val Default = FilterData(0x0001, 0xFFFF, 0)

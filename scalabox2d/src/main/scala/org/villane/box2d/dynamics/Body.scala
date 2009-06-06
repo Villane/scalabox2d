@@ -22,8 +22,8 @@ class Body(bd: BodyDef, val world: World) {
   /** Is this body static (immovable)? */
   def isStatic = static
   def isDynamic = !static
-  
-  var shapes: List[Shape] = Nil
+
+  var fixtures: List[Fixture] = Nil
   var userData: AnyRef = null
 
   var sleepTime = 0f
@@ -73,8 +73,8 @@ class Body(bd: BodyDef, val world: World) {
 
     var freeze = false
 
-    for (s <- shapes if !freeze) {
-      val inRange = s.synchronize(world.broadPhase, transform, transform)
+    for (f <- fixtures if !freeze) {
+      val inRange = f.synchronize(world.broadPhase, transform, transform)
 
       if (!inRange) {
         freeze = true
@@ -85,8 +85,8 @@ class Body(bd: BodyDef, val world: World) {
       flags |= BodyFlags.frozen
       linearVelocity = Vector2f.Zero
       angularVelocity = 0f
-      for (s <- shapes) {
-        s.destroyProxy(world.broadPhase)
+      for (f <- fixtures) {
+        f.destroyProxy(world.broadPhase)
       }
 
       // Failure
@@ -208,32 +208,28 @@ class Body(bd: BodyDef, val world: World) {
   }
 
   /**
-   *  Creates a shape and attach it to this body.
-   * <BR><em>Warning</em>: This function is locked during callbacks.
-   * @param def the shape definition.
+   * Creates a fixture and attaches it to this body.
+   * @param def the fixture definition.
+   * @warning This function is locked during callbacks.
    */
-  def createShape(sd: ShapeDef): Shape = {
+  def createFixture(defn: FixtureDef): Fixture = {
     assert(!world.lock)
 
     if (world.lock) {
       return null
     }
 
-    val s = Shape.create(sd)
-    shapes = s :: shapes
-    s.body = this
+    val f = Fixture(this, defn)
+    fixtures = f :: fixtures
 
     // Add the shape to the world's broad-phase.
-    s.createProxy(world.broadPhase, _transform)
+    f.createProxy(world.broadPhase, _transform)
 
-    // Compute the sweep radius for CCD.
-    s.updateSweepRadius(sweep.localCenter)
-
-    return s
+    return f
   }
-	
+
   /** 
-   * Compute the mass properties from the attached shapes. You typically call this
+   * Compute the mass properties from the attached fixtures. You typically call this
    * after adding all the shapes. If you add or remove shapes later, you may want
    * to call this again. Note that this changes the center of mass position.
    */
@@ -248,8 +244,8 @@ class Body(bd: BodyDef, val world: World) {
     invI = 0f
 
     var center = Vector2f.Zero
-    for (s <- shapes) {
-      val massData = s.computeMass()
+    for (f <- fixtures) {
+      val massData = f.computeMass()
       mass += massData.mass
       center += massData.center * massData.mass
       I += massData.I
@@ -276,22 +272,17 @@ class Body(bd: BodyDef, val world: World) {
     sweep.c = _transform * sweep.localCenter
     sweep.c0 = sweep.c
 		
-    // Update the sweep radii of all child shapes
-    for (s <- shapes) {
-      s.updateSweepRadius(sweep.localCenter)
-    }
-
     val oldStatic = static
     static = (invMass == 0f && invI == 0f)
 
     // If the body type changed, we need to refilter the broad-phase proxies.
     if (oldStatic != static) {
-      for (s <- shapes) {
-        s.refilterProxy(world.broadPhase, _transform)
+      for (f <- fixtures) {
+        f.refilterProxy(world.broadPhase, _transform)
       }
     }
   }
-  
+
   /** Is this body treated like a bullet for continuous collision detection? */
   def isBullet = (flags & BodyFlags.bullet) == BodyFlags.bullet
   /** Is this body frozen? */
@@ -311,23 +302,23 @@ class Body(bd: BodyDef, val world: World) {
   }
 
   /** For internal use only. */
-  def synchronizeShapes(): Boolean = {
+  def synchronizeFixtures(): Boolean = {
     val rot = Matrix2f.rotation(sweep.a0)
     val xf1 = new Transform2f(sweep.c0 - (rot * sweep.localCenter), rot)
 
     var inRange = true
-    val iter = shapes.elements
+    val iter = fixtures.elements
     while (inRange && iter.hasNext) {
-      val s = iter.next
-      inRange = s.synchronize(world.broadPhase, xf1, _transform)
+      val f = iter.next
+      inRange = f.synchronize(world.broadPhase, xf1, _transform)
     }
 
     if (!inRange) {
       flags |= BodyFlags.frozen
       linearVelocity = Vector2f.Zero
       angularVelocity = 0f
-      for (s <- shapes) {
-        s.destroyProxy(world.broadPhase)
+      for (f <- fixtures) {
+        f.destroyProxy(world.broadPhase)
       }
       // Failure
       return false

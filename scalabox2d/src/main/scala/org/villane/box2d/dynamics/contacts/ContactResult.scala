@@ -7,9 +7,9 @@ import collision.ContactID
 /** This structure is used to report contact point results. */
 case class ContactResult(
   /** The first shape */
-  shape1: Shape,
+  fixture1: Fixture,
   /** The second shape */
-  shape2: Shape,
+  fixture2: Fixture,
   /** Position in world coordinates */
   pos: Vector2f,
   /** Points from shape1 to shape2 */

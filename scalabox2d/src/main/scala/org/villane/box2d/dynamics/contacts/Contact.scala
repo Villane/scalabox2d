@@ -4,6 +4,7 @@ import collection.mutable
 import vecmath._
 import shapes._
 import collision._
+import settings.Settings
 
 object ContactFlags {
   val nonSolid = 0x0001
@@ -13,11 +14,11 @@ object ContactFlags {
 }
 
 object Contact {
-  def apply[S1 <: Shape, S2 <: Shape](shape1: S1, shape2: S2) = (shape1, shape2) match {
-    case (s1: Circle, s2: Circle) => CircleContact(s1, s2)
-    case (s1: Polygon, s2: Circle) => PolygonCircleContact(s1, s2)
-    case (s1: Circle, s2: Polygon) => reverse(PolygonCircleContact(s2, s1))
-    case (s1: Polygon, s2: Polygon) => PolygonContact(s1, s2) 
+  def apply(fixture1: Fixture, fixture2: Fixture) = (fixture1.shape, fixture2.shape) match {
+    case (s1: Circle, s2: Circle) => CircleContact(fixture1, fixture2)
+    case (s1: Polygon, s2: Circle) => PolygonCircleContact(fixture1, fixture2)
+    case (s1: Circle, s2: Polygon) => reverse(PolygonCircleContact(fixture2, fixture1))
+    case (s1: Polygon, s2: Polygon) => PolygonContact(fixture1, fixture2) 
     // XXX ERKKI this was return null; and probably should be NullContact? 
     case _ => throw new IllegalArgumentException("No contact creator for given types")
   }
@@ -34,8 +35,8 @@ object Contact {
 
   def destroy(contact: Contact) {
     if (contact.manifolds.length > 0) {
-      contact.shape1.body.wakeUp()
-      contact.shape2.body.wakeUp()
+      contact.fixture1.body.wakeUp()
+      contact.fixture2.body.wakeUp()
     }
   }
 
@@ -45,20 +46,20 @@ object Contact {
  * Base class for contacts between shapes.
  * @author ewjordan
  */
-abstract class Contact(val shape1: Shape, val shape2: Shape) {
+abstract class Contact(val fixture1: Fixture, val fixture2: Fixture) {
   /** The parent world. */
   //var world: World = null // TODO getCurrentWOlrd?
 
   /** Node for connecting bodies. */
-  val node1 = if (shape2 != null) ContactEdge(shape2.body, this) else null
+  val node1 = if (fixture2 != null) ContactEdge(fixture2.body, this) else null
 
   /** Node for connecting bodies. */
-  val node2 = if (shape1 != null) ContactEdge(shape1.body, this) else null
+  val node2 = if (fixture1 != null) ContactEdge(fixture1.body, this) else null
 
   /** Combined friction */
-  var friction = if (shape1 == null || shape2 == null) 0f else MathUtil.sqrt(shape1.friction * shape2.friction)
+  var friction = if (fixture1 == null || fixture2 == null) 0f else MathUtil.sqrt(fixture1.friction * fixture2.friction)
   /** Combined restitution */
-  var restitution = if (shape1 == null || shape2 == null) 0f else MathUtil.max(shape1.restitution, shape2.restitution)
+  var restitution = if (fixture1 == null || fixture2 == null) 0f else MathUtil.max(fixture1.restitution, fixture2.restitution)
 
   var flags = 0
   var toi = 0f
@@ -80,13 +81,13 @@ abstract class Contact(val shape1: Shape, val shape2: Shape) {
   
   def init {
     // This is mainly so that NullContract could be created!
-    if (shape1 != null && shape2 != null) {
-      if (shape1.isSensor || shape2.isSensor) {
+    if (fixture1 != null && fixture2 != null) {
+      if (fixture1.isSensor || fixture2.isSensor) {
         flags |= ContactFlags.nonSolid
       }
       //world = s1.body.world
-      shape1.body.contactList = node1 :: shape1.body.contactList
-      shape2.body.contactList = node2 :: shape2.body.contactList
+      fixture1.body.contactList = node1 :: fixture1.body.contactList
+      fixture2.body.contactList = node2 :: fixture2.body.contactList
     }
   }
 
@@ -95,8 +96,8 @@ abstract class Contact(val shape1: Shape, val shape2: Shape) {
     evaluate(listener)
     val newCount = manifolds.length
 
-    val body1 = shape1.body
-    val body2 = shape2.body
+    val body1 = fixture1.body
+    val body2 = fixture2.body
 
     if (newCount == 0 && oldCount > 0) {
       body1.wakeUp()
@@ -109,6 +110,18 @@ abstract class Contact(val shape1: Shape, val shape2: Shape) {
     } else {
       flags |= ContactFlags.slow
     }
+  }
+
+  // ERKKI impl from circlecontact
+  def computeTOI(sweep1: Sweep, sweep2: Sweep) = {
+    val toiInput = TOIInput(
+      sweep1,
+      sweep2,
+      fixture1.computeSweepRadius(sweep1.localCenter),
+      fixture2.computeSweepRadius(sweep2.localCenter),
+      Settings.linearSlop
+    )
+	TOI.timeOfImpact(toiInput, fixture1.shape, fixture2.shape)
   }
 
 }

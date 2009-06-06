@@ -96,7 +96,7 @@ object Polygon {
 	
 }
 
-class Polygon(defn: PolygonDef) extends Shape(defn) with SupportsGenericDistance {
+class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
   // TODO can this be used in constructor?
   val vertexCount = defn.vertices.length
   assert(3 <= vertexCount && vertexCount <= Settings.maxPolygonVertices)
@@ -146,17 +146,16 @@ class Polygon(defn: PolygonDef) extends Shape(defn) with SupportsGenericDistance
     }
     cvs
   }
-  
-  def updateSweepRadius(center: Vector2f) {
-    // Update the sweep radius (maximum radius) as measured from
-    // a local center point.
-    sweepRadius = 0f
-    for (v <- coreVertices) {
-      val d = v - center
-      sweepRadius = MathUtil.max(sweepRadius, d.length)
+
+  def computeSweepRadius(pivot: Vector2f) = {
+	assert(vertices.length > 0)
+    var sr = 0f
+    coreVertices foreach { v =>
+      sr = MathUtil.max(sr, MathUtil.distanceSquared(v, pivot))
     }
+    MathUtil.sqrt(sr)
   }
-    
+
   def testPoint(t: Transform2f, p: Vector2f): Boolean = {
     val pLocal = t.rot ** (p - t.pos)
 
@@ -169,21 +168,20 @@ class Polygon(defn: PolygonDef) extends Shape(defn) with SupportsGenericDistance
     }
    	return true
   }
-  
+
+  def testSegment(t: Transform2f, lambda: Float, normal: Vector2f) {}
+
+  def computeSubmergedArea(normal: Vector2f, offset: Float, t: Transform2f) =
+    (0f,Vector2f.Zero)
+
   def computeAABB(t: Transform2f) = {
 	val rot = t.rot * obb.rot
 	val h = rot.abs * obb.extents
 	val p = t.pos + (t.rot * obb.center)
     AABB(p - h, p + h)
   }
-  
-  def computeSweptAABB(t1: Transform2f, t2: Transform2f) = {
-	val aabb1 = computeAABB(t1)
-	val aabb2 = computeAABB(t2)
-    AABB(min(aabb1.lowerBound, aabb2.lowerBound), max(aabb1.upperBound, aabb2.upperBound))
-  }
 
-  def computeMass() = {
+  def computeMass(density: Float) = {
 	assert(vertexCount >= 3)
 
     var center = Vector2f.Zero

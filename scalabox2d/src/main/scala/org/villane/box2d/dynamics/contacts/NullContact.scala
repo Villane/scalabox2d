@@ -4,7 +4,9 @@ import collision.Manifold
 
 // This lets us provide broadphase proxy pair user data for
 // contacts that shouldn't exist.
-object NullContact extends Contact(null,null) {
+object NullContact extends Contact(null, null) {
   def evaluate(listener: ContactListener) {}
   val manifolds = Array[Manifold]()
+
+  override def computeTOI(sweep1: Sweep, sweep2: Sweep) = 1f
 }

@@ -7,11 +7,14 @@ import collision._
 /**
  * Contact between two circles. 
  */
-case class CircleContact(c1: Circle, c2: Circle) extends Contact(c1, c2) with SingleManifoldContact {
+case class CircleContact(f1: Fixture, f2: Fixture) extends Contact(f1, f2) with SingleManifoldContact {
+
+  def c1 = f1.shape.asInstanceOf[Circle]
+  def c2 = f2.shape.asInstanceOf[Circle]
 
   def evaluate(listener: ContactListener) {
-    val b1 = shape1.body
-    val b2 = shape2.body
+    val b1 = fixture1.body
+    val b2 = fixture2.body
     evaluate(listener, () => CircleCollider.collideCircles(c1, b1.transform, c2, b2.transform))
   }
 

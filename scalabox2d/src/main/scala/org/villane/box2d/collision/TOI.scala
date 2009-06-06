@@ -8,6 +8,14 @@ import shapes._
 import settings.Settings
 import settings.Settings.ε
 
+case class TOIInput(
+  sweep1: Sweep,
+  sweep2: Sweep,
+  sweepRadius1: Float,
+  sweepRadius2: Float,
+  tolerance: Float
+)
+
 /** Handles conservative advancement to compute time of impact between shapes. */
 object TOI {
   // This algorithm uses conservative advancement to compute the time of
@@ -20,10 +28,12 @@ object TOI {
    * @return the fraction between [0,1] in which the shapes first touch.
    * fraction=0 means the shapes begin touching/overlapped, and fraction=1 means the shapes don't touch.
    */
-  def timeOfImpact(shape1: Shape, sweep1: Sweep,
-                   shape2: Shape, sweep2: Sweep) = {
-    val r1 = shape1.sweepRadius
-    val r2 = shape2.sweepRadius
+  def timeOfImpact(input: TOIInput, shape1: Shape, shape2: Shape) = {
+    val r1 = input.sweepRadius1
+    val r2 = input.sweepRadius2
+    val sweep1 = input.sweep1
+    val sweep2 = input.sweep2
+    val tolerance = input.tolerance
 
     assert(sweep1.t0 == sweep2.t0)
     assert(1.0f - sweep1.t0 > ε)
@@ -45,6 +55,8 @@ object TOI {
       val t = (1f - α) * t0 + α
       val xf1 = sweep1.getTransform(t)
       val xf2 = sweep2.getTransform(t)
+      
+      //val distInput = DistanceInput(xf1, xf2, false)
 
       // Get the distance between shapes.
       val (distance,p1,p2) = Distance.distance(shape1, xf1, shape2, xf2)

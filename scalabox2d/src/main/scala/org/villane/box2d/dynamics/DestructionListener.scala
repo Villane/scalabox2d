@@ -16,8 +16,8 @@ trait DestructionListener {
   def sayGoodbye(joint: Joint)
 
   /**
-   * Called when any shape is about to be destroyed due
+   * Called when any fixture is about to be destroyed due
    * to the destruction of its parent body.
    */
-  def sayGoodbye(shape: Shape)
+  def sayGoodbye(fixture: Fixture)
 }

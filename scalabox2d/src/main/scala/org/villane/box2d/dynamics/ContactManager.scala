@@ -11,11 +11,11 @@ class ContactManager extends PairListener {
   val destroyImmediate = false
 
   def pairAdded(proxyUserData1: AnyRef, proxyUserData2: AnyRef): AnyRef = {
-    val shape1 = proxyUserData1.asInstanceOf[Shape]
-    val shape2 = proxyUserData2.asInstanceOf[Shape]
+    val fixture1 = proxyUserData1.asInstanceOf[Fixture]
+    val fixture2 = proxyUserData2.asInstanceOf[Fixture]
 
-    val body1 = shape1.body
-    val body2 = shape2.body
+    val body1 = fixture1.body
+    val body2 = fixture2.body
 
     if (body1.isStatic && body2.isStatic) {
       return NullContact
@@ -29,12 +29,12 @@ class ContactManager extends PairListener {
       return NullContact
     }
     
-    if (world.contactFilter != null && !world.contactFilter.shouldCollide(shape1, shape2)) {
+    if (world.contactFilter != null && !world.contactFilter.shouldCollide(fixture1, fixture2)) {
       return NullContact
     }
 
     // Call the factory.
-    val c = Contact(shape1, shape2)
+    val c = Contact(fixture1, fixture2)
 
     if (c == null) {
       return NullContact
@@ -68,21 +68,21 @@ class ContactManager extends PairListener {
   }
 
   def destroy(c: Contact) {
-    val shape1 = c.shape1
-    val shape2 = c.shape2
+    val f1 = c.fixture1
+    val f2 = c.fixture2
 
     // Inform the user that this contact is ending.
     val manifoldCount = c.manifolds.length
     if (manifoldCount > 0 && (world.contactListener != null)) {
-      val b1 = shape1.body
-      val b2 = shape2.body
+      val b1 = f1.body
+      val b2 = f2.body
       for (manifold <- c.manifolds) {
         val normal = manifold.normal
         for (mp <- manifold.points) {
           val pos = b1.toWorldPoint(mp.localPoint1)
           val v1 = b1.getLinearVelocityFromLocalPoint(mp.localPoint1)
           val v2 = b2.getLinearVelocityFromLocalPoint(mp.localPoint2)
-          val cp = ContactPoint(shape1, shape2, pos, v2 - v1, manifold.normal, mp.separation, c.friction, c.restitution, mp.id)
+          val cp = ContactPoint(f1, f2, pos, v2 - v1, manifold.normal, mp.separation, c.friction, c.restitution, mp.id)
           world.contactListener.remove(cp)
         }
       }
@@ -92,8 +92,8 @@ class ContactManager extends PairListener {
     // Contact lists should be optimized for random removal as well
     // Remove from the world.
     world.contactList -= c
-    val body1 = shape1.body
-    val body2 = shape2.body
+    val body1 = f1.body
+    val body2 = f2.body
 
     // Remove from body 1
     body1.contactList = body1.contactList.remove(c==)
@@ -112,8 +112,8 @@ class ContactManager extends PairListener {
       val c = world.contactList(iC)
       iC += 1
 
-      val body1 = c.shape1.body
-      val body2 = c.shape2.body
+      val body1 = c.fixture1.body
+      val body2 = c.fixture2.body
       if (!body1.isSleeping || !body2.isSleeping) {
         c.update(world.contactListener)
       }

@@ -6,9 +6,9 @@ import collision.ContactID
 
 case class ContactPoint(
   /** The first shape */
-  shape1: Shape,		
+  fixture1: Fixture,
   /** The second shape */
-  shape2: Shape,		
+  fixture2: Fixture,
   /** Position in world coordinates */
   pos: Vector2f,
   /** Velocity of point on body2 relative to point on body1 (pre-solver) */
@@ -18,7 +18,7 @@ case class ContactPoint(
   /** The separation is negative when shapes are touching */
   separation: Float,
   /** The combined friction coefficient */
-  friction: Float, 
+  friction: Float,
   /** The combined restitution coefficient */
   restitution: Float,
   /** The contact id identifies the features in contact */

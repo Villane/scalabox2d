@@ -8,29 +8,23 @@ import settings.Settings.ε
 /**
  * Like a circle shape of zero radius, except that it has a finite mass.
  */
-class Point(defn: PointDef) extends Shape(defn) {
+class Point(defn: PointDef) extends Shape {
   val pos = defn.pos
   val mass = defn.mass
 
   def testPoint(t: Transform2f, p: Vector2f) = false
+  def testSegment(t: Transform2f, lambda: Float, normal: Vector2f) {}
+
+  def computeSubmergedArea(normal: Vector2f, offset: Float, t: Transform2f) =
+    (0f,Vector2f.Zero)
 
   def computeAABB(t: Transform2f) = {
     val p = t * pos
     AABB(p - ε, p + ε)
   }
 
-  def computeSweptAABB(t1: Transform2f, t2: Transform2f) = {
-    val p1 = t1 * pos
-    val p2 = t2 * pos
-    val lower = min(p1, p2)
-    val upper = max(p1, p2)
-    AABB(lower - ε, upper + ε)
-  }
+  def computeSweepRadius(pivot: Vector2f) = (pos - pivot).length + Settings.toiSlop
 
-  def updateSweepRadius(center: Vector2f) {
-    sweepRadius = (pos - center).length + Settings.toiSlop
-  }
-
-  def computeMass() = Mass(mass, pos, 0)
+  def computeMass(density: Float) = Mass(mass, pos, 0)
 
 }

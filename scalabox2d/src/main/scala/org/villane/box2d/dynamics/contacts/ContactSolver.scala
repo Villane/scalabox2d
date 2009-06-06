@@ -17,8 +17,8 @@ class ContactSolver(contacts: Seq[Contact]) {
       val contact = contacts(iContact)
 
       assert(contact.solid)
-      val b1 = contact.shape1.body
-      val b2 = contact.shape2.body
+      val b1 = contact.fixture1.body
+      val b2 = contact.fixture2.body
       val manifolds = contact.manifolds
       val friction = contact.friction
       val restitution = contact.restitution

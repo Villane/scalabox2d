@@ -82,15 +82,15 @@ class DebugDraw(val draw: DebugDrawHandler) {
 
       for (b <- bodies) {
         val xf = b.transform
-        for (s <- b.shapes) {
-          if (!s.isSensor) {
+        for (f <- b.fixtures) {
+          if (!f.isSensor) {
             val color = if (b.isStatic)
               Color3f(255f*0.5f, 255f*0.9f, 255f*0.5f)
             else if (b.isSleeping)
               Color3f(255f*0.5f, 255f*0.5f, 255f*0.9f)
             else
               Color3f(255f*0.9f, 255f*0.9f, 255f*0.9f)
-            drawShape(s, xf, color, core)
+            drawShape(f.shape, xf, color, core)
           }
         }
       }
@@ -167,9 +167,9 @@ class DebugDraw(val draw: DebugDrawHandler) {
 
         for (b <- bodies) {
           val xf = b.transform
-          for (s <- b.shapes) {
-            if (s.isInstanceOf[Polygon]) {
-              val poly = s.asInstanceOf[Polygon]
+          for (f <- b.fixtures) {
+            if (f.shape.isInstanceOf[Polygon]) {
+              val poly = f.shape.asInstanceOf[Polygon]
               val obb = poly.obb
               val h = obb.extents
               val vs: Array[Vector2f] = Array(

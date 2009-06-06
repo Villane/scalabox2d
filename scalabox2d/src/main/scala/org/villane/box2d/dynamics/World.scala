@@ -87,11 +87,11 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
 
     // Delete the attached shapes. This destroys broad-phase
     // proxies and pairs, leading to the destruction of contacts.
-    for (s <- b.shapes) {
+    for (f <- b.fixtures) {
       if (destructionListener != null) {
-        destructionListener.sayGoodbye(s)
+        destructionListener.sayGoodbye(f)
       }
-      s.destroyProxy(broadPhase)
+      f.destroyProxy(broadPhase)
     }
 
     bodyList -= b
@@ -115,12 +115,13 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
     // If the joint prevents collisions, then reset collision filtering
     if (!defn.collideConnected) {
       // Reset the proxies on the body with the minimum number of shapes.
-      val b = if (defn.body1.shapes.length < defn.body2.shapes.length)
+      // ERKKI TODO List.length is expensive, use something else
+      val b = if (defn.body1.fixtures.length < defn.body2.fixtures.length)
         defn.body1
       else
         defn.body2
       
-      for (s <- b.shapes) refilter(s)
+      for (f <- b.fixtures) refilter(f)
     }
 
     return j
@@ -155,11 +156,12 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
     // If the joint prevents collisions, then reset collision filtering.
     if (!collideConnected) {
       // Reset the proxies on the body with the minimum number of shapes.
-      val b = if (body1.shapes.length < body2.shapes.length)
+      // TODO erkki list.length is expensive, use something else
+      val b = if (body1.fixtures.length < body2.fixtures.length)
         body1
       else
         body2
-      for (s <- b.shapes) refilter(s)
+      for (f <- b.fixtures) refilter(f)
     }
   }
 	
@@ -229,17 +231,17 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
    * @param maxCount the capacity of the shapes array.
    * @return array of shapes overlapped, up to maxCount in length
    */
-  def query(aabb: AABB, maxCount: Int): Array[Shape] = {
+  def query(aabb: AABB, maxCount: Int): Array[Fixture] = {
     val objs = broadPhase.query(aabb, maxCount)
-    objs.map(_.asInstanceOf[Shape])
+    objs.map(_.asInstanceOf[Fixture])
   }
 
   //--------------- Internals Below -------------------
   // ERKKI Internals were public
 	
   /** Re-filter a shape. This re-runs contact filtering on a shape. */
-  private def refilter(shape: Shape) {
-    shape.refilterProxy(broadPhase, shape.body.transform)
+  private def refilter(fixture: Fixture) {
+    fixture.refilterProxy(broadPhase, fixture.body.transform)
   }
 
   private def solve(step: TimeStep) = {
@@ -380,7 +382,7 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
         // Update shapes (for broad-phase). If the shapes go out of
         // the world AABB then shapes and contacts may be destroyed,
         // including contacts that are
-        val inRange = b.synchronizeShapes()
+        val inRange = b.synchronizeFixtures()
 
         // Did the body's shapes leave the world?
         if (!inRange && boundaryListener != null) {
@@ -434,10 +436,10 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
           toi = c.toi
         } else {
           // Compute the TOI for this contact.
-          val s1 = c.shape1
-          val s2 = c.shape2
-          val b1 = s1.body
-          val b2 = s2.body
+          val f1 = c.fixture1
+          val f2 = c.fixture2
+          val b1 = f1.body
+          val b2 = f2.body
 
           if ((b1.isStatic || b1.isSleeping) && (b2.isStatic || b2.isSleeping)) {
             skip = true // simulate "continue"
@@ -455,7 +457,7 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
             assert(t0 < 1f)
 
             // Compute the time of impact.
-            toi = TOI.timeOfImpact(c.shape1, b1.sweep, c.shape2, b2.sweep)
+            toi = c.computeTOI(b1.sweep, b2.sweep)
             assert(0f <= toi && toi <= 1f)
 
             if (toi > 0f && toi < 1f) {
@@ -482,10 +484,10 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
         loop = false
       } else {
         // Advance the bodies to the TOI.
-        val s1 = minContact.shape1
-        val s2 = minContact.shape2
-        val b1 = s1.body
-        val b2 = s2.body
+        val f1 = minContact.fixture1
+        val f2 = minContact.fixture2
+        val b1 = f1.body
+        val b2 = f2.body
         b1.advance(minTOI)
         b2.advance(minTOI)
 
@@ -571,7 +573,7 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
               // Update shapes (for broad-phase). If the shapes go out of
               // the world AABB then shapes and contacts may be destroyed,
               // including contacts that are
-              val inRange = b.synchronizeShapes()
+              val inRange = b.synchronizeFixtures()
 
               // Did the body's shapes leave the world?
               if (!inRange && boundaryListener != null) {

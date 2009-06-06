@@ -243,9 +243,9 @@ class Island(val bodyCapacity: Int,
       val cc = constraints(i)
       i += 1
 
-      val shape1 = c.shape1
-      val shape2 = c.shape2
-      val b1 = shape1.body
+      val f1 = c.fixture1
+      val f2 = c.fixture2
+      val b1 = f1.body
       for (manifold <- c.manifolds) {
         for (k <- 0 until manifold.points.length) {
           val point = manifold.points(k)
@@ -255,7 +255,7 @@ class Island(val bodyCapacity: Int,
           // TOI constraint results are not stored, so get
           // the result from the constraint.
           val id = new ContactID(point.id.features)
-          val cr = new ContactResult(shape1, shape2,
+          val cr = new ContactResult(f1, f2,
                                      pos, manifold.normal,
                                      ccp.normalImpulse, ccp.tangentImpulse, id)
           listener.result(cr)
