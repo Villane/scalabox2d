@@ -1,6 +1,7 @@
 package org.villane.box2d.testbed.fenggui
 
-import org.fenggui.{FengGUI,Label,Display, Button, Container}
+import org.fenggui.{FengGUI, Label, Display, Button}
+import org.fenggui.{Container, ComboBox, TextEditor, CheckBox}
 import org.fenggui.layout.{RowExLayout, RowExLayoutData, RowLayout, FormLayout}
 import org.fenggui.util.{Alignment, Spacing}
 import org.fenggui.binding.render.Binding
@@ -8,6 +9,7 @@ import org.fenggui.binding.render.lwjgl.{LWJGLBinding,EventHelper}
 import org.fenggui.event.mouse.MouseButton
 import org.fenggui.theme.{DefaultTheme, XMLTheme}
 import org.fenggui.decorator.background.PlainBackground
+import org.fenggui.decorator.border.TitledBorder
 
 import org.newdawn.slick.{GameContainer,Graphics,Input,InputListener,Color}
 import org.newdawn.slick.opengl.SlickCallable
@@ -32,35 +34,162 @@ trait FengWrapper extends InputListener {
     Binding.getInstance().setUseClassLoader(true)
     FengGUI.setTheme(new XMLTheme("themes/QtCurve/QtCurve.xml"))
     val w = FengGUI.createWindow(false, false)
-    w.setTitle("ScalaBox2D TestBed")
+    w.setTitle("Control Panel")
     w.getContentContainer.setLayoutManager(new RowLayout(false))
     
-    val c = new Container
-    //c.getAppearance.add(new PlainBackground(org.fenggui.util.Color.DARK_GREEN))
+    val buttons = FengGUI.createWidget(classOf[Container])
     //c.setExpandable(false)
-    
+
     val play = FengGUI.createWidget(classOf[Button])
     play.setText("Play")
     play.getAppearance.setMargin(new Spacing(5, 2))
-    //play.setSizeToMinSize
-    //play.setExpandable(false)
 
     val step = FengGUI.createWidget(classOf[Button])
     step.setText("Step")
     step.getAppearance.setMargin(new Spacing(5, 2))
-    //step.setExpandable(false)
 
     val restart = FengGUI.createWidget(classOf[Button])
     restart.setText("Restart")
     restart.getAppearance.setMargin(new Spacing(5, 2))
-    //restart.setExpandable(false)
 
-    c.addWidget(play, step, restart)
-    c.pack
+    buttons.addWidget(play, step, restart)
+
+    val spacer2 = FengGUI.createWidget(classOf[Container])
+    spacer2.getAppearance.add(new TitledBorder("Tests"))
+
+    val testList = FengGUI.createWidget(classOf[ComboBox])
+    testList.getAppearance.setMargin(new Spacing(5, 2))
+
+    spacer2.addWidget(testList)
+    testList.addItem("Bridge")
+    testList.addItem("CCDTest")
+    testList.addItem("Chain")
+    testList.addItem("Circles")
+    testList.addItem("Circular Breakout")
+    testList.addItem("Domino")
+    testList.addItem("Overhang")
+    testList.addItem("Pyramid")
+    testList.addItem("Varying Friction")
+    testList.addItem("Varying Restitution")
+    testList.addItem("Vertical Stack")
+
+    val tuning = FengGUI.createWidget(classOf[Container])
+    tuning.getAppearance.add(new TitledBorder("Tuning"))
+    tuning.setLayoutManager(new RowLayout(false))
+
+    val t1 = FengGUI.createWidget(classOf[Container])
+
+    val gravity = FengGUI.createWidget(classOf[Label])
+    gravity.setText("Gravity")
+    val gCell = FengGUI.createWidget(classOf[TextEditor])
+    gCell.setRestrict(TextEditor.RESTRICT_NUMBERSONLY)
+    gCell.setMaxCharacters(5)
+    gCell.updateMinSize()
+    gCell.setText("9.81")
     
-    w.getContentContainer.addWidget(c)
+    val hertz = FengGUI.createWidget(classOf[Label])
+    hertz.setText("Hertz")
+    val hCell = FengGUI.createWidget(classOf[TextEditor])
+    hCell.setRestrict(TextEditor.RESTRICT_NUMBERSONLY)
+    hCell.setMaxCharacters(5)
+    hCell.updateMinSize()
+    hCell.setText("60.0")
+    t1.addWidget(gravity, gCell, hertz, hCell)
+
+    val t2 = FengGUI.createWidget(classOf[Container])
+
+    val velIters = FengGUI.createWidget(classOf[Label])
+    velIters.setText("Vel Iters")
+    val vCell = FengGUI.createWidget(classOf[TextEditor])
+    vCell.setRestrict(TextEditor.RESTRICT_NUMBERSONLY)
+    vCell.setMaxCharacters(2)
+    vCell.updateMinSize()
+    vCell.setText("10")
+
+    val posIters = FengGUI.createWidget(classOf[Label])
+    posIters.setText("Pos Iters")
+    val pCell = FengGUI.createWidget(classOf[TextEditor])
+    pCell.setRestrict(TextEditor.RESTRICT_NUMBERSONLY)
+    pCell.setMaxCharacters(2)
+    pCell.updateMinSize()
+    pCell.setText("2")
+    t2.addWidget(velIters, vCell, posIters, pCell)
+
+    val sleeping = FengGUI.createCheckBox
+    sleeping.setText("Sleeping")
+    sleeping.setSelected(true)
+
+    val warmStarting = FengGUI.createCheckBox
+    warmStarting.setText("Warm Starting")
+    warmStarting.setSelected(true)
+
+    val timeOfImpact = FengGUI.createCheckBox
+    timeOfImpact.setText("Time of Impact")
+    timeOfImpact.setSelected(true)
+
+    tuning.addWidget(t1, t2, sleeping, warmStarting, timeOfImpact)
+
+    val draw = FengGUI.createWidget(classOf[Container])
+    draw.getAppearance.add(new TitledBorder("Draw"))
+    draw.setLayoutManager(new RowLayout(false))
+
+    val shapes = FengGUI.createCheckBox
+    shapes.setText("Shapes")
+    shapes.setSelected(true)
+
+    val joints = FengGUI.createCheckBox
+    joints.setText("Joints")
+    joints.setSelected(true)
+
+    val controllers = FengGUI.createCheckBox
+    controllers.setText("Controllers")
+    controllers.setSelected(false)
+
+    val coreShapes = FengGUI.createCheckBox
+    coreShapes.setText("Core Shapes")
+    coreShapes.setSelected(false)
+
+    val aabb = FengGUI.createCheckBox
+    aabb.setText("AABBs")
+    aabb.setSelected(false)
+
+    val obb = FengGUI.createCheckBox
+    obb.setText("OBBs")
+    obb.setSelected(false)
+
+    val pairs = FengGUI.createCheckBox
+    pairs.setText("Pairs")
+    pairs.setSelected(false)
+
+    val cPoints = FengGUI.createCheckBox
+    cPoints.setText("Contact Points")
+    cPoints.setSelected(false)
+
+    val cNormals = FengGUI.createCheckBox
+    cNormals.setText("Contact Normals")
+    cNormals.setSelected(false)
+
+    val cForces = FengGUI.createCheckBox
+    cForces.setText("Contact Forces")
+    cForces.setSelected(false)
+
+    val fForces = FengGUI.createCheckBox
+    fForces.setText("Friction Forces")
+    fForces.setSelected(false)
+
+    val com = FengGUI.createCheckBox
+    com.setText("Center of Masses")
+    com.setSelected(false)
+
+    val stastics = FengGUI.createCheckBox
+    stastics.setText("Stastics")
+    stastics.setSelected(false)
+
+    draw.addWidget(shapes, joints, controllers, coreShapes, aabb, obb, pairs)
+    draw.addWidget(cPoints,cNormals,cForces,fForces,com,stastics)
+
+    w.getContentContainer.addWidget(buttons,spacer2,tuning, draw)
     w.setWidth(200)
-    //w.layout
     w.pack
     val y = w.getHeight
     val x = w.getWidth
