@@ -16,7 +16,10 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.tests.AntiAliasTest;
 import box2d.testbed._
+
 import fenggui.FengWrapper
+import org.fenggui.event.mouse.MouseButton
+import org.fenggui.binding.render.lwjgl.EventHelper
 
 object TestbedRunner {
   def main(args: Array[String]) {
@@ -71,11 +74,8 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
   var frameCount = 0L;
 
   val tests = new collection.mutable.ListBuffer[AbstractExample]
-  var currentTestIndex = -1
-  def getCurrentTest = if (tests.isDefinedAt(currentTestIndex))
-  Some(tests(currentTestIndex))
-  else
-  None
+  var currentTestIndex = 3
+  var currentTest : AbstractExample = null
 
   def init(container: GameContainer) {
 
@@ -106,39 +106,32 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
     }
     nanoStart = System.nanoTime();
 
-    initWrapper(container)
+    currentTest = tests(currentTestIndex)
+    currentTest.initialize
+    initWrapper(container, currentTest.settings)
   }
 
-  def update(container: GameContainer, delta: Int) {}
+  def update(container: GameContainer, delta: Int) {
+
+    Vector2f.creationCount = 0;
+
+    if(settings.testIndex != currentTestIndex) {
+      currentTest.needsReset = true
+      currentTestIndex = settings.testIndex
+    }
+
+    if (currentTest.needsReset) {
+      currentTest = tests(currentTestIndex)
+      currentTest.initialize()
+      nanoStart = System.nanoTime()
+      frameCount = 0
+    }
+
+  }
 
   def render(container: GameContainer, g: Graphics) {
 
-    m_debugDraw.g = g;
-    m_debugDraw.container = container;
-    //background(0);
-    Vector2f.creationCount = 0;
-
-    /* Make sure we've got a valid test to run and reset it if needed */
-    getCurrentTest match {
-      case None =>
-        currentTestIndex = 0
-        nanoStart = System.nanoTime();
-        frameCount = 0;
-      case _ =>
-    }
-    val currentTest = getCurrentTest.get
-
-    if (currentTest.needsReset) {
-      //System.out.println("Resetting "+currentTest.name);
-      val s = currentTest.settings; //copy settings
-      currentTest.initialize();
-      if (s != null) currentTest.settings = s;
-      nanoStart = System.nanoTime();
-      frameCount = 0;
-    }
-
     currentTest.m_textLine = AbstractExample.textLineHeight;
-    //g.setColor(AbstractExample.white)
     g.drawString(currentTest.name, 5, currentTest.m_textLine);
     currentTest.m_textLine += 2*AbstractExample.textLineHeight;
 
@@ -171,11 +164,9 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
       g.drawString("Average FPS (entire test): "+totalFPS, 5, currentTest.m_textLine);
       currentTest.m_textLine += AbstractExample.textLineHeight;
     }
-    
     draw
   }
 
-	
   /**
    * Handle mouseDown events.
    * @param p The screen location that the mouse is down at.
@@ -185,11 +176,8 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
     mousePressed = true
     mousePosOld = mousePos
     mousePos = (x,y)
-    getCurrentTest match {
-      case Some(test) =>
-        test.mouseDown(mousePos)
-      case None =>
-    }
+    currentTest.mouseDown(mousePos)
+    desk.fireMousePressedEvent(x, container.getHeight - y, b, 1)
   }
 
   /**
@@ -199,11 +187,8 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
     mousePosOld = mousePos
     mousePos = (x,y)
     mousePressed = false
-    getCurrentTest match {
-      case Some(test) =>
-        test.mouseUp()
-      case None =>
-    }
+    currentTest.mouseUp()
+    desk.fireMouseReleasedEvent(x, container.getHeight - y, b, 1)
   }
 
   /**
@@ -213,11 +198,17 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
   override def mouseMoved(oldX: Int, oldY: Int, x: Int, y: Int) {
     mousePosOld = mousePos
     mousePos = (x,y)
-    getCurrentTest match {
-      case Some(test) =>
-        test.mouseMove(mousePos)
-      case None =>
+    currentTest.mouseMove(mousePos)
+
+    if (container.getInput.isMouseButtonDown(0)) {
+      desk.fireMouseDraggedEvent(x, container.getHeight - y, MouseButton.LEFT, 0)
+    } else {
+      desk.fireMouseMovedEvent(x, container.getHeight - y)
     }
+  }
+
+  override def mouseClicked(button: Int, x: Int, y: Int, clickCount: Int) {
+    desk.fireMouseClickEvent(x, container.getHeight-y, button, clickCount)
   }
 
   /**
@@ -225,36 +216,26 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
    * send the key event to the current test if appropriate.
    */
 	override def keyPressed(keyCode: Int, key: Char) {
+    
     import org.newdawn.slick.Input
     if (keyCode == Input.KEY_LSHIFT) {
       shiftDown = true
     }
-    if (keyCode == Input.KEY_RIGHT) {
-      currentTestIndex += 1
-      if (currentTestIndex >= tests.size) currentTestIndex = 0;
-      getCurrentTest.get.needsReset = true;
-      return;
-    } else if (keyCode == Input.KEY_LEFT) {
-      currentTestIndex -= 1
-      if (currentTestIndex < 0) currentTestIndex = tests.size-1;
-      getCurrentTest.get.needsReset = true;
-      return;
+ 
+    if (key == 'r') currentTest.needsReset = true;
+    if (key == ' ') currentTest.launchBomb();
+    if (key == 'p') {
+      currentTest.settings.pause = !currentTest.settings.pause;
     }
-    getCurrentTest match {
-      case None =>
-      case Some(currentTest) =>
-        if (key == 'r') currentTest.needsReset = true;
-        if (key == ' ') currentTest.launchBomb();
-        if (key == 'p') {
-          currentTest.settings.pause = !currentTest.settings.pause;
-        }
-        if (key == '+' && currentTest.settings.pause) {
-          currentTest.settings.singleStep = true;
-        }
-        if (key == 's') currentTest.settings.drawStats = !currentTest.settings.drawStats;
-        if (key == 'c') currentTest.settings.drawContactPoints = !currentTest.settings.drawContactPoints;
-        if (key == 'b') currentTest.settings.drawAABBs = !currentTest.settings.drawAABBs;
+    if (key == '+' && currentTest.settings.pause) {
+      currentTest.settings.singleStep = true;
     }
+    if (key == 's') currentTest.settings.drawStats = !currentTest.settings.drawStats;
+    if (key == 'c') currentTest.settings.drawContactPoints = !currentTest.settings.drawContactPoints;
+    if (key == 'b') currentTest.settings.drawAABBs = !currentTest.settings.drawAABBs;
+
+    desk.fireKeyPressedEvent(EventHelper.mapKeyChar, EventHelper.mapEventKey)
+    desk.fireKeyTypedEvent(EventHelper.mapKeyChar)
   }
  
   override def keyReleased(keyCode: Int, key: Char) {
@@ -262,28 +243,31 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
     if (keyCode == Input.KEY_LSHIFT) {
       shiftDown = false
     }
+    desk.fireKeyReleasedEvent(EventHelper.mapKeyChar, EventHelper.mapEventKey)
   }
 
   override def mouseWheelMoved(amount: Int) {
-    getCurrentTest match {
-      case Some(test) =>
-        val d = m_debugDraw
-        val notches = amount
-        val oldCenter = d.screenToWorld(width / 2.0f, height / 2.0f)
-        //Change the zoom and clamp it to reasonable values
-        if (notches < 0) {
-          d.scaleFactor = Math.min(300f, d.scaleFactor * 1.05f);
-        }
-        else if (notches > 0) {
-          d.scaleFactor = Math.max(.02f, d.scaleFactor / 1.05f);
-        }
-        val newCenter = d.screenToWorld(width / 2.0f, height / 2.0f);
-        d.transX -= (oldCenter.x - newCenter.x) * d.scaleFactor;
-        d.transY -= (oldCenter.y - newCenter.y) * d.scaleFactor;
-        test.cachedCamScale = d.scaleFactor;
-      case None =>
+
+    val d = m_debugDraw
+    val notches = amount
+    val oldCenter = d.screenToWorld(width / 2.0f, height / 2.0f)
+    //Change the zoom and clamp it to reasonable values
+    if (notches < 0) {
+      d.scaleFactor = Math.min(300f, d.scaleFactor * 1.05f);
     }
+    else if (notches > 0) {
+      d.scaleFactor = Math.max(.02f, d.scaleFactor / 1.05f);
+    }
+    val newCenter = d.screenToWorld(width / 2.0f, height / 2.0f);
+    d.transX -= (oldCenter.x - newCenter.x) * d.scaleFactor;
+    d.transY -= (oldCenter.y - newCenter.y) * d.scaleFactor;
+    currentTest.cachedCamScale = d.scaleFactor;
+
+    desk.fireMouseWheel(container.getInput.getMouseX,
+                        container.getHeight - container.getInput.getMouseY,
+                        amount > 0, amount.abs, 0)
   }
+  
   /**
    * Allows the world to be dragged with a right-click.
    */
@@ -299,10 +283,9 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
         d.transX += mouseX - pmouseX;
         d.transY -= mouseY - pmouseY;
         val v = d.screenToWorld(width*.5f,height*.5f);
-        getCurrentTest.get.cachedCamX = v.x;
-        getCurrentTest.get.cachedCamY = v.y;
+        currentTest.cachedCamX = v.x;
+        currentTest.cachedCamY = v.y;
       }
     }
-    
   }
 }

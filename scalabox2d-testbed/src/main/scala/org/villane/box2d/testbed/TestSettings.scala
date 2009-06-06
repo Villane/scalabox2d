@@ -13,6 +13,7 @@ class TestSettings {
   var enableWarmStarting = true;
   var enablePositionCorrection = true;
   var enableTOI = true;
+  var enableSleeping = true;
 
   var pause = false;
   var singleStep = false;
@@ -30,4 +31,6 @@ class TestSettings {
   var drawContactNormals = false;
   var drawContactForces = false;
   var drawFrictionForces = false;
+
+  var testIndex = 3
 }

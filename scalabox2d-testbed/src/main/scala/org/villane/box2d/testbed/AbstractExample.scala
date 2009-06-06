@@ -231,6 +231,11 @@ abstract class AbstractExample(_parent: TestbedMain) {
     m_world.positionCorrection = settings.enablePositionCorrection
     m_world.continuousPhysics = settings.enableTOI
 
+    if(m_world.allowSleep != settings.enableSleeping && settings.enableSleeping == false) {
+      for(b <- m_world.bodyList) b.wakeUp
+    }
+    m_world.allowSleep = settings.enableSleeping
+
     m_pointCount = 0;
     m_world.step(timeStep, settings.iterationCount);
 
