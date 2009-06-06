@@ -8,7 +8,9 @@ object MathUtil {
   // can run absurdly slow for such simple functions...
   // TODO: profile, see if this just seems to be the case or is actually causing issues...
   def max(a: Float, b: Float) = if (a > b) a else b
+  def max(as: Float*): Float = as reduceLeft max
   def min(a: Float, b: Float) = if (a < b) a else b
+  def min(as: Float*): Float = as reduceLeft min
 
   def sqrt(a: Float) = Math.sqrt(a).toFloat
 

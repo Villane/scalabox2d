@@ -19,5 +19,13 @@ object Preamble {
   implicit def floatToFloatExtensions(a: Float) = new FloatExtensions(a)
 
   def min(a: Vector2f, b: Vector2f) = Vector2f(MathUtil.min(a.x, b.x), MathUtil.min(a.y, b.y))
+  def min(a: Vector2f, b: Vector2f, c: Vector2f, d: Vector2f) = Vector2f(
+    MathUtil.min(a.x, b.x, c.x, d.x),
+    MathUtil.min(a.y, b.y, c.y, d.y)
+  )
   def max(a: Vector2f, b: Vector2f) = Vector2f(MathUtil.max(a.x, b.x), MathUtil.max(a.y, b.y))
+  def max(a: Vector2f, b: Vector2f, c: Vector2f, d: Vector2f) = Vector2f(
+    MathUtil.max(a.x, b.x, c.x, d.x),
+    MathUtil.max(a.y, b.y, c.y, d.y)
+  )
 }
