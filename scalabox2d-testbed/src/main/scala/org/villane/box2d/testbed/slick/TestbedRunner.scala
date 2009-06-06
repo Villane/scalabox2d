@@ -68,7 +68,7 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
   var nanoStart = 0L; //
     
   /** Number of frames since we started this example. */
-	var frameCount = 0L;
+  var frameCount = 0L;
 
   val tests = new collection.mutable.ListBuffer[AbstractExample]
   var currentTestIndex = -1
@@ -120,7 +120,7 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
 
     /* Make sure we've got a valid test to run and reset it if needed */
     getCurrentTest match {
-      case None =>  
+      case None =>
         currentTestIndex = 0
         nanoStart = System.nanoTime();
         frameCount = 0;
@@ -225,7 +225,7 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
    * send the key event to the current test if appropriate.
    */
 	override def keyPressed(keyCode: Int, key: Char) {
-	  import org.newdawn.slick.Input
+    import org.newdawn.slick.Input
     if (keyCode == Input.KEY_LSHIFT) {
       shiftDown = true
     }
@@ -249,7 +249,7 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
           currentTest.settings.pause = !currentTest.settings.pause;
         }
         if (key == '+' && currentTest.settings.pause) {
-        	currentTest.settings.singleStep = true;
+          currentTest.settings.singleStep = true;
         }
         if (key == 's') currentTest.settings.drawStats = !currentTest.settings.drawStats;
         if (key == 'c') currentTest.settings.drawContactPoints = !currentTest.settings.drawContactPoints;
@@ -258,7 +258,7 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
   }
  
   override def keyReleased(keyCode: Int, key: Char) {
-	  import org.newdawn.slick.Input
+    import org.newdawn.slick.Input
     if (keyCode == Input.KEY_LSHIFT) {
       shiftDown = false
     }
@@ -305,6 +305,4 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
     }
     
   }
-    
-    
 }
