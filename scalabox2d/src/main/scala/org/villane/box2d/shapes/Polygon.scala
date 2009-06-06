@@ -6,106 +6,57 @@ import Settings.ε
 
 object Polygon {
   def computeCentroid(vertices: Array[Vector2f]) = {
-	val count = vertices.size
+    val count = vertices.size
     assert(count >= 3)
-	
+
     var c = Vector2f.Zero
     var area = 0f
-	
-	        // pRef is the reference point for forming triangles.
-	        // It's location doesn't change the result (except for rounding error).
-	        val pRef = Vector2f.Zero
-	//    #if 0
-	//        // This code would put the reference point inside the polygon.
-	//        for (int32 i = 0; i < count; ++i)
-	//        {
-	//            pRef += vs[i];
-	//        }
-	//        pRef *= 1.0f / count;
-	//    #endif
-	
-	        val inv3 = 1f / 3
-	
-	        for (i <- 0 until count) {
-	            // Triangle vertices.
-	            val p1 = pRef
-	            val p2 = vertices(i)
-	            val p3 = if (i + 1 < count) vertices(i+1) else vertices(0)
-	
-	            val e1 = p2 - p1
-	            val e2 = p3 - p1
-	
-	            val D = e1 × e2
-	
-	            val triangleArea = 0.5f * D
-	            area += triangleArea;
-	
-	            // Area weighted centroid
-                c += (p1 + p2 + p3) * (triangleArea * inv3)
-	        }
-	
-	        // Centroid
-	        assert(area > ε)
-	        c * (1 / area)
-	    }
-	
-	// http://www.geometrictools.com/Documentation/MinimumAreaRectangle.pdf
-	def computeOBB(vertices: Array[Vector2f]) = {
-		val count = vertices.length
-		assert(count <= Settings.maxPolygonVertices)
-        val p = new Array[Vector2f](count + 1)
-        
-        for (i <- 0 until count) {
-		  p(i) = vertices(i)
-		}
-		p(count) = p(0)
 
-		var minArea = Float.MaxValue
-  var obb: OBB = null
-		
-		for (i <- 1 to count) {
-			val root = p(i-1)
-			var ux = p(i) - root
-			val length = ux.length
-            ux /= length // normalize
-			assert(length > ε)
-			val uy = Vector2f(-ux.y, ux.x)
-			var lower = Vector2f(Float.MaxValue, Float.MaxValue)
-			var upper = Vector2f(-Float.MaxValue, -Float.MaxValue)
+    // pRef is the reference point for forming triangles.
+    // It's location doesn't change the result (except for rounding error).
+    val pRef = Vector2f.Zero
+    // This code would put the reference point inside the polygon.
+    // for (int32 i = 0; i < count; ++i)
+    // {
+    //    pRef += vs[i];
+    // }
+    // pRef *= 1.0f / count;
 
-			for (j <- 0 until count) {
-				val d = p(j) - root
-				val r = Vector2f(ux ∙ d, uy ∙ d)
-				lower = min(lower, r);
-				upper = max(upper, r);
-			}
+    val inv3 = 1f / 3
 
-			val area = (upper.x - lower.x) * (upper.y - lower.y);
-			if (area < 0.95f * minArea){
-			  minArea = area
-              val rot = Matrix2f(ux, uy) 
-			  val center = (lower + upper) * 0.5f
-              obb = OBB(rot, root + (rot * center), (upper - lower) * 0.5f)
-			}
-		}
+    for (i <- 0 until count) {
+      // Triangle vertices.
+      val p1 = pRef
+      val p2 = vertices(i)
+      val p3 = if (i + 1 < count) vertices(i+1) else vertices(0)
 
-		assert(minArea < Float.MaxValue)
-        obb
-	}
-	
+      val e1 = p2 - p1
+      val e2 = p3 - p1
+
+      val D = e1 × e2
+
+      val triangleArea = 0.5f * D
+      area += triangleArea
+
+      // Area weighted centroid
+      c += triangleArea * inv3 * (p1 + p2 + p3)
+    }
+
+    // Centroid
+    assert(area > ε)
+    c * (1 / area)
+  }
+
 }
 
 class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
-  // TODO can this be used in constructor?
+  val radius = Settings.polygonRadius
   val vertexCount = defn.vertices.length
   assert(3 <= vertexCount && vertexCount <= Settings.maxPolygonVertices)
 
   val vertices = Array.fromFunction(defn.vertices)(vertexCount)
   val normals = computeNormals 
   val centroid = Polygon.computeCentroid(vertices)
-  val coreVertices = computeCoreVertices
-
-  val obb = Polygon.computeOBB(vertices)
 
   def computeNormals = {
     val ns = new Array[Vector2f](vertexCount)
@@ -118,32 +69,6 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
       ns(i) = edge.tangent.normalize
     }
     ns
-  }
-
-  def computeCoreVertices = {
-    // Create core polygon shape by shifting edges inward.
-    // Also compute the min/max radius for CCD.
-    val cvs = new Array[Vector2f](vertexCount)
-    for (i <- 0 until vertexCount) {
-      val i1 = if (i - 1 >= 0) i - 1 else vertexCount - 1
-      val i2 = i
-
-      val n1 = normals(i1)
-      val n2 = normals(i2)
-      val v = vertices(i) - centroid
-
-      val d = Vector2f(n1 ∙ v - Settings.toiSlop, n2 ∙ v - Settings.toiSlop)
-
-      // Shifting the edge inward by b2_toiSlop should
-      // not cause the plane to pass the centroid.
-
-      // Your shape has a radius/extent less than b2_toiSlop.
-      assert(d.x >= 0f)
-      assert(d.y >= 0f)
-      val A = Matrix2f(n1.x, n1.y, n2.x, n2.y)
-      cvs(i) = A.solve(d) + centroid
-    }
-    cvs
   }
 
   def computeSweepRadius(pivot: Vector2f) = {
@@ -174,10 +99,11 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
     (0f,Vector2f.Zero)
 
   def computeAABB(t: Transform2f) = {
-	val rot = t.rot * obb.rot
-	val h = rot.abs * obb.extents
-	val p = t.pos + (t.rot * obb.center)
-    AABB(p - h, p + h)
+    val vTrans = vertices map (t * _)
+    val lower = vTrans reduceLeft min
+    val upper = vTrans reduceLeft max
+    val r = (radius, radius)
+    AABB(lower - r, upper + r)
   }
 
   def computeMass(density: Float) = {
@@ -251,6 +177,34 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
       }
     }
     xf * coreVertices(bestIndex) 
+  }
+
+  /** Core vertices are deprecated */
+  val coreVertices = computeCoreVertices
+  def computeCoreVertices = {
+    // Create core polygon shape by shifting edges inward.
+    // Also compute the min/max radius for CCD.
+    val cvs = new Array[Vector2f](vertexCount)
+    for (i <- 0 until vertexCount) {
+      val i1 = if (i - 1 >= 0) i - 1 else vertexCount - 1
+      val i2 = i
+
+      val n1 = normals(i1)
+      val n2 = normals(i2)
+      val v = vertices(i) - centroid
+
+      val d = Vector2f(n1 ∙ v - Settings.toiSlop, n2 ∙ v - Settings.toiSlop)
+
+      // Shifting the edge inward by b2_toiSlop should
+      // not cause the plane to pass the centroid.
+
+      // Your shape has a radius/extent less than b2_toiSlop.
+      assert(d.x >= 0f)
+      assert(d.y >= 0f)
+      val A = Matrix2f(n1.x, n1.y, n2.x, n2.y)
+      cvs(i) = A.solve(d) + centroid
+    }
+    cvs
   }
 
 }

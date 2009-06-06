@@ -4,25 +4,28 @@ import vecmath._
 import vecmath.Preamble._
 
 object DrawFlags {
-  val shape = 0x0001 ///< draw shapes
-  val joint = 0x0002 ///< draw joint connections
-  val coreShape = 0x0004 ///< draw core (TOI) shapes
-  val aabb = 0x0008 ///< draw axis aligned bounding boxes
-  val obb = 0x0010 ///< draw oriented bounding boxes
-  val pair = 0x0020 ///< draw broad-phase pairs
-  val centerOfMass = 0x0040 ///< draw center of mass frame
+  /** draw shapes */
+  val shape = 0x0001
+  /** draw joint connections */
+  val joint = 0x0002
+  /** @deprecated draw core (TOI) shapes */
+  val coreShape = 0x0004
+  /** draw axis aligned bounding boxes */
+  val aabb = 0x0008
+  /** draw broad-phase pairs */
+  val pair = 0x0020
+  /** draw center of mass frame */
+  val centerOfMass = 0x0040
 }
 
 /**
- * Implement this abstract class to allow JBox2d to 
- * automatically draw your physics for debugging purposes.
- * Not intended to replace your own custom rendering
- * routines!
+ * Implement this abstract class to allow JBox2d to automatically draw your
+ * physics for debugging purposes. Not intended to replace your own custom
+ * rendering routines!
  */
 trait DebugDrawHandler {
   /// Implement and register this class with a b2World to provide debug drawing of physics
   /// entities in your game.
-
   var drawFlags = 0
 
   def appendFlags(flags: Int) = drawFlags |= flags

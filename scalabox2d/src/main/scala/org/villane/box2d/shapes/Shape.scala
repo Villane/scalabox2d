@@ -7,10 +7,17 @@ import dynamics._
 
 object Shape {
   def create(defn: ShapeDef) = defn match {
-    case cd: CircleDef => new Circle(cd)
-    case pd: PolygonDef => new Polygon(pd)
-    case pd: PointDef => new Point(pd)
+    case d: CircleDef => new Circle(d.pos, d.radius)
+    case d: PointDef => new Point(d.pos, d.mass)
+    case d: PolygonDef => new Polygon(d)
   }
+}
+
+sealed trait SegmentCollide
+object SegmentCollide {
+  object StartsInsideCollide extends SegmentCollide
+  object MissCollide extends SegmentCollide
+  object HitCollide extends SegmentCollide
 }
 
 /**
@@ -18,7 +25,7 @@ object Shape {
  */
 abstract class Shape {
   /** Sweep radius relative to the parent body's center of mass. */
-  var radius = 0f
+  def radius: Float
 
   /**
    * Test a point for containment in this shape. This only works for convex shapes.
@@ -29,9 +36,8 @@ abstract class Shape {
   def testPoint(t: Transform2f, p: Vector2f): Boolean
   def testSegment(t: Transform2f, lambda: Float, normal: Vector2f)
 
-  def computeMass(density: Float): Mass
-  /* INTERNALS BELOW */
   def computeAABB(t: Transform2f): AABB
+  def computeMass(density: Float): Mass
   /**
    * Compute the volume and centroid of this shape intersected with a half plane
    * @param normal the surface normal

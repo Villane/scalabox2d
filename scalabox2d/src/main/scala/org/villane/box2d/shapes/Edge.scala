@@ -7,7 +7,7 @@ import Settings.ε
 /**
  * Temporarily Abstract because half-implemented
  */
-abstract class Edge(defn: EdgeChainDef) extends Shape with SupportsGenericDistance  {
+abstract class Edge(defn: EdgeChainDef) extends Shape with SupportsGenericDistance {
   val v1: Vector2f = defn.vertices(0)
   val v2: Vector2f = defn.vertices(1)
 

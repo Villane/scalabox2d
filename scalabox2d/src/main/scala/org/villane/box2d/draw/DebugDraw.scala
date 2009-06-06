@@ -161,34 +161,6 @@ class DebugDraw(val draw: DebugDrawHandler) {
       )
       draw.drawPolygon(vsw, Color3f(255.0f*0.3f, 255.0f*0.9f, 255.0f*0.9f))
 
-      if ((flags & DrawFlags.obb) != 0) {
-        val color = new Color3f(0.5f, 0.3f, 0.5f)
-
-        for (b <- bodies) {
-          val xf = b.transform
-          for (f <- b.fixtures) {
-            if (f.shape.isInstanceOf[Polygon]) {
-              val poly = f.shape.asInstanceOf[Polygon]
-              val obb = poly.obb
-              val h = obb.extents
-              val vs: Array[Vector2f] = Array(
-                -h,
-                (h.x, -h.y),
-                h,
-                (-h.x, h.y)
-              )
-
-              for (i <- 0 until 4) {
-                vs(i) = obb.center + (obb.rot * vs(i))
-                vs(i) = xf * vs(i)
-              }
-
-              draw.drawPolygon(vs, color)
-            }
-          }
-        }
-      }
-
       if ((flags & DrawFlags.centerOfMass) != 0) {
         for (b <- bodies) {
           val xf = Transform2f(b.worldCenter, b.transform.rot)

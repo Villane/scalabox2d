@@ -48,6 +48,14 @@ object Settings {
   val angularSlop = 2.0f / 180.0f * π // 2 degrees
 
   /**
+   * The radius of the polygon/edge shape skin. This should not be modified.
+   * Making this smaller means polygons will have and insufficient for
+   * continuous collision. Making it larger may create artifacts for vertex
+   * collision.
+   */
+  val polygonRadius = 2.0f * linearSlop
+
+  /**
    * A velocity threshold for elastic collisions. Any collision with a relative linear
    * velocity below this threshold will be treated as inelastic.
    */
