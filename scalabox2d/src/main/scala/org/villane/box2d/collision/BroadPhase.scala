@@ -3,7 +3,6 @@ package org.villane.box2d.collision
 import vecmath._
 import vecmath.Preamble._
 import shapes._
-import settings.Settings
 
 object BroadPhase {
   val Invalid = Int.MaxValue

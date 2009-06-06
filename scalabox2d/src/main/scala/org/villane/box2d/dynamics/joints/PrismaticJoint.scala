@@ -2,8 +2,7 @@ package org.villane.box2d.dynamics.joints
 
 import vecmath._
 import vecmath.Preamble._
-import settings.Settings
-import settings.Settings.ε
+import Settings.ε
 
 //Linear constraint (point-to-line)
 //d = p2 - p1 = x2 + r2 - x1 - r1

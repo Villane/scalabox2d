@@ -1,7 +1,5 @@
 package org.villane.box2d.collision
 
-import settings.Settings
-
 object PairManager {
   val NullPair = Int.MaxValue
   val NullProxy = Int.MaxValue

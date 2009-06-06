@@ -1,4 +1,4 @@
-package org.villane.box2d.settings
+package org.villane.box2d
 
 import vecmath.MathUtil.π
 

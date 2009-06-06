@@ -5,10 +5,11 @@ import vecmath.Preamble._
 import shapes._
 
 object Fixtures {
+  def shape(shapeDef: ShapeDef) = new FixtureBuilder(new FixtureDef(shapeDef))
   def circle(pos: Vector2f, radius: Float) = new FixtureBuilder(new FixtureDef(
     CircleDef(pos, radius)))
   def polygon(vertices: Vector2f*) = new FixtureBuilder(new FixtureDef(
-    PolygonDef(vertices:_*)))
+    PolygonDef(vertices.toArray)))
   def box(halfW: Float, halfH: Float) = new FixtureBuilder(new FixtureDef(
     PolygonDef.box(halfW, halfH)))
   def box(halfW: Float, halfH: Float, center: Vector2f) = new FixtureBuilder(new FixtureDef(

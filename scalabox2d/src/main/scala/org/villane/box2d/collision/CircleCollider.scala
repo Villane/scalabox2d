@@ -2,7 +2,7 @@ package org.villane.box2d.collision
 
 import vecmath._
 import shapes.Circle
-import settings.Settings.ε
+import Settings.ε
 
 /**
  * Circle/circle overlap solver - for internal use only.

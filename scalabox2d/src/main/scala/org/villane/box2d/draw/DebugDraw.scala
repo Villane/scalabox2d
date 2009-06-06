@@ -4,7 +4,6 @@ import collision._
 import vecmath._
 import vecmath.Preamble._
 import shapes._
-import settings.Settings
 import dynamics._
 import dynamics.joints._
 

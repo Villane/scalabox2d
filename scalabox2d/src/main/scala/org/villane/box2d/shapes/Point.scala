@@ -2,8 +2,7 @@ package org.villane.box2d.shapes
 
 import vecmath._
 import vecmath.Preamble._
-import settings.Settings
-import settings.Settings.ε
+import Settings.ε
 
 /**
  * Like a circle shape of zero radius, except that it has a finite mass.

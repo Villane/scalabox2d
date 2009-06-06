@@ -2,7 +2,6 @@ package org.villane.box2d.shapes
 
 import vecmath._
 import vecmath.Preamble._
-import settings.Settings
 import MathUtil.π
 
 /**

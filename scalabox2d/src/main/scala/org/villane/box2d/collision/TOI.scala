@@ -5,8 +5,7 @@ import vecmath._
 import vecmath.Preamble._
 import shapes._
 
-import settings.Settings
-import settings.Settings.ε
+import Settings.ε
 
 case class TOIInput(
   sweep1: Sweep,

@@ -1,8 +1,7 @@
 package org.villane.box2d.dynamics.contacts
 
 import dynamics._
-import settings.Settings
-import settings.Settings.ε
+import Settings.ε
 import vecmath._
 import vecmath.Preamble._
 

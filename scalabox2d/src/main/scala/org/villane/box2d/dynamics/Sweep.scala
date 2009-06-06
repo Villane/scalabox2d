@@ -1,6 +1,6 @@
 package org.villane.box2d.dynamics
 
-import settings.Settings.ε
+import Settings.ε
 import vecmath._
 
 /**

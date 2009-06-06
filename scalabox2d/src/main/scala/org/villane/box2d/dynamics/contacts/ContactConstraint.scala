@@ -1,7 +1,6 @@
 package org.villane.box2d.dynamics.contacts
 
 import vecmath.Vector2f
-import settings.Settings
 import collision.Manifold
 import dynamics.Body
 

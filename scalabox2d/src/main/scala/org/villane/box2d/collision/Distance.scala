@@ -2,8 +2,7 @@ package org.villane.box2d.collision
 
 import vecmath._
 import vecmath.Preamble._
-import settings.Settings
-import settings.Settings.ε
+import Settings.ε
 import shapes._
 
 case class DistanceInput(

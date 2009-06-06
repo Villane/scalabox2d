@@ -5,7 +5,6 @@ import joints._
 import contacts._
 import vecmath._
 import vecmath.Preamble._
-import settings.Settings
 
 import collection.jcl.ArrayList
 

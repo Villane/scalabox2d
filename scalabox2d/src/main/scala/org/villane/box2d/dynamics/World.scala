@@ -6,8 +6,7 @@ import shapes._
 import contacts._
 import collision._
 import joints._
-import settings.Settings
-import settings.Settings.ε
+import Settings.ε
 
 import java.util.concurrent._
 import collection.jcl.ArrayList

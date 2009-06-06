@@ -2,7 +2,6 @@ package org.villane.box2d.dynamics.joints
 
 import vecmath._
 import vecmath.Preamble._
-import settings.Settings
 
 object LimitState extends Enumeration {
   val INACTIVE_LIMIT, AT_LOWER_LIMIT, AT_UPPER_LIMIT, EQUAL_LIMITS = Value  

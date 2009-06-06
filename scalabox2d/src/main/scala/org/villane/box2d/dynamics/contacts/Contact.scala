@@ -4,7 +4,6 @@ import collection.mutable
 import vecmath._
 import shapes._
 import collision._
-import settings.Settings
 
 object ContactFlags {
   val nonSolid = 0x0001

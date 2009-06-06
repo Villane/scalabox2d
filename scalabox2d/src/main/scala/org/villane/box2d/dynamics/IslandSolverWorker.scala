@@ -1,6 +1,5 @@
 package org.villane.box2d.dynamics
 
-import settings.Settings
 import java.util.concurrent._
 
 object IslandSolverWorker {
