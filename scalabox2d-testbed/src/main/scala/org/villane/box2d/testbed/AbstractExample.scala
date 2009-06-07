@@ -7,6 +7,8 @@ import box2d.shapes._
 import box2d.dynamics._
 import box2d.dynamics.joints._
 import box2d.dynamics.contacts._
+import box2d.settings.Settings
+
 import scala.collection.jcl.ArrayList
 
 // TODO import //org.newdawn.slick.Image
@@ -17,10 +19,7 @@ class Image {
 
 object AbstractExample {
   /** General instructions that apply to all tests. */
-  val instructionString = "Press left/right to change test\n" +
-    "Use the mouse to drag objects\n" +
-    "Shift+drag to slingshot bomb\n" +
-    "Press 'o' to toggle options panel\n"
+  val instructionString = "Shift+drag to slingshot a bomb\n"
   val white = new Color3f(255.0f,255.0f,255.0f);
   val black = new Color3f(0.0f*255.0f,0.0f*255.0f,0.0f*255.0f);
   val gray = new Color3f(0.5f*255.0f,0.5f*255.0f,0.5f*255.0f);
@@ -59,8 +58,6 @@ abstract class AbstractExample(_parent: TestbedMain) {
   var bombSpawnPoint = Vector2f.Zero
   /** True if a bomb has started spawning but has not been created yet. */
   var bombSpawning = false
-  /** Y-pixel value that marks bottom of text to be drawn. */
-  var m_textLine = 0
   /** Number of active points in m_points array. */
   var m_pointCount = 0
   /** Array of contact points - use m_pointCount to get number of active elements.  */
@@ -77,6 +74,16 @@ abstract class AbstractExample(_parent: TestbedMain) {
   var m_worldAABB: AABB = null
   /** The exponentially smoothed amount of free memory available to the JVM. */ 
   var memFree = 0f
+   /** FPS that we want to achieve */
+  val targetFPS = 60.0f;
+  /** Number of frames to average over when computing real FPS */
+  val fpsAverageCount = 100;
+  /** Array of timings */
+  var nanos: Array[Long]= null;
+  /** When we started the nanotimer */
+  var nanoStart = 0L
+  /** Number of frames since we started this example. */
+  var frameCount = 0L;
 
   /** Listener for body and joint destructions. */
   protected var m_destructionListener: DestructionListener = null
@@ -100,7 +107,7 @@ abstract class AbstractExample(_parent: TestbedMain) {
   def printInstructions() {
     val fullString = instructionString + getExampleInstructions();
     val instructionLines = fullString.split("\n")
-    var currentLine = parent.height - instructionLines.length*textLineHeight;
+    var currentLine = parent.height - instructionLines.length*textLineHeight*2;
     for (i <- 0 until instructionLines.length) {
       m_debugDraw.draw.drawString(5, currentLine, instructionLines(i), white);
       currentLine += textLineHeight;
@@ -150,19 +157,29 @@ abstract class AbstractExample(_parent: TestbedMain) {
    * </UL>
    */
   def initialize() {
+
+    /* Set up the timers for FPS reporting */
+    nanos = new Array[Long](fpsAverageCount)
+    val nanosPerFrameGuess = (1000000000.0 / targetFPS).toLong
+    nanos(fpsAverageCount-1) = System.nanoTime();
+    for (i <- new Range.Inclusive(fpsAverageCount-2,0,-1)) {
+      nanos(i) = nanos(i+1) - nanosPerFrameGuess;
+    }
+    nanoStart = System.nanoTime();
+    
     needsReset = false;
-    m_textLine = 15;
     for (i <- 0 until 255) {
       keyDown(i) = false;
       newKeyDown(i) = false;
     }
-    settings = new TestSettings()
-    mouseScreen = Vector2f(parent.mouseX, parent.mouseY);
-    mouseWorld = Vector2f.Zero;
-    pmouseScreen = Vector2f(mouseScreen.x,mouseScreen.y);
-    pmousePressed = false;
+    
+    settings = new TestSettings
+    mouseScreen = Vector2f(parent.mouseX, parent.mouseY)
+    mouseWorld = Vector2f.Zero
+    pmouseScreen = Vector2f(mouseScreen.x,mouseScreen.y)
+    pmousePressed = false
 
-    createWorld();
+    createWorld
 
     m_bomb = null;
     m_mouseJoint = null;
@@ -173,6 +190,7 @@ abstract class AbstractExample(_parent: TestbedMain) {
     for (i <- 0 until m_points.length) {
       m_points(i) = new ExampleContactPoint();
     }
+
     m_destructionListener = new ConcreteDestructionListener();
     m_boundaryListener = new ConcreteBoundaryListener();
     m_contactListener = new ConcreteContactListener();
@@ -183,6 +201,7 @@ abstract class AbstractExample(_parent: TestbedMain) {
     m_world.boundaryListener = m_boundaryListener
     m_world.contactListener = m_contactListener
     m_world.debugDraw = parent.g
+
     if (hasCachedCamera) {
       m_debugDraw.draw.setCamera(cachedCamX,cachedCamY,cachedCamScale);
     } else {
@@ -192,8 +211,9 @@ abstract class AbstractExample(_parent: TestbedMain) {
       cachedCamY = 10.0f;
       cachedCamScale = 10.0f;
     }
-    boundImages.clear();
-    create();
+
+    boundImages.clear
+    create
   }
 
   /**
@@ -202,6 +222,7 @@ abstract class AbstractExample(_parent: TestbedMain) {
    * in your step method is the m_world.step() call.
    */
   def step() {
+
     preStep();
     mouseWorld = m_debugDraw.draw.screenToWorld(mouseScreen)
 
@@ -214,8 +235,7 @@ abstract class AbstractExample(_parent: TestbedMain) {
         timeStep = 0.0f;
       }
 
-      m_debugDraw.draw.drawString(5, m_textLine, "****PAUSED - press '+' to take a single step, 'p' to unpause****", white);
-      m_textLine += textLineHeight;
+      m_debugDraw.draw.drawString(2, 1, "**** PAUSED ****", white);
     }
 
     m_debugDraw.draw.drawFlags = 0
@@ -240,29 +260,45 @@ abstract class AbstractExample(_parent: TestbedMain) {
     m_world.step(timeStep, settings.iterationCount);
 
     //Optional validation of broadphase - asserts if there is an error
-    //m_world.m_broadPhase.validate();
+    //m_world.m_broadPhase.validate;
 
     if (m_bomb != null && m_bomb.isFrozen) {
-      m_world.destroyBody(m_bomb);
-      m_bomb = null;
+      m_world.destroyBody(m_bomb)
+      m_bomb = null
     }
 
+    for (i <- 0 until fpsAverageCount-1) {
+      nanos(i) = nanos(i+1)
+    }
+
+    nanos(fpsAverageCount-1) = System.nanoTime();
+    val averagedFPS = ( (fpsAverageCount-1) * 1000000000.0 / (nanos(fpsAverageCount-1)-nanos(0)));
+    frameCount += 1
+    val totalFPS = (frameCount * 1000000000 / (1.0*(System.nanoTime()-nanoStart)));
+    
     if (settings.drawStats) {
-      /*m_debugDraw.draw.drawString(5, m_textLine, "proxies(max) = "+m_world.getProxyCount()+
-                               "("+Settings.maxProxies+"), pairs(max) = "+m_world.getPairCount()+
-                               "("+Settings.maxPairs+")", white);*/
-      m_textLine += textLineHeight;
 
-      m_debugDraw.draw.drawString(5, m_textLine, "bodies/contacts/joints = "+
-                               m_world.bodyList.size+"/"+m_world.contactList.size+"/"+m_world.jointList.size, white);
-      m_textLine += textLineHeight;
+      var textLine = 10
+      m_debugDraw.draw.drawString(2, textLine, "proxies(max) = "+ m_world.proxyCount +
+                               "("+ Settings.maxProxies+"), pairs(max) = "+ m_world.pairCount +
+                               "("+ Settings.maxPairs+")", white)
+      textLine += textLineHeight
 
-      val memTot = Runtime.getRuntime().totalMemory();
-      memFree = (memFree * .9f + .1f * Runtime.getRuntime().freeMemory());
-      m_debugDraw.draw.drawString(5, m_textLine, "total memory: "+memTot, white);
-      m_textLine += textLineHeight;
-      m_debugDraw.draw.drawString(5, m_textLine, "Average free memory: "+memFree, white);
-      m_textLine += textLineHeight;
+      m_debugDraw.draw.drawString(2, textLine, "bodies/contacts/joints = "+
+                               m_world.bodyList.size+"/"+m_world.contactList.size+"/"+m_world.jointList.size, white)
+      textLine += textLineHeight
+
+      val memTot = Runtime.getRuntime().totalMemory()
+      memFree = (memFree * .9f + .1f * Runtime.getRuntime().freeMemory())
+      m_debugDraw.draw.drawString(2, textLine, "total memory: "+memTot, white)
+      textLine += textLineHeight
+      m_debugDraw.draw.drawString(2, textLine, "average free memory: "+memFree, white)
+      textLine += textLineHeight + 5
+      m_debugDraw.draw.drawString(2, textLine, "Vec2 creations/frame: " + Vector2f.creationCount, white)
+      textLine += textLineHeight
+      m_debugDraw.draw.drawString(2, textLine, "Average FPS (" + fpsAverageCount + " frames): " + averagedFPS, white)
+      textLine += textLineHeight
+      m_debugDraw.draw.drawString(2, textLine, "Average FPS (entire test): "+ totalFPS, white)
     }
 
     if (m_mouseJoint != null) {

@@ -24,7 +24,7 @@ import org.fenggui.binding.render.lwjgl.EventHelper
 object TestbedRunner {
   def main(args: Array[String]) {
     val container = new AppGameContainer(new SlickTestGame())
-    container.setDisplayMode(600,600,false)
+    container.setDisplayMode(800,600,false)
     container.start()
   }
 }
@@ -41,10 +41,10 @@ object TestbedRunner {
  */
 class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with TestbedMain with FengWrapper {
 
-  val m_debugDraw = new SlickDebugDraw(null,null)
+  val debugDraw = new SlickDebugDraw(null,null)
 
   // TestBedMain API
-  val g = new DebugDraw(m_debugDraw)
+  val g = new DebugDraw(debugDraw)
   def mouseX = mousePos.x
   def mouseY = mousePos.y
   def pmouseX = mousePosOld.x
@@ -60,30 +60,19 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
   var mousePos = Vector2f.Zero
   var mousePosOld = Vector2f.Zero
   var gameContainer: GameContainer = null
-
-  /** FPS that we want to achieve */
-  val targetFPS = 60.0f;
-  /** Number of frames to average over when computing real FPS */
-  val fpsAverageCount = 100;
-  /** Array of timings */
-  var nanos: Array[Long]= null;
-  /** When we started the nanotimer */
-  var nanoStart = 0L; //
-    
-  /** Number of frames since we started this example. */
-  var frameCount = 0L;
-
+  
   val tests = new collection.mutable.ListBuffer[AbstractExample]
   var currentTestIndex = 3
   var currentTest : AbstractExample = null
 
   def init(container: GameContainer) {
 
-    m_debugDraw.g = container.getGraphics
-    m_debugDraw.container = container
+    debugDraw.g = container.getGraphics
+    debugDraw.container = container
 
     gameContainer = container
     container.setTargetFrameRate(60)
+    container.setShowFPS(false)
 
     tests += new testbed.tests.CircularBreakout(this)
     tests += new testbed.tests.Domino(this)
@@ -96,15 +85,6 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
     tests += new testbed.tests.VaryingFriction(this)
     tests += new testbed.tests.VaryingRestitution(this)
     tests += new testbed.tests.VerticalStack(this)
-
-    /* Set up the timers for FPS reporting */
-    nanos = new Array[Long](fpsAverageCount)
-    val nanosPerFrameGuess = (1000000000.0 / targetFPS).toLong
-    nanos(fpsAverageCount-1) = System.nanoTime();
-    for (i <- new Range.Inclusive(fpsAverageCount-2,0,-1)) {
-      nanos(i) = nanos(i+1) - nanosPerFrameGuess;
-    }
-    nanoStart = System.nanoTime();
 
     currentTest = tests(currentTestIndex)
     currentTest.initialize
@@ -123,48 +103,24 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
     if (currentTest.needsReset) {
       currentTest = tests(currentTestIndex)
       currentTest.initialize()
-      nanoStart = System.nanoTime()
-      frameCount = 0
+      currentTest.settings = settings
+      currentTest.nanoStart = System.nanoTime()
+      currentTest.frameCount = 0
     }
 
   }
 
   def render(container: GameContainer, g: Graphics) {
 
-    currentTest.m_textLine = AbstractExample.textLineHeight;
-    g.drawString(currentTest.name, 5, currentTest.m_textLine);
-    currentTest.m_textLine += 2*AbstractExample.textLineHeight;
+    // Take our time step (drawing is done here, too)
+    currentTest.step
 
-    /* Take our time step (drawing is done here, too) */
-    currentTest.step();
+    // If the user wants to move the canvas, do it
+    handleCanvasDrag
 
-    /* If the user wants to move the canvas, do it */
-    handleCanvasDrag();
+    // Draw the GUI
+    drawGUI
 
-
-    /* ==== Vec2 creation and FPS reporting ==== */
-    if (currentTest.settings.drawStats) {
-      //g.setColor(AbstractExample.white)
-      g.drawString("Vec2 creations/frame: "+Vector2f.creationCount, 5, currentTest.m_textLine);
-      currentTest.m_textLine += AbstractExample.textLineHeight;
-    }
-
-    for (i <- 0 until fpsAverageCount-1) {
-      nanos(i) = nanos(i+1)
-    }
-    nanos(fpsAverageCount-1) = System.nanoTime();
-    val averagedFPS = ( (fpsAverageCount-1) * 1000000000.0 / (nanos(fpsAverageCount-1)-nanos(0)));
-    frameCount += 1
-    val totalFPS = (frameCount * 1000000000 / (1.0*(System.nanoTime()-nanoStart)));
-    if (currentTest.settings.drawStats) {
-      //g.setColor(AbstractExample.white)
-      g.drawString("Average FPS ("+fpsAverageCount+" frames): "+averagedFPS, 5, currentTest.m_textLine);
-      currentTest.m_textLine += AbstractExample.textLineHeight;
-      //g.setColor(AbstractExample.white)
-      g.drawString("Average FPS (entire test): "+totalFPS, 5, currentTest.m_textLine);
-      currentTest.m_textLine += AbstractExample.textLineHeight;
-    }
-    draw
   }
 
   /**
@@ -248,7 +204,7 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
 
   override def mouseWheelMoved(amount: Int) {
 
-    val d = m_debugDraw
+    val d = debugDraw
     val notches = amount
     val oldCenter = d.screenToWorld(width / 2.0f, height / 2.0f)
     //Change the zoom and clamp it to reasonable values
@@ -275,9 +231,8 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
     //Handle mouse dragging stuff
     //Left mouse attaches mouse joint to object.
     //Right mouse drags canvas.
-    val d = m_debugDraw
+    val d = debugDraw
 		
-    //Vec2 mouseWorld = d.screenToWorld(mouseX, mouseY);
     if (mouseButton == 1) {
       if (mousePressed) {
         d.transX += mouseX - pmouseX;

@@ -37,10 +37,10 @@ class Pyramid(_parent: TestbedMain) extends AbstractExample(_parent) {
 			val deltaX = Vector2f(0.5625f, 2.0f);
 			val deltaY = Vector2f(1.125f, 0.0f);
 
-			for (i <- 0 until 25) {
+			for (i <- 0 until 30) {
 				y = x
 
-				for (j <- i until 25) {
+				for (j <- i until 30) {
 					val bd = new BodyDef();
 					bd.pos = (y);
 					val body = m_world.createBody(bd);

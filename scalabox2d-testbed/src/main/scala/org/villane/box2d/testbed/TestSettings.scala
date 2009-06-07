@@ -23,7 +23,7 @@ class TestSettings {
   var drawCoreShapes = false;
   var drawOBBs = false;
   var drawCOMs = false;
-  var drawStats = true;
+  var drawStats = false;
   var drawImpulses = false;
   var drawAABBs = false;
   var drawPairs = false;

@@ -204,6 +204,15 @@ trait FengWrapper extends InputListener {
     cPoints.setText("Contact Points")
     cPoints.setSelected(false)
 
+    cPoints.addSelectionChangedListener(new ISelectionChangedListener() {
+        def selectionChanged(selectionChangedEvent:SelectionChangedEvent) {
+          if (selectionChangedEvent.isSelected)
+          settings.drawContactPoints = true
+          else
+          settings.drawContactPoints = false
+        }
+    })
+
     val cNormals = FengGUI.createCheckBox
     cNormals.setText("Contact Normals")
     cNormals.setSelected(false)
@@ -224,6 +233,15 @@ trait FengWrapper extends InputListener {
     stastics.setText("Stastics")
     stastics.setSelected(false)
 
+    stastics.addSelectionChangedListener(new ISelectionChangedListener() {
+        def selectionChanged(selectionChangedEvent:SelectionChangedEvent) {
+          if (selectionChangedEvent.isSelected)
+          settings.drawStats = true
+          else
+          settings.drawStats = false
+        }
+    })
+
     draw.addWidget(shapes, joints, controllers, coreShapes, aabb, obb, pairs)
     draw.addWidget(cPoints,cNormals,cForces,fForces,com,stastics)
 
@@ -232,11 +250,11 @@ trait FengWrapper extends InputListener {
     w.pack
     val y = w.getHeight
     val x = w.getWidth
-    w.setXY(600-x, 600-y)
+    w.setXY(800-x, 600-y)
     desk.addWidget(w)
   }
 
-  def draw() {
+  def drawGUI() {
     SlickCallable.enterSafeBlock
     desk.display
     SlickCallable.leaveSafeBlock
