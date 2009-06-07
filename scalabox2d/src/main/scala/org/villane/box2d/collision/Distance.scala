@@ -5,22 +5,6 @@ import vecmath.Preamble._
 import Settings.ε
 import shapes._
 
-case class DistanceInput(
-  t1: Transform2f,
-  t2: Transform2f,
-  useRadii: Boolean
-)
-
-case class DistanceOutput(
-  /** closest point on shape1 */
-  p1: Vector2f,
-  /** closest point on shape2 */
-  p2: Vector2f,
-  distance: Float,
-  /** number of GJK iterations used */
-  iterations: Float
-)
-
 object Point {
   def apply(v: Vector2f): Point = Point(v.x, v.y)
 }
