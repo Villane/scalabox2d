@@ -11,6 +11,7 @@ import org.fenggui.decorator.background.PlainBackground
 import org.fenggui.decorator.border.TitledBorder
 import org.fenggui.event.mouse.MouseButton
 import org.fenggui.event.{ISelectionChangedListener, SelectionChangedEvent}
+import org.fenggui.event.{IButtonPressedListener, ButtonPressedEvent}
 
 import org.newdawn.slick.{GameContainer,Graphics,Input,InputListener,Color}
 import org.newdawn.slick.opengl.SlickCallable
@@ -45,19 +46,38 @@ trait FengWrapper extends InputListener {
     val buttons = FengGUI.createWidget(classOf[Container])
     //c.setExpandable(false)
 
-    val play = FengGUI.createWidget(classOf[Button])
-    play.setText("Pause")
-    play.getAppearance.setMargin(new Spacing(5, 2))
+    val pause = FengGUI.createWidget(classOf[Button])
+    pause.setText("Pause")
+    pause.getAppearance.setMargin(new Spacing(5, 2))
+
+    pause.addButtonPressedListener(new IButtonPressedListener() {
+      def buttonPressed(e: ButtonPressedEvent) {
+        settings.pause = !settings.pause
+      }
+    })
 
     val step = FengGUI.createWidget(classOf[Button])
     step.setText("Step")
     step.getAppearance.setMargin(new Spacing(5, 2))
 
-    val restart = FengGUI.createWidget(classOf[Button])
-    restart.setText("Restart")
-    restart.getAppearance.setMargin(new Spacing(5, 2))
+    step.addButtonPressedListener(new IButtonPressedListener() {
+      def buttonPressed(e: ButtonPressedEvent) {
+        settings.singleStep = true
+        settings.pause = true
+      }
+    })
 
-    buttons.addWidget(play, step, restart)
+    val reset = FengGUI.createWidget(classOf[Button])
+    reset.setText("Reset")
+    reset.getAppearance.setMargin(new Spacing(5, 2))
+
+    reset.addButtonPressedListener(new IButtonPressedListener() {
+      def buttonPressed(e: ButtonPressedEvent) {
+        settings.reset = !settings.reset
+      }
+    })
+
+    buttons.addWidget(pause, step, reset)
 
     val spacer2 = FengGUI.createWidget(classOf[Container])
     spacer2.getAppearance.add(new TitledBorder("Tests"))

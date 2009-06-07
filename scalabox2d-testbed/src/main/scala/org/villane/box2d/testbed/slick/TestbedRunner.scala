@@ -95,12 +95,8 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
 
     Vector2f.creationCount = 0;
 
-    if(settings.testIndex != currentTestIndex) {
-      currentTest.needsReset = true
+    if (settings.reset || settings.testIndex != currentTestIndex) {
       currentTestIndex = settings.testIndex
-    }
-
-    if (currentTest.needsReset) {
       currentTest = tests(currentTestIndex)
       currentTest.initialize()
       currentTest.settings = settings
@@ -178,7 +174,7 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
       shiftDown = true
     }
  
-    if (key == 'r') currentTest.needsReset = true;
+    if (key == 'r') settings.reset = true;
     if (key == ' ') currentTest.launchBomb();
     if (key == 'p') {
       currentTest.settings.pause = !currentTest.settings.pause;

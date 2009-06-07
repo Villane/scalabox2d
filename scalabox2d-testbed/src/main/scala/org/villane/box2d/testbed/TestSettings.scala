@@ -15,8 +15,12 @@ class TestSettings {
   var enableTOI = true;
   var enableSleeping = true;
 
-  var pause = false;
-  var singleStep = false;
+  /** Pause the simulation */
+  var pause = false
+  /** Take a single timestep */
+  var singleStep = false
+  /** True if we should reset the demo for the next frame. */
+  var reset = false
 
   var drawShapes = true;
   var drawJoints = true;

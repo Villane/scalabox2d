@@ -27,17 +27,15 @@ object AbstractExample {
   val green = new Color3f(0.0f,255.0f,0.0f);
   val blue= new Color3f(0.0f,0.0f,255.0f);
   /** Height of font used to draw text. */
-  val textLineHeight = 12;
+  val textLineHeight = 15;
   /** Max number of contact points to store */
   val k_maxContactPoints = 2048; 
 }
 
-abstract class AbstractExample(_parent: TestbedMain) {
+abstract class AbstractExample(parent: TestbedMain) {
   import AbstractExample._
-  /** The controller that the AbstractExample runs in */
-  val parent = _parent
   /** Used for drawing */
-  var m_debugDraw = _parent.g
+  var m_debugDraw = parent.g
   //public Body followedBody = null; //camera follows motion of this body
   /** Array of key states, by char value.  Does not include arrows or modifier keys. */
   var keyDown = new Array[Boolean](255)
@@ -52,8 +50,6 @@ abstract class AbstractExample(_parent: TestbedMain) {
   var pmouseScreen = Vector2f.Zero
   /** Was the mouse pressed last frame?  True if either right or left button was down. */
   var pmousePressed = false
-  /** True if we should reset the demo for the next frame. */
-  var needsReset = true
   /** The point at which we will place a bomb when completeBombSpawn() is called. */
   var bombSpawnPoint = Vector2f.Zero
   /** True if a bomb has started spawning but has not been created yet. */
@@ -167,7 +163,7 @@ abstract class AbstractExample(_parent: TestbedMain) {
     }
     nanoStart = System.nanoTime();
     
-    needsReset = false;
+    settings.reset = false;
     for (i <- 0 until 255) {
       keyDown(i) = false;
       newKeyDown(i) = false;
