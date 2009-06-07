@@ -11,6 +11,7 @@ import dynamics.joints._
 class DebugDraw(val draw: DebugDrawHandler) {
   /** For internal use */
   def drawShape(shape: Shape, xf: Transform2f, color: Color3f, core: Boolean) {
+    
     val coreColor = Color3f(255f * 0.9f, 255f * 0.6f, 255f * 0.6f)
 
     shape match {
@@ -75,6 +76,7 @@ class DebugDraw(val draw: DebugDrawHandler) {
 
   /** For internal use */
   def drawDebugData(bodies: Seq[Body], joints: Seq[Joint], bp: BroadPhase) {
+    
     val flags = draw.drawFlags
 
     if ((flags & DrawFlags.shape) != 0) {

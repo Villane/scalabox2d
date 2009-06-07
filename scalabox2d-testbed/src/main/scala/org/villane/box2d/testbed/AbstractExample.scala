@@ -35,7 +35,7 @@ object AbstractExample {
 abstract class AbstractExample(parent: TestbedMain) {
   import AbstractExample._
   /** Used for drawing */
-  var m_debugDraw = parent.g
+  var debugDraw = parent.g
   //public Body followedBody = null; //camera follows motion of this body
   /** Array of key states, by char value.  Does not include arrows or modifier keys. */
   var keyDown = new Array[Boolean](255)
@@ -105,7 +105,7 @@ abstract class AbstractExample(parent: TestbedMain) {
     val instructionLines = fullString.split("\n")
     var currentLine = parent.height - instructionLines.length*textLineHeight*2;
     for (i <- 0 until instructionLines.length) {
-      m_debugDraw.draw.drawString(5, currentLine, instructionLines(i), white);
+      debugDraw.draw.drawString(5, currentLine, instructionLines(i), white);
       currentLine += textLineHeight;
     }
   }
@@ -199,9 +199,9 @@ abstract class AbstractExample(parent: TestbedMain) {
     m_world.debugDraw = parent.g
 
     if (hasCachedCamera) {
-      m_debugDraw.draw.setCamera(cachedCamX,cachedCamY,cachedCamScale);
+      debugDraw.draw.setCamera(cachedCamX,cachedCamY,cachedCamScale);
     } else {
-      m_debugDraw.draw.setCamera(0.0f, 10.0f, 10.0f);
+      debugDraw.draw.setCamera(0.0f, 10.0f, 10.0f);
       hasCachedCamera = true;
       cachedCamX = 0.0f;
       cachedCamY = 10.0f;
@@ -220,7 +220,7 @@ abstract class AbstractExample(parent: TestbedMain) {
   def step() {
 
     preStep();
-    mouseWorld = m_debugDraw.draw.screenToWorld(mouseScreen)
+    mouseWorld = debugDraw.draw.screenToWorld(mouseScreen)
 
     var timeStep = if (settings.hz > 0.0f) 1.0f / settings.hz else 0.0f
 
@@ -231,17 +231,17 @@ abstract class AbstractExample(parent: TestbedMain) {
         timeStep = 0.0f;
       }
 
-      m_debugDraw.draw.drawString(2, 1, "**** PAUSED ****", white);
+      debugDraw.draw.drawString(2, 1, "**** PAUSED ****", white);
     }
 
-    m_debugDraw.draw.drawFlags = 0
-    if (settings.drawShapes) m_debugDraw.draw.appendFlags(DrawFlags.shape);
-    if (settings.drawJoints) m_debugDraw.draw.appendFlags(DrawFlags.joint);
-    if (settings.drawCoreShapes) m_debugDraw.draw.appendFlags(DrawFlags.coreShape);
-    if (settings.drawAABBs) m_debugDraw.draw.appendFlags(DrawFlags.aabb);
-    if (settings.drawOBBs) m_debugDraw.draw.appendFlags(DrawFlags.obb);
-    if (settings.drawPairs) m_debugDraw.draw.appendFlags(DrawFlags.pair);
-    if (settings.drawCOMs) m_debugDraw.draw.appendFlags(DrawFlags.centerOfMass);
+    debugDraw.draw.drawFlags = 0
+    if (settings.drawShapes) debugDraw.draw.appendFlags(DrawFlags.shape);
+    if (settings.drawJoints) debugDraw.draw.appendFlags(DrawFlags.joint);
+    if (settings.drawCoreShapes) debugDraw.draw.appendFlags(DrawFlags.coreShape);
+    if (settings.drawAABBs) debugDraw.draw.appendFlags(DrawFlags.aabb);
+    if (settings.drawOBBs) debugDraw.draw.appendFlags(DrawFlags.obb);
+    if (settings.drawPairs) debugDraw.draw.appendFlags(DrawFlags.pair);
+    if (settings.drawCOMs) debugDraw.draw.appendFlags(DrawFlags.centerOfMass);
 
     m_world.warmStarting = settings.enableWarmStarting
     m_world.positionCorrection = settings.enablePositionCorrection
@@ -275,26 +275,26 @@ abstract class AbstractExample(parent: TestbedMain) {
     if (settings.drawStats) {
 
       var textLine = 10
-      m_debugDraw.draw.drawString(2, textLine, "proxies(max) = "+ m_world.proxyCount +
+      debugDraw.draw.drawString(2, textLine, "proxies(max) = "+ m_world.proxyCount +
                                "("+ Settings.maxProxies+"), pairs(max) = "+ m_world.pairCount +
                                "("+ Settings.maxPairs+")", white)
       textLine += textLineHeight
 
-      m_debugDraw.draw.drawString(2, textLine, "bodies/contacts/joints = "+
+      debugDraw.draw.drawString(2, textLine, "bodies/contacts/joints = "+
                                m_world.bodyList.size+"/"+m_world.contactList.size+"/"+m_world.jointList.size, white)
       textLine += textLineHeight
 
       val memTot = Runtime.getRuntime().totalMemory()
       memFree = (memFree * .9f + .1f * Runtime.getRuntime().freeMemory())
-      m_debugDraw.draw.drawString(2, textLine, "total memory: "+memTot, white)
+      debugDraw.draw.drawString(2, textLine, "total memory: "+memTot, white)
       textLine += textLineHeight
-      m_debugDraw.draw.drawString(2, textLine, "average free memory: "+memFree, white)
+      debugDraw.draw.drawString(2, textLine, "average free memory: "+memFree, white)
       textLine += textLineHeight + 5
-      m_debugDraw.draw.drawString(2, textLine, "Vec2 creations/frame: " + Vector2f.creationCount, white)
+      debugDraw.draw.drawString(2, textLine, "Vec2 creations/frame: " + Vector2f.creationCount, white)
       textLine += textLineHeight
-      m_debugDraw.draw.drawString(2, textLine, "Average FPS (" + fpsAverageCount + " frames): " + averagedFPS, white)
+      debugDraw.draw.drawString(2, textLine, "Average FPS (" + fpsAverageCount + " frames): " + averagedFPS, white)
       textLine += textLineHeight
-      m_debugDraw.draw.drawString(2, textLine, "Average FPS (entire test): "+ totalFPS, white)
+      debugDraw.draw.drawString(2, textLine, "Average FPS (entire test): "+ totalFPS, white)
     }
 
     if (m_mouseJoint != null) {
@@ -302,12 +302,12 @@ abstract class AbstractExample(parent: TestbedMain) {
       val p1 = body.toWorldPoint(m_mouseJoint.localAnchor);
       val p2 = m_mouseJoint.target;
 
-      m_debugDraw.draw.drawSegment(p1, p2, new Color3f(255.0f,255.0f,255.0f));
+      debugDraw.draw.drawSegment(p1, p2, new Color3f(255.0f,255.0f,255.0f));
     }
 
     if (bombSpawning) {
-      m_debugDraw.draw.drawSolidCircle(bombSpawnPoint, 0.3f, Vector2f(1.0f,0.0f),Color3f(255f*0.5f,255f*0.5f,255f*0.5f));
-      m_debugDraw.draw.drawSegment(bombSpawnPoint, mouseWorld, Color3f(55f*0.5f,55f*0.5f,255f*0.5f));
+      debugDraw.draw.drawSolidCircle(bombSpawnPoint, 0.3f, Vector2f(1.0f,0.0f),Color3f(255f*0.5f,255f*0.5f,255f*0.5f));
+      debugDraw.draw.drawSegment(bombSpawnPoint, mouseWorld, Color3f(55f*0.5f,55f*0.5f,255f*0.5f));
     }
 
     if (settings.drawContactPoints) {
@@ -320,29 +320,29 @@ abstract class AbstractExample(parent: TestbedMain) {
         if (point.state == 0) {
           // Add
           //System.out.println("Add");
-          m_debugDraw.draw.drawPoint(point.position, 0.3f, Color3f(255.0f, 150.0f, 150.0f));
+          debugDraw.draw.drawPoint(point.position, 0.3f, Color3f(255.0f, 150.0f, 150.0f));
         } else if (point.state == 1) {
           // Persist
           //System.out.println("Persist");
-          m_debugDraw.draw.drawPoint(point.position, 0.1f, Color3f(255.0f, 0.0f, 0.0f));
+          debugDraw.draw.drawPoint(point.position, 0.1f, Color3f(255.0f, 0.0f, 0.0f));
         } else {
           // Remove
           //System.out.println("Remove");
-          m_debugDraw.draw.drawPoint(point.position, 0.5f, Color3f(0.0f, 155.0f, 155.0f));
+          debugDraw.draw.drawPoint(point.position, 0.5f, Color3f(0.0f, 155.0f, 155.0f));
         }
 
         if (settings.drawContactNormals) {
           val p1 = point.position;
           val p2 = Vector2f( p1.x + k_axisScale * point.normal.x,
                              p1.y + k_axisScale * point.normal.y);
-          m_debugDraw.draw.drawSegment(p1, p2, new Color3f(0.4f*255f, 0.9f*255f, 0.4f*255f));
+          debugDraw.draw.drawSegment(p1, p2, new Color3f(0.4f*255f, 0.9f*255f, 0.4f*255f));
         } 
 				//TODO
 				/*else if (settings.drawContactForces) {
 					Vec2 p1 = point.position;
 					Vec2 p2 = new Vec2( p1.x + k_forceScale * point.normalImpulse * point.normal.x,
 										p1.y + k_forceScale * point.normalImpulse * point.normal.y);
-					m_debugDraw.drawSegment(p1, p2, new Color3f(0.9f*255f, 0.9f*255f, 0.3f*255f));
+					debugDraw.drawSegment(p1, p2, new Color3f(0.9f*255f, 0.9f*255f, 0.3f*255f));
 				}
 
 				if (settings.drawFrictionForces) {
@@ -350,7 +350,7 @@ abstract class AbstractExample(parent: TestbedMain) {
 					Vec2 p1 = point.position;
 					Vec2 p2 = new Vec2( p1.x + k_forceScale * point.tangentImpulse * tangent.x,
 										p1.y + k_forceScale * point.tangentImpulse * tangent.y);
-					m_debugDraw.drawSegment(p1, p2, new Color3f(0.9f*255f, 0.9f*255f, 0.3f*255f));
+					debugDraw.drawSegment(p1, p2, new Color3f(0.9f*255f, 0.9f*255f, 0.3f*255f));
 				}*/
       }
     }
@@ -439,7 +439,7 @@ abstract class AbstractExample(parent: TestbedMain) {
   def completeBombSpawn() {
     if (!bombSpawning) return
     val multiplier = 30.0f;
-    val mouseW = m_debugDraw.draw.screenToWorld(mouseScreen)
+    val mouseW = debugDraw.draw.screenToWorld(mouseScreen)
     val vel = (bombSpawnPoint - mouseW) * multiplier
     launchBomb(bombSpawnPoint,vel)
     bombSpawning = false
@@ -493,11 +493,11 @@ abstract class AbstractExample(parent: TestbedMain) {
     def mouseDown(p1: Vector2f) {
     	
     	if (parent.shiftKey) {
-    		spawnBomb(m_debugDraw.draw.screenToWorld(p1))
+    		spawnBomb(debugDraw.draw.screenToWorld(p1))
     		return;
     	}
     	
-    	val p = m_debugDraw.draw.screenToWorld(p1);
+    	val p = debugDraw.draw.screenToWorld(p1);
     	
     	assert (m_mouseJoint == null)
 
@@ -554,7 +554,7 @@ abstract class AbstractExample(parent: TestbedMain) {
     def mouseMove(p: Vector2f) {
     	mouseScreen = p;
         if (m_mouseJoint != null) {
-            m_mouseJoint.target = m_debugDraw.draw.screenToWorld(p)
+            m_mouseJoint.target = debugDraw.draw.screenToWorld(p)
         }
     }
     
@@ -566,7 +566,7 @@ abstract class AbstractExample(parent: TestbedMain) {
      * @param scale Size in screen units (usually pixels) of one world unit (meter)
      */
     def setCamera(x: Float, y: Float, scale: Float) {
-    	m_debugDraw.draw.setCamera(x, y, scale);
+    	debugDraw.draw.setCamera(x, y, scale);
     	hasCachedCamera = true;
     	cachedCamX = x;
     	cachedCamY = y;
@@ -721,7 +721,7 @@ abstract class AbstractExample(parent: TestbedMain) {
     ){
         private var halfImageWidth = image.width / 2f
         private var halfImageHeight = image.height / 2f
-        private var p = m_debugDraw;
+        private var p = debugDraw;
 
         def draw() {
         	//p.drawImage(image, body.pos, body.angle+localRotation, localScale, localOffset, halfImageWidth, halfImageHeight);

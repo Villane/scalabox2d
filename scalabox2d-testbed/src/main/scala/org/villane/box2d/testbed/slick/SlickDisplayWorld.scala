@@ -27,6 +27,7 @@ object SlickDisplayWorld {
 }
 
 class SlickDisplayWorld(world: World) extends BasicGame("Slick ScalaBox2D: World") {
+  
   val m_debugDraw = new SlickDebugDraw(null,null)
   val g = new DebugDraw(m_debugDraw)
   def width = gameContainer.getWidth

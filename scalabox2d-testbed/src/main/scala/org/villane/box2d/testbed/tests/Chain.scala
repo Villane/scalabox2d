@@ -46,7 +46,7 @@ class Chain(_parent: TestbedMain) extends AbstractExample(_parent) {
 				
 				val anchor = Vector2f(i, y);
 				val jd = new RevoluteJointDef(prevBody, body, anchor);
-			jd.collideConnected = false;
+        jd.collideConnected = false;
 				m_world.createJoint(jd);
 				
 				prevBody = body;
