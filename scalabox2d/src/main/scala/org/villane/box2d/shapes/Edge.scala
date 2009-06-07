@@ -5,7 +5,7 @@ import vecmath.Preamble._
 import Settings.ε
 
 /**
- * Temporarily Abstract because half-implemented
+ * A single edge from v1 to v2
  */
 class Edge(defn: EdgeChainDef) extends Shape {
   // Erkki: is this correct?

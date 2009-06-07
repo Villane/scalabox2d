@@ -16,6 +16,11 @@ object MathUtil {
 
   def sin(a: Float) = Math.sin(a).toFloat
   def cos(a: Float) = Math.cos(a).toFloat
+  def tan(a: Float) = Math.tan(a).toFloat
+  def asin(a: Float) = Math.asin(a).toFloat
+  def acos(a: Float) = Math.acos(a).toFloat
+  def atan(a: Float) = Math.atan(a).toFloat
+  def pow(a: Float, b: Float) = Math.pow(a, b).toFloat
 
   def clamp(a: Float, low: Float, high: Float) = max(low, min(a, high))
 

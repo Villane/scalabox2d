@@ -4,6 +4,10 @@ import vecmath._
 
 object SegmentCollide {
   val Miss = SegmentCollide(SegmentCollideResult.Miss, 0, Vector2f.Zero)
+  def hit(lambda: Float, normal: Vector2f) =
+    SegmentCollide(SegmentCollideResult.Hit, lambda, normal)
+  def startsInside(lambda: Float, normal: Vector2f) =
+    SegmentCollide(SegmentCollideResult.StartsInside, lambda, normal)
 }
 
 case class SegmentCollide(
@@ -42,9 +46,8 @@ class Segment(val p1: Vector2f, val p2: Vector2f) {
         val mu2 = -r.x * b.y + r.y * b.x
 
         // Does the segment intersect this segment?
-        if (-slop * denom <= mu2 && mu2 <= denom * (1f + slop)) {
-          return SegmentCollide(SegmentCollideResult.Hit, a / denom, n.normalize)
-        }
+        if (-slop * denom <= mu2 && mu2 <= denom * (1f + slop))
+          return SegmentCollide.hit(a / denom, n.normalize)
       }
     }
     SegmentCollide.Miss

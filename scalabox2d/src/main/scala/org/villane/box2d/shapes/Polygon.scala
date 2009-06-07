@@ -129,9 +129,9 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
     assert(0f <= lower && lower <= maxLambda)
 
     if (index >= 0)
-      SegmentCollide(SegmentCollideResult.Hit, lower, t.rot * normals(index))
+      SegmentCollide.hit(lower, t.rot * normals(index))
     else
-      SegmentCollide(SegmentCollideResult.StartsInside, 0, Vector2f.Zero)
+      SegmentCollide.startsInside(0, Vector2f.Zero)
   }
 
   def computeAABB(t: Transform2f) = {
