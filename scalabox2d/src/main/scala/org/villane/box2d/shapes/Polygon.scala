@@ -11,7 +11,7 @@ object Polygon {
     forTriangles(vertices) { t =>
       area += t.area
       // Area weighted centroid
-      c += t.area * Triangle.inv3 * (t.p1 + t.p2 + t.p3)
+      c += t.center
     }
     // Centroid
     assert(area > ε)
@@ -33,6 +33,7 @@ object Polygon {
     lazy val e3 = p3 - p2
     lazy val D = e1 × e2
     lazy val area = 0.5f * D
+    lazy val center = area * Triangle.inv3 * (p1 + p2 + p3)
   }
 
   def forTriangles[T](vertices: Array[Vector2f])(block: Triangle => T) = {
@@ -69,6 +70,7 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
     val ns = new Array[Vector2f](vertexCount)
     var i = 0
     // Compute normals. Ensure the edges have non-zero length.
+    // TODO forEdges?
     Polygon.forTriangles(vertices) { t =>
       assert(t.e3.lengthSquared > ε * ε)
       ns(i) = t.e3.tangent.normalize
@@ -90,8 +92,8 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
     var lower = 0f
     var upper = maxLambda
 
-    val p1 = t.rot ** (segment.p1 - t.pos)
-	val p2 = t.rot ** (segment.p2 - t.pos)
+    val p1 = t ** segment.p1
+	val p2 = t ** segment.p2
 	val d = p2 - p1
 	var index = -1
 
@@ -132,9 +134,6 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
       SegmentCollide(SegmentCollideResult.StartsInside, 0, Vector2f.Zero)
   }
 
-  def computeSubmergedArea(normal: Vector2f, offset: Float, t: Transform2f) =
-    (0f,Vector2f.Zero)
-
   def computeAABB(t: Transform2f) = {
     // TODO may need optimizing
     val vTrans = vertices map (t * _)
@@ -153,7 +152,7 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
     Polygon.forTriangles(vertices) { t =>
       area += t.area
       // Area weighted centroid
-      center += t.area * inv3 * (t.p1 + t.p2 + t.p3)
+      center += t.center
 
       val (px, py) = t.p1.tuple
       val (ex1, ey1) = t.e1.tuple
@@ -176,38 +175,108 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
     Mass(mass, center, I * density)
   }
 
+  def computeSubmergedArea(normal: Vector2f, offset: Float, t: Transform2f):
+    (Float, Vector2f) = {
+    //Transform plane into shape co-ordinates
+    val normalL = t.rot ** normal
+    val offsetL = offset - (normal dot t.pos)
+
+    val depths = new Array[Float](vertexCount)
+    var diveCount = 0
+    var intoIndex = -1
+    var outoIndex = -1
+
+    var lastSubmerged = false
+    for (i <- 0 until vertexCount) {
+      depths(i) = (normalL dot vertices(i)) - offsetL
+      val isSubmerged = depths(i) < -ε
+      if (i > 0) {
+        if (isSubmerged) {
+          if (!lastSubmerged) {
+            intoIndex = i-1
+            diveCount += 1
+          }
+        } else {
+          if (lastSubmerged) {
+            outoIndex = i-1
+            diveCount += 1
+          }
+        }
+      }
+      lastSubmerged = isSubmerged
+    }
+
+    diveCount match {
+      case 0 =>
+        if (lastSubmerged) {
+          //Completely submerged
+          val mass = computeMass(1)
+          return (mass.mass, t * mass.center)
+        } else {
+          //Completely dry
+          return (0, Vector2f.Zero)
+        }
+      case 1 =>
+        if (intoIndex == -1) {
+          intoIndex = vertexCount - 1
+        } else {
+          outoIndex = vertexCount - 1
+        }
+    }
+
+    val intoIndex2 = (intoIndex + 1) % vertexCount
+	val outoIndex2 = (outoIndex + 1) % vertexCount
+
+    val intoLambda = (0 - depths(intoIndex)) / (depths(intoIndex2) - depths(intoIndex))
+    val outoLambda = (0 - depths(outoIndex)) / (depths(outoIndex2) - depths(outoIndex))
+
+    val intoVec = Vector2f(
+      vertices(intoIndex).x * (1-intoLambda) + vertices(intoIndex2).x * intoLambda,
+      vertices(intoIndex).y * (1-intoLambda) + vertices(intoIndex2).y * intoLambda
+    )
+    val outoVec = Vector2f(
+      vertices(outoIndex).x * (1-outoLambda) + vertices(outoIndex2).x * outoLambda,
+      vertices(outoIndex).y * (1-outoLambda) + vertices(outoIndex2).y * outoLambda
+    )
+
+    // Initialize accumulator
+    var area = 0f
+    var center = Vector2f.Zero
+    var p2 = vertices(intoIndex2)
+    var p3: Vector2f = null
+
+    import Polygon.Triangle
+    import Triangle.inv3
+
+    // An awkward loop from intoIndex2+1 to outIndex2
+    var i = intoIndex2
+    while (i != outoIndex2) {
+      i = (i + 1) % vertexCount
+      p3 = if (i == outoIndex2) outoVec else vertices(i)
+
+      // Add the triangle formed by intoVec,p2,p3
+      val tri = Triangle(intoVec, p2, p3)
+      area += tri.area
+      center += tri.center
+      p2 = p3
+    }
+
+    // Normalize and transform centroid
+    center *= 1.0f / area
+    (area, t * center)
+  }
+
   def computeSweepRadius(pivot: Vector2f) = {
-	assert(vertices.length > 0)
+    assert(vertices.length > 0)
     var sr = 0f
+    // TODO NO CORE VERTICES!!!
     coreVertices foreach { v =>
       sr = MathUtil.max(sr, MathUtil.distanceSquared(v, pivot))
     }
     MathUtil.sqrt(sr)
   }
 
-  /**
-   * Get the support point in the given world direction.
-   * Use the supplied transform.
-   */
-  def support(xf: Transform2f, d: Vector2f) = {
-    val dLocal = xf.rot ** d
-
-    var bestIndex = 0
-    var bestValue = coreVertices(0) ∙ dLocal
-    for (i <- 1 until vertexCount) {
-      val value = coreVertices(i) ∙ dLocal
-      if (value > bestValue) {
-        bestIndex = i
-        bestValue = value
-      }
-    }
-    xf * coreVertices(bestIndex) 
-  }
-
-  /** Core vertices are deprecated */
-  /** Get the first vertex and apply the supplied transform. */
-  def getFirstVertex(t: Transform2f) = t * coreVertices(0)
-
+  /** Core vertices and everything below is deprecated */
   val coreVertices = computeCoreVertices
   def computeCoreVertices = {
     // Create core polygon shape by shifting edges inward.
@@ -234,5 +303,27 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
     }
     cvs
   }
+
+  /**
+   * Get the support point in the given world direction.
+   * Use the supplied transform.
+   */
+  def support(xf: Transform2f, d: Vector2f) = {
+    val dLocal = xf.rot ** d
+
+    var bestIndex = 0
+    var bestValue = coreVertices(0) ∙ dLocal
+    for (i <- 1 until vertexCount) {
+      val value = coreVertices(i) ∙ dLocal
+      if (value > bestValue) {
+        bestIndex = i
+        bestValue = value
+      }
+    }
+    xf * coreVertices(bestIndex) 
+  }
+
+  /** Get the first vertex and apply the supplied transform. */
+  def getFirstVertex(t: Transform2f) = t * coreVertices(0)
 
 }
