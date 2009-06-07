@@ -94,7 +94,11 @@ class SlickDebugDraw(var g: Graphics, var container: GameContainer) extends Debu
     g.fill(circle)
   }
 
-  def drawString(x: Float, y: Float, s: String, color: Color3f) {}
+  def drawString(x: Float, y: Float, s: String, color: Color3f) {
+    val slickColor = new Color(color.r/255.0f,color.g/255.0f,color.b/255.0f)
+    g.setColor(slickColor)
+    g.drawString(s, x, y)
+  }
 
   def drawTransform(xf: Transform2f) {}
 
