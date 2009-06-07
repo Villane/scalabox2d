@@ -12,7 +12,8 @@ class Point(val pos: Vector2f, val mass: Float) extends Shape {
   val radius = Settings.polygonRadius
 
   def testPoint(t: Transform2f, p: Vector2f) = false
-  def testSegment(t: Transform2f, lambda: Float, normal: Vector2f) {}
+  def testSegment(t: Transform2f, segment: Segment, maxLambda: Float) =
+    SegmentCollide.Miss
 
   def computeSubmergedArea(normal: Vector2f, offset: Float, t: Transform2f) =
     (0f,Vector2f.Zero)

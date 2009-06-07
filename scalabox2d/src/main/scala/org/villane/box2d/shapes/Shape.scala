@@ -13,13 +13,6 @@ object Shape {
   }
 }
 
-sealed trait SegmentCollide
-object SegmentCollide {
-  object StartsInsideCollide extends SegmentCollide
-  object MissCollide extends SegmentCollide
-  object HitCollide extends SegmentCollide
-}
-
 /**
  * A shape is used for collision detection.
  */
@@ -34,7 +27,17 @@ abstract class Shape {
    * @return true if the point is within the shape
    */
   def testPoint(t: Transform2f, p: Vector2f): Boolean
-  def testSegment(t: Transform2f, lambda: Float, normal: Vector2f)
+  /**
+   * Perform a ray cast against this shape.
+   * @param t world transform
+	/// @param segment defines the begin and end point of the ray cast.
+	/// @param maxLambda a number typically in the range [0,1].
+   * @param lambda returns the hit fraction. You can use this to compute the contact point
+	/// p = (1 - lambda) * segment.p1 + lambda * segment.p2.
+	/// @param normal returns the normal at the contact point. If there is no intersection, the normal
+	/// is not set.
+   */
+  def testSegment(t: Transform2f, segment: Segment, maxLambda: Float): SegmentCollide
 
   def computeAABB(t: Transform2f): AABB
   def computeMass(density: Float): Mass

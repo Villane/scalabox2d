@@ -18,7 +18,8 @@ class Circle(val pos: Vector2f, val radius: Float) extends Shape {
   	(d ∙ d) <= (radius * radius)
   }
 
-  def testSegment(t: Transform2f, lambda: Float, normal: Vector2f) {}
+  def testSegment(t: Transform2f, segment: Segment, maxLambda: Float) =
+    SegmentCollide.Miss
 
   def computeSweepRadius(pivot: Vector2f) = {
     val d = pos - pivot
