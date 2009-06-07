@@ -113,6 +113,21 @@ class SlickDebugDraw(var g: Graphics, var container: GameContainer) extends Debu
     g.drawString(s, x, y)
   }
 
-  def drawTransform(xf: Transform2f) {}
+  def drawTransform(xf: Transform2f) {
+    val r = 3
+		val p1 = xf.pos
+		val k_axisScale = 0.4f
+		val p1world = worldToScreen(p1)
+		g.fillOval(p1world.x - r, p1world.y - r, 2 * r, 2 * r)
+		val p2x = p1.x + k_axisScale * xf.rot.col1.x
+		val p2y = p1.y + k_axisScale * xf.rot.col1.y
+    val p2 = Vector2f(p2x, p2y)
+		val p2world = worldToScreen(p2)
+		val p3x = p1.x + k_axisScale * xf.rot.col2.x
+		val p3y = p1.x + k_axisScale * xf.rot.col2.y
+		val p3world = worldToScreen(Vector2f(p3x, p3y))
+		g.drawLine(p1world.x, p1world.y, p3world.x, p3world.y)
+		g.fillOval(p3world.x - r, p3world.y - r, 2 * r, 2 * r)
+  }
 
 }
