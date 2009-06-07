@@ -1,5 +1,7 @@
 package org.villane.box2d.testbed.fenggui
 
+import org.villane.vecmath.Vector2f
+
 import org.fenggui.{FengGUI, Label, Display, Button, List}
 import org.fenggui.{Container, ComboBox, TextEditor, CheckBox}
 import org.fenggui.layout.{RowExLayout, RowExLayoutData, RowLayout, FormLayout}
@@ -12,6 +14,7 @@ import org.fenggui.decorator.border.TitledBorder
 import org.fenggui.event.mouse.MouseButton
 import org.fenggui.event.{ISelectionChangedListener, SelectionChangedEvent}
 import org.fenggui.event.{IButtonPressedListener, ButtonPressedEvent}
+import org.fenggui.event.{ITextChangedListener, TextChangedEvent}
 
 import org.newdawn.slick.{GameContainer,Graphics,Input,InputListener,Color}
 import org.newdawn.slick.opengl.SlickCallable
@@ -44,7 +47,6 @@ trait FengWrapper extends InputListener {
     w.getContentContainer.setLayoutManager(new RowLayout(false))
     
     val buttons = FengGUI.createWidget(classOf[Container])
-    //c.setExpandable(false)
 
     val pause = FengGUI.createWidget(classOf[Button])
     pause.setText("Pause")
@@ -102,9 +104,8 @@ trait FengWrapper extends InputListener {
         def selectionChanged(e:SelectionChangedEvent) {
           // dont listen to de-select events!
           if (!e.isSelected) return
-        
+          // TODO: bug the FengGUI guys about this nasty hack....
           val test = e.getSource.asInstanceOf[List].getSelectedItem.getText
-
           settings.testIndex = test match {
             case "Bridge" => 3
             case "CCDTest" => 5
@@ -135,7 +136,14 @@ trait FengWrapper extends InputListener {
     gCell.setRestrict(TextEditor.RESTRICT_NUMBERSONLY)
     gCell.setMaxCharacters(4)
     gCell.updateMinSize()
-    gCell.setText("10")
+    /*
+    gCell.addTextChangedListener(new ITextChangedListener() {
+      def textChanged(e:TextChangedEvent) {
+        val s = e.getTrigger.getText.replaceAll("\n","")
+        settings.gravity = Vector2f(0f, s.toInt)
+      }
+    })
+    */
     
     val hertz = FengGUI.createWidget(classOf[Label])
     hertz.setText("Hertz")
@@ -143,48 +151,77 @@ trait FengWrapper extends InputListener {
     hCell.setRestrict(TextEditor.RESTRICT_NUMBERSONLY)
     hCell.setMaxCharacters(4)
     hCell.updateMinSize()
-    hCell.setText("60")
+    /*
+    hCell.addTextChangedListener(new ITextChangedListener() {
+      def textChanged(e:TextChangedEvent) {
+        val s = e.getTrigger.getText.replaceAll("\n","")
+        settings.hz = s.toInt
+        println("hz" + settings.hz)
+      }
+    })
+    */
+
     t1.addWidget(gravity, gCell, hertz, hCell)
 
     val t2 = FengGUI.createWidget(classOf[Container])
 
     val velIters = FengGUI.createWidget(classOf[Label])
-    velIters.setText("Vel Iters")
+    velIters.setText("Iterations")
     val vCell = FengGUI.createWidget(classOf[TextEditor])
     vCell.setRestrict(TextEditor.RESTRICT_NUMBERSONLY)
     vCell.setMaxCharacters(3)
     vCell.updateMinSize()
-    vCell.setText("10")
+    /*
+    vCell.addTextChangedListener(new ITextChangedListener() {
+      def textChanged(e:TextChangedEvent) {
+        val s = e.getTrigger.getText.replaceAll("\n","")
+        settings.iterationCount = s.toInt
+        println("iterations" + s.toInt)
+      }
+    })
+    */
 
+    // TODO: implement position iterations 
     val posIters = FengGUI.createWidget(classOf[Label])
     posIters.setText("Pos Iters")
     val pCell = FengGUI.createWidget(classOf[TextEditor])
     pCell.setRestrict(TextEditor.RESTRICT_NUMBERSONLY)
     pCell.setMaxCharacters(3)
     pCell.updateMinSize()
-    pCell.setText("10")
+    
     t2.addWidget(velIters, vCell, posIters, pCell)
+
+    gCell.setText("-10")
+    hCell.setText("60")
+    vCell.setText("10")
+    pCell.setText("10")
 
     val sleeping = FengGUI.createCheckBox
     sleeping.setText("Sleeping")
     sleeping.setSelected(true)
-
     sleeping.addSelectionChangedListener(new ISelectionChangedListener() {
         def selectionChanged(selectionChangedEvent:SelectionChangedEvent) {
-          if (selectionChangedEvent.isSelected)
-          settings.enableSleeping = true
-          else
-          settings.enableSleeping = false
+          settings.enableSleeping = !settings.enableSleeping
         }
       })
 
     val warmStarting = FengGUI.createCheckBox
     warmStarting.setText("Warm Starting")
     warmStarting.setSelected(true)
+    warmStarting.addSelectionChangedListener(new ISelectionChangedListener() {
+        def selectionChanged(e:SelectionChangedEvent) {
+          settings.enableWarmStarting = !settings.enableWarmStarting
+        }
+    })
 
     val timeOfImpact = FengGUI.createCheckBox
     timeOfImpact.setText("Time of Impact")
     timeOfImpact.setSelected(true)
+    timeOfImpact.addSelectionChangedListener(new ISelectionChangedListener() {
+        def selectionChanged(e:SelectionChangedEvent) {
+          settings.enableTOI = !settings.enableTOI
+        }
+    })
 
     tuning.addWidget(t1, t2, sleeping, warmStarting, timeOfImpact)
 
@@ -195,70 +232,119 @@ trait FengWrapper extends InputListener {
     val shapes = FengGUI.createCheckBox
     shapes.setText("Shapes")
     shapes.setSelected(true)
+    shapes.addSelectionChangedListener(new ISelectionChangedListener() {
+        def selectionChanged(e:SelectionChangedEvent) {
+          settings.drawShapes = !settings.drawShapes
+        }
+    })
 
     val joints = FengGUI.createCheckBox
     joints.setText("Joints")
     joints.setSelected(true)
+    joints.addSelectionChangedListener(new ISelectionChangedListener() {
+        def selectionChanged(e:SelectionChangedEvent) {
+          settings.drawJoints = !settings.drawJoints
+        }
+    })
 
     val controllers = FengGUI.createCheckBox
     controllers.setText("Controllers")
     controllers.setSelected(false)
+    /* TODO: Implement controller drawing
+    controllers.addSelectionChangedListener(new ISelectionChangedListener() {
+        def selectionChanged(e:SelectionChangedEvent) {
+          settings.drawCoreShapes = !settings.drawCoreShapes
+        }
+    })
+    */
 
     val coreShapes = FengGUI.createCheckBox
     coreShapes.setText("Core Shapes")
     coreShapes.setSelected(false)
+    coreShapes.addSelectionChangedListener(new ISelectionChangedListener() {
+        def selectionChanged(e:SelectionChangedEvent) {
+          settings.drawCoreShapes = !settings.drawCoreShapes
+        }
+    })
 
     val aabb = FengGUI.createCheckBox
     aabb.setText("AABBs")
     aabb.setSelected(false)
+    aabb.addSelectionChangedListener(new ISelectionChangedListener() {
+        def selectionChanged(e:SelectionChangedEvent) {
+          settings.drawAABBs = !settings.drawAABBs
+        }
+    })
 
     val obb = FengGUI.createCheckBox
     obb.setText("OBBs")
     obb.setSelected(false)
+    obb.addSelectionChangedListener(new ISelectionChangedListener() {
+        def selectionChanged(e:SelectionChangedEvent) {
+          settings.drawOBBs = !settings.drawOBBs
+        }
+    })
 
     val pairs = FengGUI.createCheckBox
     pairs.setText("Pairs")
     pairs.setSelected(false)
+    pairs.addSelectionChangedListener(new ISelectionChangedListener() {
+        def selectionChanged(e:SelectionChangedEvent) {
+          settings.drawPairs = !settings.drawPairs
+        }
+    })
 
     val cPoints = FengGUI.createCheckBox
     cPoints.setText("Contact Points")
     cPoints.setSelected(false)
-
     cPoints.addSelectionChangedListener(new ISelectionChangedListener() {
-        def selectionChanged(selectionChangedEvent:SelectionChangedEvent) {
-          if (selectionChangedEvent.isSelected)
-          settings.drawContactPoints = true
-          else
-          settings.drawContactPoints = false
+        def selectionChanged(e:SelectionChangedEvent) {
+          settings.drawContactPoints = !settings.drawContactPoints
         }
     })
 
     val cNormals = FengGUI.createCheckBox
     cNormals.setText("Contact Normals")
     cNormals.setSelected(false)
+    cNormals.addSelectionChangedListener(new ISelectionChangedListener() {
+        def selectionChanged(e:SelectionChangedEvent) {
+          settings.drawContactNormals = !settings.drawContactNormals
+        }
+    })
 
     val cForces = FengGUI.createCheckBox
     cForces.setText("Contact Forces")
     cForces.setSelected(false)
+    cForces.addSelectionChangedListener(new ISelectionChangedListener() {
+        def selectionChanged(e:SelectionChangedEvent) {
+          settings.drawContactForces = !settings.drawContactForces
+        }
+    })
 
     val fForces = FengGUI.createCheckBox
     fForces.setText("Friction Forces")
     fForces.setSelected(false)
+    fForces.addSelectionChangedListener(new ISelectionChangedListener() {
+        def selectionChanged(e:SelectionChangedEvent) {
+          settings.drawFrictionForces = !settings.drawFrictionForces
+        }
+    })
 
     val com = FengGUI.createCheckBox
     com.setText("Center of Masses")
     com.setSelected(false)
+    com.addSelectionChangedListener(new ISelectionChangedListener() {
+        def selectionChanged(e:SelectionChangedEvent) {
+          settings.drawCOMs = !settings.drawCOMs
+        }
+    })
 
     val stastics = FengGUI.createCheckBox
     stastics.setText("Stastics")
     stastics.setSelected(false)
-
     stastics.addSelectionChangedListener(new ISelectionChangedListener() {
         def selectionChanged(selectionChangedEvent:SelectionChangedEvent) {
-          if (selectionChangedEvent.isSelected)
-          settings.drawStats = true
-          else
-          settings.drawStats = false
+          settings.drawStats = !settings.drawStats
         }
     })
 

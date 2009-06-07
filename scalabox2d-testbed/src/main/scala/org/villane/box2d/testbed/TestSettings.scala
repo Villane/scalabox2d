@@ -1,5 +1,7 @@
 package org.villane.box2d.testbed
 
+import org.villane.vecmath.Vector2f
+
 /**
  * Settings for the current test.  Mostly self-explanatory.
  * <BR><BR>
@@ -9,6 +11,7 @@ package org.villane.box2d.testbed
 class TestSettings {
   var hz = 60;
   var iterationCount = 10;
+  var gravity = Vector2f(0f, -10f)
 
   var enableWarmStarting = true;
   var enablePositionCorrection = true;
