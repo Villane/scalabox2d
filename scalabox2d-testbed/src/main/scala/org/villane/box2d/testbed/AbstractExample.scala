@@ -321,15 +321,15 @@ abstract class AbstractExample(parent: TestbedMain) {
         if (point.state == 0) {
           // Add
           //System.out.println("Add");
-          debugDraw.draw.drawPoint(point.position, 0.3f, Color3f(255.0f, 150.0f, 150.0f));
+          debugDraw.draw.drawPoint(point.position, 0.3f, Color3f(255.0f, 0.0f, 0.0f));
         } else if (point.state == 1) {
           // Persist
           //System.out.println("Persist");
-          debugDraw.draw.drawPoint(point.position, 0.1f, Color3f(255.0f, 0.0f, 0.0f));
+          debugDraw.draw.drawPoint(point.position, 0.1f, Color3f(0.0f, 0.0f, 255.0f));
         } else {
           // Remove
           //System.out.println("Remove");
-          debugDraw.draw.drawPoint(point.position, 0.5f, Color3f(0.0f, 155.0f, 155.0f));
+          debugDraw.draw.drawPoint(point.position, 0.5f, Color3f(255.0f, 255.0f, 0.0f));
         }
 
         if (settings.drawContactNormals) {
