@@ -15,9 +15,10 @@ class DebugDraw(val draw: DebugDrawHandler) {
   val SLEEPING_COLOR = Color3f(255f*0.5f, 255f*0.5f, 255f*0.9f)
   val DYNAMIC_COLOR = Color3f(255f*0.9f, 255f*0.9f, 255f*0.9f)
   val PAIR_COLOR = Color3f(255f*0.9f, 255f*0.9f, 255f*0.3f)
-  val AABB_COLOR = Color3f(255.0f * 0.3f, 255.0f * 0.9f, 255.0f * 0.9f)
+  val WORLDAABB_COLOR = Color3f(255.0f * 0.3f, 255.0f * 0.9f, 255.0f * 0.9f)
   val CORE_COLOR = Color3f(255f * 0.9f, 255f * 0.6f, 255f * 0.6f)
-
+  val AABB_COLOR = Color3f(255f, 255f, 255f)
+  
   /** For internal use */
   def drawShape(shape: Shape, xf: Transform2f, color: Color3f, core: Boolean) {
     
@@ -144,7 +145,7 @@ class DebugDraw(val draw: DebugDrawHandler) {
 
     if ((flags & DrawFlags.aabb) != 0) {
       val invQ = 1f / bp.quantizationFactor
-      val color = Color3f(255f, 255f, 255f)
+      val color = AABB_COLOR
       for (i <- 0 until Settings.maxProxies) {
         val p = bp.proxyPool(i)
         if (p.isValid) {
@@ -171,7 +172,7 @@ class DebugDraw(val draw: DebugDrawHandler) {
         worldUpper,
         (worldLower.x, worldUpper.y)
     )
-    draw.drawPolygon(vsw, AABB_COLOR)
+    draw.drawPolygon(vsw, WORLDAABB_COLOR)
 
     if ((flags & DrawFlags.obb) != 0) {
 
