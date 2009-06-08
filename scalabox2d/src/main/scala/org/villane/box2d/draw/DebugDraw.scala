@@ -9,10 +9,19 @@ import dynamics._
 import dynamics.joints._
 
 class DebugDraw(val draw: DebugDrawHandler) {
+
+  val OBB_COLOR = Color3f(255.0f * 0.5f, 255.0f * 0.3f, 255.0f * 0.5f)
+  val STATIC_COLOR = Color3f(255f*0.5f, 255f*0.9f, 255f*0.5f)
+  val SLEEPING_COLOR = Color3f(255f*0.5f, 255f*0.5f, 255f*0.9f)
+  val DYNAMIC_COLOR = Color3f(255f*0.9f, 255f*0.9f, 255f*0.9f)
+  val PAIR_COLOR = Color3f(255f*0.9f, 255f*0.9f, 255f*0.3f)
+  val AABB_COLOR = Color3f(255.0f * 0.3f, 255.0f * 0.9f, 255.0f * 0.9f)
+  val CORE_COLOR = Color3f(255f * 0.9f, 255f * 0.6f, 255f * 0.6f)
+
   /** For internal use */
   def drawShape(shape: Shape, xf: Transform2f, color: Color3f, core: Boolean) {
     
-    val coreColor = Color3f(255f * 0.9f, 255f * 0.6f, 255f * 0.6f)
+    val coreColor = CORE_COLOR
 
     shape match {
       case circle: Circle => 
@@ -86,11 +95,11 @@ class DebugDraw(val draw: DebugDrawHandler) {
         for (s <- b.shapes) {
           if (!s.isSensor) {
             val color = if (b.isStatic)
-            Color3f(255f*0.5f, 255f*0.9f, 255f*0.5f)
+            STATIC_COLOR
             else if (b.isSleeping)
-            Color3f(255f*0.5f, 255f*0.5f, 255f*0.9f)
+            SLEEPING_COLOR
             else
-            Color3f(255f*0.9f, 255f*0.9f, 255f*0.9f)
+            DYNAMIC_COLOR
             drawShape(s, xf, color, core)
           }
         }
@@ -103,7 +112,8 @@ class DebugDraw(val draw: DebugDrawHandler) {
 
     if ((flags & DrawFlags.pair) != 0) {
       val invQ = 1f / bp.quantizationFactor
-      val color = Color3f(255f*0.9f, 255f*0.9f, 255f*0.3f)
+
+      val color = PAIR_COLOR
 
       // ERKKI TODO this was done differently with the custom hash table
       for (((proxyId1,proxyId2),pair) <- bp.pairManager.hashTable) {
@@ -134,7 +144,7 @@ class DebugDraw(val draw: DebugDrawHandler) {
 
     if ((flags & DrawFlags.aabb) != 0) {
       val invQ = 1f / bp.quantizationFactor
-      val color = Color3f(255f*0.9f, 255f*0.3f,255f* 0.9f)
+      val color = Color3f(255f, 255f, 255f)
       for (i <- 0 until Settings.maxProxies) {
         val p = bp.proxyPool(i)
         if (p.isValid) {
@@ -161,11 +171,11 @@ class DebugDraw(val draw: DebugDrawHandler) {
         worldUpper,
         (worldLower.x, worldUpper.y)
     )
-    draw.drawPolygon(vsw, Color3f(255.0f*0.3f, 255.0f*0.9f, 255.0f*0.9f))
+    draw.drawPolygon(vsw, AABB_COLOR)
 
     if ((flags & DrawFlags.obb) != 0) {
 
-      val color = new Color3f(255.0f*0.5f, 255.0f*0.3f, 255.0f*0.5f)
+      val color = OBB_COLOR
 
       for (b <- bodies) {
         val xf = b.transform
@@ -185,7 +195,6 @@ class DebugDraw(val draw: DebugDrawHandler) {
               vs(i) = obb.center + (obb.rot * vs(i))
               vs(i) = xf * vs(i)
             }
-
             draw.drawPolygon(vs, color)
           }
         }

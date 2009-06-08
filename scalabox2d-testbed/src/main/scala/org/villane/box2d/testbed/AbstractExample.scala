@@ -20,12 +20,13 @@ class Image {
 object AbstractExample {
   /** General instructions that apply to all tests. */
   val instructionString = "Shift+drag to slingshot a bomb\n"
-  val white = new Color3f(255.0f,255.0f,255.0f);
-  val black = new Color3f(0.0f*255.0f,0.0f*255.0f,0.0f*255.0f);
-  val gray = new Color3f(0.5f*255.0f,0.5f*255.0f,0.5f*255.0f);
-  val red = new Color3f(255.0f,0.0f,0.0f);
-  val green = new Color3f(0.0f,255.0f,0.0f);
-  val blue= new Color3f(0.0f,0.0f,255.0f);
+  val white = Color3f(255.0f,255.0f,255.0f);
+  val black = Color3f(0.0f*255.0f,0.0f*255.0f,0.0f*255.0f);
+  val gray = Color3f(0.5f*255.0f,0.5f*255.0f,0.5f*255.0f);
+  val red = Color3f(255.0f,0.0f,0.0f);
+  val green = Color3f(0.0f,255.0f,0.0f);
+  val blue= Color3f(0.0f,0.0f,255.0f)
+  val yellow = Color3f(255.0f, 255.0f, 0.0f)
   /** Height of font used to draw text. */
   val textLineHeight = 15;
   /** Max number of contact points to store */
@@ -310,7 +311,6 @@ abstract class AbstractExample(parent: TestbedMain) {
       debugDraw.draw.drawSegment(bombSpawnPoint, mouseWorld, Color3f(55f*0.5f,55f*0.5f,255f*0.5f));
     }
 
-    //TODO : Move this to DebugDraw
     if (settings.drawContactPoints) {
       val k_forceScale = 0.01f;
       val k_axisScale = 0.3f;
@@ -321,15 +321,15 @@ abstract class AbstractExample(parent: TestbedMain) {
         if (point.state == 0) {
           // Add
           //System.out.println("Add");
-          debugDraw.draw.drawPoint(point.position, 0.3f, Color3f(255.0f, 0.0f, 0.0f));
+          debugDraw.draw.drawPoint(point.position, 0.3f, AbstractExample.red);
         } else if (point.state == 1) {
           // Persist
           //System.out.println("Persist");
-          debugDraw.draw.drawPoint(point.position, 0.1f, Color3f(0.0f, 0.0f, 255.0f));
+          debugDraw.draw.drawPoint(point.position, 0.1f, AbstractExample.blue);
         } else {
           // Remove
           //System.out.println("Remove");
-          debugDraw.draw.drawPoint(point.position, 0.5f, Color3f(255.0f, 255.0f, 0.0f));
+          debugDraw.draw.drawPoint(point.position, 0.5f, AbstractExample.yellow);
         }
 
         if (settings.drawContactNormals) {

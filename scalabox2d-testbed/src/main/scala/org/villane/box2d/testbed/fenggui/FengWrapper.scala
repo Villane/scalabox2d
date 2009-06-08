@@ -136,14 +136,13 @@ trait FengWrapper extends InputListener {
     gCell.setRestrict(TextEditor.RESTRICT_NUMBERSONLY)
     gCell.setMaxCharacters(4)
     gCell.updateMinSize()
-    /*
     gCell.addTextChangedListener(new ITextChangedListener() {
       def textChanged(e:TextChangedEvent) {
         val s = e.getTrigger.getText.replaceAll("\n","")
-        settings.gravity = Vector2f(0f, s.toInt)
+        //settings.gravity = Vector2f(0f, s.toInt)
+        println("Gravity" + e.getText)
       }
     })
-    */
     
     val hertz = FengGUI.createWidget(classOf[Label])
     hertz.setText("Hertz")
@@ -151,15 +150,13 @@ trait FengWrapper extends InputListener {
     hCell.setRestrict(TextEditor.RESTRICT_NUMBERSONLY)
     hCell.setMaxCharacters(4)
     hCell.updateMinSize()
-    /*
     hCell.addTextChangedListener(new ITextChangedListener() {
       def textChanged(e:TextChangedEvent) {
         val s = e.getTrigger.getText.replaceAll("\n","")
-        settings.hz = s.toInt
-        println("hz" + settings.hz)
+        //settings.hz = s.toInt
+        println("hz" + s.toInt)
       }
     })
-    */
 
     t1.addWidget(gravity, gCell, hertz, hCell)
 
@@ -171,15 +168,13 @@ trait FengWrapper extends InputListener {
     vCell.setRestrict(TextEditor.RESTRICT_NUMBERSONLY)
     vCell.setMaxCharacters(3)
     vCell.updateMinSize()
-    /*
     vCell.addTextChangedListener(new ITextChangedListener() {
       def textChanged(e:TextChangedEvent) {
         val s = e.getTrigger.getText.replaceAll("\n","")
-        settings.iterationCount = s.toInt
+        //settings.iterationCount = s.toInt
         println("iterations" + s.toInt)
       }
     })
-    */
 
     // TODO: implement position iterations 
     val posIters = FengGUI.createWidget(classOf[Label])
@@ -188,6 +183,7 @@ trait FengWrapper extends InputListener {
     pCell.setRestrict(TextEditor.RESTRICT_NUMBERSONLY)
     pCell.setMaxCharacters(3)
     pCell.updateMinSize()
+    // TODO - Add positionIteration listener
     
     t2.addWidget(velIters, vCell, posIters, pCell)
 
