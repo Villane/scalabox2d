@@ -247,17 +247,6 @@ trait FengWrapper extends InputListener {
         }
     })
 
-    val controllers = FengGUI.createCheckBox
-    controllers.setText("Controllers")
-    controllers.setSelected(false)
-    /* TODO: Implement controller drawing
-    controllers.addSelectionChangedListener(new ISelectionChangedListener() {
-        def selectionChanged(e:SelectionChangedEvent) {
-          settings.drawCoreShapes = !settings.drawCoreShapes
-        }
-    })
-    */
-
     val coreShapes = FengGUI.createCheckBox
     coreShapes.setText("Core Shapes")
     coreShapes.setSelected(false)
@@ -303,33 +292,6 @@ trait FengWrapper extends InputListener {
         }
     })
 
-    val cNormals = FengGUI.createCheckBox
-    cNormals.setText("Contact Normals")
-    cNormals.setSelected(false)
-    cNormals.addSelectionChangedListener(new ISelectionChangedListener() {
-        def selectionChanged(e:SelectionChangedEvent) {
-          settings.drawContactNormals = !settings.drawContactNormals
-        }
-    })
-
-    val cForces = FengGUI.createCheckBox
-    cForces.setText("Contact Forces")
-    cForces.setSelected(false)
-    cForces.addSelectionChangedListener(new ISelectionChangedListener() {
-        def selectionChanged(e:SelectionChangedEvent) {
-          settings.drawContactForces = !settings.drawContactForces
-        }
-    })
-
-    val fForces = FengGUI.createCheckBox
-    fForces.setText("Friction Forces")
-    fForces.setSelected(false)
-    fForces.addSelectionChangedListener(new ISelectionChangedListener() {
-        def selectionChanged(e:SelectionChangedEvent) {
-          settings.drawFrictionForces = !settings.drawFrictionForces
-        }
-    })
-
     val com = FengGUI.createCheckBox
     com.setText("Center of Masses")
     com.setSelected(false)
@@ -348,10 +310,10 @@ trait FengWrapper extends InputListener {
         }
     })
 
-    draw.addWidget(shapes, joints, controllers, coreShapes, aabb, obb, pairs)
-    draw.addWidget(cPoints,cNormals,cForces,fForces,com,stastics)
+    draw.addWidget(shapes, joints, coreShapes, aabb, obb, pairs)
+    draw.addWidget(cPoints, com, stastics)
 
-    w.getContentContainer.addWidget(buttons,spacer2,tuning, draw)
+    w.getContentContainer.addWidget(buttons, spacer2, tuning, draw)
     w.setWidth(200)
     w.pack
     val y = w.getHeight

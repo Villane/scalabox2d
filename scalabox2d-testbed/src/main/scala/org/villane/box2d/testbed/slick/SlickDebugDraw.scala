@@ -122,7 +122,9 @@ class SlickDebugDraw(var g: Graphics, var container: GameContainer) extends Debu
 		val p2world = worldToScreen(p2)
 		val p3 = p1 + (xf.rot.col2 * k_axisScale)
 		val p3world = worldToScreen(p3)
+    g.setColor(new Color(1f,0f,0f))
 		g.drawLine(p1world.x, p1world.y, p2world.x, p2world.y)
+    g.setColor(new Color(0f,1f,0f))
     g.drawLine(p1world.x, p1world.y, p3world.x, p3world.y)
   }
 
