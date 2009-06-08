@@ -310,6 +310,7 @@ abstract class AbstractExample(parent: TestbedMain) {
       debugDraw.draw.drawSegment(bombSpawnPoint, mouseWorld, Color3f(55f*0.5f,55f*0.5f,255f*0.5f));
     }
 
+    //TODO : Move this to DebugDraw
     if (settings.drawContactPoints) {
       val k_forceScale = 0.01f;
       val k_axisScale = 0.3f;

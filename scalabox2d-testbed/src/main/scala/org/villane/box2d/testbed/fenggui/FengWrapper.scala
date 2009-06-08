@@ -292,6 +292,15 @@ trait FengWrapper extends InputListener {
         }
     })
 
+    val cNormals = FengGUI.createCheckBox
+    cNormals.setText("Contact Normals")
+    cNormals.setSelected(false)
+    cNormals.addSelectionChangedListener(new ISelectionChangedListener() {
+        def selectionChanged(e:SelectionChangedEvent) {
+          settings.drawContactNormals = !settings.drawContactNormals
+        }
+    })
+
     val com = FengGUI.createCheckBox
     com.setText("Center of Masses")
     com.setSelected(false)
@@ -311,7 +320,7 @@ trait FengWrapper extends InputListener {
     })
 
     draw.addWidget(shapes, joints, coreShapes, aabb, obb, pairs)
-    draw.addWidget(cPoints, com, stastics)
+    draw.addWidget(cPoints, cNormals, com, stastics)
 
     w.getContentContainer.addWidget(buttons, spacer2, tuning, draw)
     w.setWidth(200)
