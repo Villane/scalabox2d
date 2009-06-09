@@ -7,6 +7,8 @@ import box2d.shapes._
 import box2d.dynamics._
 import box2d.dynamics.joints._
 import box2d.dynamics.contacts._
+import box2d.settings.Settings
+
 import scala.collection.jcl.ArrayList
 
 // TODO import //org.newdawn.slick.Image
@@ -17,28 +19,24 @@ class Image {
 
 object AbstractExample {
   /** General instructions that apply to all tests. */
-  val instructionString = "Press left/right to change test\n" +
-    "Use the mouse to drag objects\n" +
-    "Shift+drag to slingshot bomb\n" +
-    "Press 'o' to toggle options panel\n"
-  val white = new Color3f(255.0f,255.0f,255.0f);
-  val black = new Color3f(0.0f*255.0f,0.0f*255.0f,0.0f*255.0f);
-  val gray = new Color3f(0.5f*255.0f,0.5f*255.0f,0.5f*255.0f);
-  val red = new Color3f(255.0f,0.0f,0.0f);
-  val green = new Color3f(0.0f,255.0f,0.0f);
-  val blue= new Color3f(0.0f,0.0f,255.0f);
+  val instructionString = "Shift+drag to slingshot a bomb\n"
+  val white = Color3f(255.0f,255.0f,255.0f);
+  val black = Color3f(0.0f*255.0f,0.0f*255.0f,0.0f*255.0f);
+  val gray = Color3f(0.5f*255.0f,0.5f*255.0f,0.5f*255.0f);
+  val red = Color3f(255.0f,0.0f,0.0f);
+  val green = Color3f(0.0f,255.0f,0.0f);
+  val blue= Color3f(0.0f,0.0f,255.0f)
+  val yellow = Color3f(255.0f, 255.0f, 0.0f)
   /** Height of font used to draw text. */
-  val textLineHeight = 12;
+  val textLineHeight = 15;
   /** Max number of contact points to store */
   val k_maxContactPoints = 2048; 
 }
 
-abstract class AbstractExample(_parent: TestbedMain) {
+abstract class AbstractExample(parent: TestbedMain) {
   import AbstractExample._
-  /** The controller that the AbstractExample runs in */
-  val parent = _parent
   /** Used for drawing */
-  var m_debugDraw = _parent.g
+  var debugDraw = parent.g
   //public Body followedBody = null; //camera follows motion of this body
   /** Array of key states, by char value.  Does not include arrows or modifier keys. */
   var keyDown = new Array[Boolean](255)
@@ -53,14 +51,10 @@ abstract class AbstractExample(_parent: TestbedMain) {
   var pmouseScreen = Vector2f.Zero
   /** Was the mouse pressed last frame?  True if either right or left button was down. */
   var pmousePressed = false
-  /** True if we should reset the demo for the next frame. */
-  var needsReset = true
   /** The point at which we will place a bomb when completeBombSpawn() is called. */
   var bombSpawnPoint = Vector2f.Zero
   /** True if a bomb has started spawning but has not been created yet. */
   var bombSpawning = false
-  /** Y-pixel value that marks bottom of text to be drawn. */
-  var m_textLine = 0
   /** Number of active points in m_points array. */
   var m_pointCount = 0
   /** Array of contact points - use m_pointCount to get number of active elements.  */
@@ -77,6 +71,16 @@ abstract class AbstractExample(_parent: TestbedMain) {
   var m_worldAABB: AABB = null
   /** The exponentially smoothed amount of free memory available to the JVM. */ 
   var memFree = 0f
+   /** FPS that we want to achieve */
+  val targetFPS = 60.0f;
+  /** Number of frames to average over when computing real FPS */
+  val fpsAverageCount = 100;
+  /** Array of timings */
+  var nanos: Array[Long]= null;
+  /** When we started the nanotimer */
+  var nanoStart = 0L
+  /** Number of frames since we started this example. */
+  var frameCount = 0L;
 
   /** Listener for body and joint destructions. */
   protected var m_destructionListener: DestructionListener = null
@@ -100,9 +104,9 @@ abstract class AbstractExample(_parent: TestbedMain) {
   def printInstructions() {
     val fullString = instructionString + getExampleInstructions();
     val instructionLines = fullString.split("\n")
-    var currentLine = parent.height - instructionLines.length*textLineHeight;
+    var currentLine = parent.height - instructionLines.length*textLineHeight*2;
     for (i <- 0 until instructionLines.length) {
-      m_debugDraw.draw.drawString(5, currentLine, instructionLines(i), white);
+      debugDraw.draw.drawString(5, currentLine, instructionLines(i), white);
       currentLine += textLineHeight;
     }
   }
@@ -150,19 +154,29 @@ abstract class AbstractExample(_parent: TestbedMain) {
    * </UL>
    */
   def initialize() {
-    needsReset = false;
-    m_textLine = 15;
+
+    /* Set up the timers for FPS reporting */
+    nanos = new Array[Long](fpsAverageCount)
+    val nanosPerFrameGuess = (1000000000.0 / targetFPS).toLong
+    nanos(fpsAverageCount-1) = System.nanoTime();
+    for (i <- new Range.Inclusive(fpsAverageCount-2,0,-1)) {
+      nanos(i) = nanos(i+1) - nanosPerFrameGuess;
+    }
+    nanoStart = System.nanoTime();
+    
+    settings.reset = false;
     for (i <- 0 until 255) {
       keyDown(i) = false;
       newKeyDown(i) = false;
     }
-    settings = new TestSettings()
-    mouseScreen = Vector2f(parent.mouseX, parent.mouseY);
-    mouseWorld = Vector2f.Zero;
-    pmouseScreen = Vector2f(mouseScreen.x,mouseScreen.y);
-    pmousePressed = false;
+    
+    settings = new TestSettings
+    mouseScreen = Vector2f(parent.mouseX, parent.mouseY)
+    mouseWorld = Vector2f.Zero
+    pmouseScreen = Vector2f(mouseScreen.x,mouseScreen.y)
+    pmousePressed = false
 
-    createWorld();
+    createWorld
 
     m_bomb = null;
     m_mouseJoint = null;
@@ -173,6 +187,7 @@ abstract class AbstractExample(_parent: TestbedMain) {
     for (i <- 0 until m_points.length) {
       m_points(i) = new ExampleContactPoint();
     }
+
     m_destructionListener = new ConcreteDestructionListener();
     m_boundaryListener = new ConcreteBoundaryListener();
     m_contactListener = new ConcreteContactListener();
@@ -183,17 +198,19 @@ abstract class AbstractExample(_parent: TestbedMain) {
     m_world.boundaryListener = m_boundaryListener
     m_world.contactListener = m_contactListener
     m_world.debugDraw = parent.g
+
     if (hasCachedCamera) {
-      m_debugDraw.draw.setCamera(cachedCamX,cachedCamY,cachedCamScale);
+      debugDraw.draw.setCamera(cachedCamX,cachedCamY,cachedCamScale);
     } else {
-      m_debugDraw.draw.setCamera(0.0f, 10.0f, 10.0f);
+      debugDraw.draw.setCamera(0.0f, 10.0f, 10.0f);
       hasCachedCamera = true;
       cachedCamX = 0.0f;
       cachedCamY = 10.0f;
       cachedCamScale = 10.0f;
     }
-    boundImages.clear();
-    create();
+
+    boundImages.clear
+    create
   }
 
   /**
@@ -202,8 +219,9 @@ abstract class AbstractExample(_parent: TestbedMain) {
    * in your step method is the m_world.step() call.
    */
   def step() {
+
     preStep();
-    mouseWorld = m_debugDraw.draw.screenToWorld(mouseScreen)
+    mouseWorld = debugDraw.draw.screenToWorld(mouseScreen)
 
     var timeStep = if (settings.hz > 0.0f) 1.0f / settings.hz else 0.0f
 
@@ -214,50 +232,70 @@ abstract class AbstractExample(_parent: TestbedMain) {
         timeStep = 0.0f;
       }
 
-      m_debugDraw.draw.drawString(5, m_textLine, "****PAUSED - press '+' to take a single step, 'p' to unpause****", white);
-      m_textLine += textLineHeight;
+      debugDraw.draw.drawString(2, 1, "**** PAUSED ****", white);
     }
 
-    m_debugDraw.draw.drawFlags = 0
-    if (settings.drawShapes) m_debugDraw.draw.appendFlags(DrawFlags.shape);
-    if (settings.drawJoints) m_debugDraw.draw.appendFlags(DrawFlags.joint);
-    if (settings.drawCoreShapes) m_debugDraw.draw.appendFlags(DrawFlags.coreShape);
-    if (settings.drawAABBs) m_debugDraw.draw.appendFlags(DrawFlags.aabb);
-    if (settings.drawOBBs) m_debugDraw.draw.appendFlags(DrawFlags.obb);
-    if (settings.drawPairs) m_debugDraw.draw.appendFlags(DrawFlags.pair);
-    if (settings.drawCOMs) m_debugDraw.draw.appendFlags(DrawFlags.centerOfMass);
+    debugDraw.draw.drawFlags = 0
+    if (settings.drawShapes) debugDraw.draw.appendFlags(DrawFlags.shape);
+    if (settings.drawJoints) debugDraw.draw.appendFlags(DrawFlags.joint);
+    if (settings.drawCoreShapes) debugDraw.draw.appendFlags(DrawFlags.coreShape);
+    if (settings.drawAABBs) debugDraw.draw.appendFlags(DrawFlags.aabb);
+    if (settings.drawOBBs) debugDraw.draw.appendFlags(DrawFlags.obb);
+    if (settings.drawPairs) debugDraw.draw.appendFlags(DrawFlags.pair);
+    if (settings.drawCOMs) debugDraw.draw.appendFlags(DrawFlags.centerOfMass);
 
     m_world.warmStarting = settings.enableWarmStarting
     m_world.positionCorrection = settings.enablePositionCorrection
     m_world.continuousPhysics = settings.enableTOI
 
+    if(m_world.allowSleep != settings.enableSleeping && settings.enableSleeping == false) {
+      for(b <- m_world.bodyList) b.wakeUp
+    }
+    m_world.allowSleep = settings.enableSleeping
+
     m_pointCount = 0;
     m_world.step(timeStep, settings.iterationCount);
 
     //Optional validation of broadphase - asserts if there is an error
-    //m_world.m_broadPhase.validate();
+    //m_world.m_broadPhase.validate;
 
     if (m_bomb != null && m_bomb.isFrozen) {
-      m_world.destroyBody(m_bomb);
-      m_bomb = null;
+      m_world.destroyBody(m_bomb)
+      m_bomb = null
     }
 
+    for (i <- 0 until fpsAverageCount-1) {
+      nanos(i) = nanos(i+1)
+    }
+
+    nanos(fpsAverageCount-1) = System.nanoTime();
+    val averagedFPS = ( (fpsAverageCount-1) * 1000000000.0 / (nanos(fpsAverageCount-1)-nanos(0)));
+    frameCount += 1
+    val totalFPS = (frameCount * 1000000000 / (1.0*(System.nanoTime()-nanoStart)));
+    
     if (settings.drawStats) {
-      /*m_debugDraw.draw.drawString(5, m_textLine, "proxies(max) = "+m_world.getProxyCount()+
-                               "("+Settings.maxProxies+"), pairs(max) = "+m_world.getPairCount()+
-                               "("+Settings.maxPairs+")", white);*/
-      m_textLine += textLineHeight;
 
-      m_debugDraw.draw.drawString(5, m_textLine, "bodies/contacts/joints = "+
-                               m_world.bodyList.size+"/"+m_world.contactList.size+"/"+m_world.jointList.size, white);
-      m_textLine += textLineHeight;
+      var textLine = 10
+      debugDraw.draw.drawString(2, textLine, "proxies(max) = "+ m_world.proxyCount +
+                               "("+ Settings.maxProxies+"), pairs(max) = "+ m_world.pairCount +
+                               "("+ Settings.maxPairs+")", white)
+      textLine += textLineHeight
 
-      val memTot = Runtime.getRuntime().totalMemory();
-      memFree = (memFree * .9f + .1f * Runtime.getRuntime().freeMemory());
-      m_debugDraw.draw.drawString(5, m_textLine, "total memory: "+memTot, white);
-      m_textLine += textLineHeight;
-      m_debugDraw.draw.drawString(5, m_textLine, "Average free memory: "+memFree, white);
-      m_textLine += textLineHeight;
+      debugDraw.draw.drawString(2, textLine, "bodies/contacts/joints = "+
+                               m_world.bodyList.size+"/"+m_world.contactList.size+"/"+m_world.jointList.size, white)
+      textLine += textLineHeight
+
+      val memTot = Runtime.getRuntime().totalMemory()
+      memFree = (memFree * .9f + .1f * Runtime.getRuntime().freeMemory())
+      debugDraw.draw.drawString(2, textLine, "total memory: "+memTot, white)
+      textLine += textLineHeight
+      debugDraw.draw.drawString(2, textLine, "average free memory: "+memFree, white)
+      textLine += textLineHeight + 5
+      debugDraw.draw.drawString(2, textLine, "Vec2 creations/frame: " + Vector2f.creationCount, white)
+      textLine += textLineHeight
+      debugDraw.draw.drawString(2, textLine, "Average FPS (" + fpsAverageCount + " frames): " + averagedFPS, white)
+      textLine += textLineHeight
+      debugDraw.draw.drawString(2, textLine, "Average FPS (entire test): "+ totalFPS, white)
     }
 
     if (m_mouseJoint != null) {
@@ -265,12 +303,12 @@ abstract class AbstractExample(_parent: TestbedMain) {
       val p1 = body.toWorldPoint(m_mouseJoint.localAnchor);
       val p2 = m_mouseJoint.target;
 
-      m_debugDraw.draw.drawSegment(p1, p2, new Color3f(255.0f,255.0f,255.0f));
+      debugDraw.draw.drawSegment(p1, p2, new Color3f(255.0f,255.0f,255.0f));
     }
 
     if (bombSpawning) {
-      m_debugDraw.draw.drawSolidCircle(bombSpawnPoint, 0.3f, Vector2f(1.0f,0.0f),Color3f(255f*0.5f,255f*0.5f,255f*0.5f));
-      m_debugDraw.draw.drawSegment(bombSpawnPoint, mouseWorld, Color3f(55f*0.5f,55f*0.5f,255f*0.5f));
+      debugDraw.draw.drawSolidCircle(bombSpawnPoint, 0.3f, Vector2f(1.0f,0.0f),Color3f(255f*0.5f,255f*0.5f,255f*0.5f));
+      debugDraw.draw.drawSegment(bombSpawnPoint, mouseWorld, Color3f(55f*0.5f,55f*0.5f,255f*0.5f));
     }
 
     if (settings.drawContactPoints) {
@@ -283,29 +321,29 @@ abstract class AbstractExample(_parent: TestbedMain) {
         if (point.state == 0) {
           // Add
           //System.out.println("Add");
-          m_debugDraw.draw.drawPoint(point.position, 0.3f, Color3f(255.0f, 150.0f, 150.0f));
+          debugDraw.draw.drawPoint(point.position, 0.3f, AbstractExample.red);
         } else if (point.state == 1) {
           // Persist
           //System.out.println("Persist");
-          m_debugDraw.draw.drawPoint(point.position, 0.1f, Color3f(255.0f, 0.0f, 0.0f));
+          debugDraw.draw.drawPoint(point.position, 0.1f, AbstractExample.blue);
         } else {
           // Remove
           //System.out.println("Remove");
-          m_debugDraw.draw.drawPoint(point.position, 0.5f, Color3f(0.0f, 155.0f, 155.0f));
+          debugDraw.draw.drawPoint(point.position, 0.5f, AbstractExample.yellow);
         }
 
         if (settings.drawContactNormals) {
           val p1 = point.position;
           val p2 = Vector2f( p1.x + k_axisScale * point.normal.x,
                              p1.y + k_axisScale * point.normal.y);
-          m_debugDraw.draw.drawSegment(p1, p2, new Color3f(0.4f*255f, 0.9f*255f, 0.4f*255f));
+          debugDraw.draw.drawSegment(p1, p2, new Color3f(0.4f*255f, 0.9f*255f, 0.4f*255f));
         } 
 				//TODO
 				/*else if (settings.drawContactForces) {
 					Vec2 p1 = point.position;
 					Vec2 p2 = new Vec2( p1.x + k_forceScale * point.normalImpulse * point.normal.x,
 										p1.y + k_forceScale * point.normalImpulse * point.normal.y);
-					m_debugDraw.drawSegment(p1, p2, new Color3f(0.9f*255f, 0.9f*255f, 0.3f*255f));
+					debugDraw.drawSegment(p1, p2, new Color3f(0.9f*255f, 0.9f*255f, 0.3f*255f));
 				}
 
 				if (settings.drawFrictionForces) {
@@ -313,7 +351,7 @@ abstract class AbstractExample(_parent: TestbedMain) {
 					Vec2 p1 = point.position;
 					Vec2 p2 = new Vec2( p1.x + k_forceScale * point.tangentImpulse * tangent.x,
 										p1.y + k_forceScale * point.tangentImpulse * tangent.y);
-					m_debugDraw.drawSegment(p1, p2, new Color3f(0.9f*255f, 0.9f*255f, 0.3f*255f));
+					debugDraw.drawSegment(p1, p2, new Color3f(0.9f*255f, 0.9f*255f, 0.3f*255f));
 				}*/
       }
     }
@@ -402,7 +440,7 @@ abstract class AbstractExample(_parent: TestbedMain) {
   def completeBombSpawn() {
     if (!bombSpawning) return
     val multiplier = 30.0f;
-    val mouseW = m_debugDraw.draw.screenToWorld(mouseScreen)
+    val mouseW = debugDraw.draw.screenToWorld(mouseScreen)
     val vel = (bombSpawnPoint - mouseW) * multiplier
     launchBomb(bombSpawnPoint,vel)
     bombSpawning = false
@@ -456,11 +494,11 @@ abstract class AbstractExample(_parent: TestbedMain) {
     def mouseDown(p1: Vector2f) {
     	
     	if (parent.shiftKey) {
-    		spawnBomb(m_debugDraw.draw.screenToWorld(p1))
+    		spawnBomb(debugDraw.draw.screenToWorld(p1))
     		return;
     	}
     	
-    	val p = m_debugDraw.draw.screenToWorld(p1);
+    	val p = debugDraw.draw.screenToWorld(p1);
     	
     	assert (m_mouseJoint == null)
 
@@ -517,7 +555,7 @@ abstract class AbstractExample(_parent: TestbedMain) {
     def mouseMove(p: Vector2f) {
     	mouseScreen = p;
         if (m_mouseJoint != null) {
-            m_mouseJoint.target = m_debugDraw.draw.screenToWorld(p)
+            m_mouseJoint.target = debugDraw.draw.screenToWorld(p)
         }
     }
     
@@ -529,7 +567,7 @@ abstract class AbstractExample(_parent: TestbedMain) {
      * @param scale Size in screen units (usually pixels) of one world unit (meter)
      */
     def setCamera(x: Float, y: Float, scale: Float) {
-    	m_debugDraw.draw.setCamera(x, y, scale);
+    	debugDraw.draw.setCamera(x, y, scale);
     	hasCachedCamera = true;
     	cachedCamX = x;
     	cachedCamY = y;
@@ -684,7 +722,7 @@ abstract class AbstractExample(_parent: TestbedMain) {
     ){
         private var halfImageWidth = image.width / 2f
         private var halfImageHeight = image.height / 2f
-        private var p = m_debugDraw;
+        private var p = debugDraw;
 
         def draw() {
         	//p.drawImage(image, body.pos, body.angle+localRotation, localScale, localOffset, halfImageWidth, halfImageHeight);

@@ -235,6 +235,10 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
     objs.map(_.asInstanceOf[Fixture])
   }
 
+  def proxyCount = broadPhase.proxyCount
+
+  def pairCount = broadPhase.pairManager.pairCount
+
   //--------------- Internals Below -------------------
   // ERKKI Internals were public
 	

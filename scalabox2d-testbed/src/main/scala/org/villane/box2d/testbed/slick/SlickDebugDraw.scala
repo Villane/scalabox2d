@@ -44,12 +44,21 @@ class SlickDebugDraw(var g: Graphics, var container: GameContainer) extends Debu
   def drawCircle(center: Vector2f, radius: Float, color: Color3f) {
     val c = worldToScreen(center)
     val circle = new Circle(c.x, c.y, radius * scaleFactor)
-    val slickColor = new Color(color.r/255.0f,color.g/255.0f,color.b/255.0f)
+    val slickColor = new Color(color.r.toInt, color.g.toInt, color.b.toInt)
     g.setColor(slickColor)
     g.draw(circle)
   }
 
-  def drawPoint(position: Vector2f, f: Float, color: Color3f) {}
+  def drawPoint(position: Vector2f, f: Float, color: Color3f) {
+    val slickColor = new Color(color.r.toInt, color.g.toInt, color.b.toInt)
+		g.setColor(slickColor)
+		val c = worldToScreen(position)
+		val radius = 3
+		// x1, y1 are upper left corner
+		val x1 = c.x - radius
+		val y1 = c.y - radius
+		g.fillOval(x1, y1, 2 * radius, 2 * radius)
+  }
 
   def drawPolygon(vertices: Array[Vector2f], color: Color3f) {
     val polygon = new Polygon()
@@ -57,7 +66,7 @@ class SlickDebugDraw(var g: Graphics, var container: GameContainer) extends Debu
       val screenPt = worldToScreen(v)
       polygon.addPoint(screenPt.x, screenPt.y)
     }
-    val slickColor = new Color(color.r/255.0f,color.g/255.0f,color.b/255.0f)
+    val slickColor = new Color(color.r.toInt, color.g.toInt, color.b.toInt)
     g.setColor(slickColor)
     g.draw(polygon)
   }
@@ -68,15 +77,15 @@ class SlickDebugDraw(var g: Graphics, var container: GameContainer) extends Debu
       val screenPt = worldToScreen(v)
       polygon.addPoint(screenPt.x, screenPt.y)
     }
-    val slickColor = new Color(color.r/255.0f,color.g/255.0f,color.b/255.0f)
+    val slickColor = new Color(color.r.toInt, color.g.toInt, color.b.toInt)
     g.setColor(slickColor)
     g.draw(polygon)
-	slickColor.a = 0.5f
+    slickColor.a = 0.5f; g.setColor(slickColor)
     g.fill(polygon)
   }
 
   def drawSegment(p1: Vector2f, p2: Vector2f, color: Color3f) {
-    val slickColor = new Color(color.r/255.0f,color.g/255.0f,color.b/255.0f)
+    val slickColor = new Color(color.r.toInt, color.g.toInt, color.b.toInt)
     g.setColor(slickColor)
     TextureImpl.bindNone()
     g.setLineWidth(1)
@@ -89,13 +98,34 @@ class SlickDebugDraw(var g: Graphics, var container: GameContainer) extends Debu
   def drawSolidCircle(center: Vector2f, radius: Float, axis: Vector2f, color: Color3f) {
     val c = worldToScreen(center)
     val circle = new Circle(c.x, c.y, radius * scaleFactor)
-    val slickColor = new Color(color.r/255.0f,color.g/255.0f,color.b/255.0f)
+    val slickColor = new Color(color.r.toInt, color.g.toInt, color.b.toInt)
     g.setColor(slickColor)
+    g.draw(circle)
+    val screenRadius = scaleFactor * radius
+    g.drawLine(c.x, c.y, c.x + screenRadius * axis.x, c.y + yFlip * screenRadius * axis.y)
+    slickColor.a = 0.5f; g.setColor(slickColor)
     g.fill(circle)
   }
 
-  def drawString(x: Float, y: Float, s: String, color: Color3f) {}
+  def drawString(x: Float, y: Float, s: String, color: Color3f) {
+    val slickColor = new Color(color.r, color.g, color.b)
+    g.setColor(slickColor)
+    g.drawString(s, x, y)
+  }
 
-  def drawTransform(xf: Transform2f) {}
+  def drawTransform(xf: Transform2f) {
+    val r = 3
+		val p1 = xf.pos
+		val k_axisScale = 0.4f
+		val p1world = worldToScreen(p1)
+		val p2 = p1 + (xf.rot.col1 * k_axisScale)
+		val p2world = worldToScreen(p2)
+		val p3 = p1 + (xf.rot.col2 * k_axisScale)
+		val p3world = worldToScreen(p3)
+    g.setColor(new Color(1f,0f,0f))
+		g.drawLine(p1world.x, p1world.y, p2world.x, p2world.y)
+    g.setColor(new Color(0f,1f,0f))
+    g.drawLine(p1world.x, p1world.y, p3world.x, p3world.y)
+  }
 
 }

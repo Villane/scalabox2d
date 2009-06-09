@@ -1,0 +1,10 @@
+# Eclipse
+.settings
+.classpath
+.project
+
+# Scala IDE
+.manager
+
+# Maven
+target
