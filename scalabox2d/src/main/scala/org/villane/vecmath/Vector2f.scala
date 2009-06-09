@@ -55,6 +55,9 @@ case class Vector2f(x: Float, y: Float) {
   def theta = Math.atan2(y, x).toFloat
   def θ = Math.atan2(y, x).toFloat
 
+  def to(v: Vector2f) = new Vector2fRange(this, v, Vector2f.One)
+  def times(n: Int) = new Vector2fTimes(this, n, Vector2f.One)
+
   /**
    * Since normalization is a simple operation, in cases where speed is desired, but the length before normalization is also needed,
    * use this instead:
