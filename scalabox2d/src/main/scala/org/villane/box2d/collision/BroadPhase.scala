@@ -387,12 +387,15 @@ class BroadPhase(val worldAABB: AABB, callback: PairListener) {
         
         //Get old bound values
         val oldValues = new BoundValues
-        for (axis <- 0 to 1) {
+        var axis = 0
+        while (axis <= 1) {
             oldValues.lowerValues(axis) = m_bounds(axis)(proxy.lowerBounds(axis)).value
             oldValues.upperValues(axis) = m_bounds(axis)(proxy.upperBounds(axis)).value
+            axis += 1
         }
 
-        for (axis <- 0 to 1) {
+        axis = 0
+        while (axis <= 1) {
             val bounds = m_bounds(axis)
 
             val lowerIndex = proxy.lowerBounds(axis)
@@ -562,6 +565,7 @@ class BroadPhase(val worldAABB: AABB, callback: PairListener) {
                     index -= 1
                 }
             }
+            axis += 1
         }
 
         if (BroadPhase.Validate) {

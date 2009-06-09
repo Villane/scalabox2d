@@ -135,12 +135,23 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
   }
 
   def computeAABB(t: Transform2f) = {
-    // TODO may need optimizing
-    val vTrans = vertices map (t * _)
-    val lower = vTrans reduceLeft min
-    val upper = vTrans reduceLeft max
-    val r = (radius, radius)
-    AABB(lower - r, upper + r)
+    var lower = t * vertices(0)
+    var upper = lower
+    var i = 1
+    while (i < vertices.size) {
+      val v = t * vertices(i)
+      lower = min(lower, v)
+      upper = max(upper, v)
+      i += 1
+    }
+    AABB(Vector2f(lower.x - radius, lower.y - radius),
+         Vector2f(upper.x + radius, upper.y + radius))
+    // INLINED FROM
+    //val vTrans = vertices map (t * _)
+    //val lower = vTrans reduceLeft min
+    //val upper = vTrans reduceLeft max
+    //val r = (radius, radius)
+    //AABB(lower-radius, upper+radius)
   }
 
   def computeMass(density: Float) = {
