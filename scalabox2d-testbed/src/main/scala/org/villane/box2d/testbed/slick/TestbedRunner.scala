@@ -42,6 +42,7 @@ object TestbedRunner {
 class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with TestbedMain with FengWrapper {
 
   val debugDraw = new SlickDebugDraw(null,null)
+  val targetFrameRate = 60
 
   // TestBedMain API
   val g = new DebugDraw(debugDraw)
@@ -71,7 +72,7 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
     debugDraw.container = container
 
     gameContainer = container
-    container.setTargetFrameRate(60)
+    container.setTargetFrameRate(targetFrameRate)
     container.setShowFPS(false)
 
     tests += new testbed.tests.CircularBreakout(this)

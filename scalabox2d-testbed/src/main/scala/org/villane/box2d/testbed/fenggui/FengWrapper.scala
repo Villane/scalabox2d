@@ -140,7 +140,7 @@ trait FengWrapper extends InputListener {
       def textChanged(e:TextChangedEvent) {
         val s = e.getTrigger.getText.replaceAll("\n","")
         //settings.gravity = Vector2f(0f, s.toInt)
-        println("Gravity" + e.getText)
+        println("Gravity" + s.toInt)
       }
     })
     
