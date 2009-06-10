@@ -11,7 +11,7 @@ import org.villane.vecmath.Vector2f
 class TestSettings {
   var hz = 60;
   var iterationCount = 10;
-  var gravity = Vector2f(0f, -10f)
+  var gravity = Vector2f(0f, -9.81f)
 
   var enableWarmStarting = true;
   var enablePositionCorrection = true;
