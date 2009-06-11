@@ -196,7 +196,6 @@ abstract class AbstractExample(parent: TestbedMain) {
     m_contactListener.asInstanceOf[ConcreteContactListener].test = this;
     m_world.destructionListener = m_destructionListener
     m_world.boundaryListener = m_boundaryListener
-    m_world.contactListener = m_contactListener
     m_world.debugDraw = parent.g
 
     if (hasCachedCamera) {
@@ -242,10 +241,11 @@ abstract class AbstractExample(parent: TestbedMain) {
     if (settings.drawAABBs) debugDraw.draw.appendFlags(DrawFlags.aabb);
     if (settings.drawPairs) debugDraw.draw.appendFlags(DrawFlags.pair);
     if (settings.drawCOMs) debugDraw.draw.appendFlags(DrawFlags.centerOfMass);
-
+    m_world.contactListener = if(settings.drawContactPoints) m_contactListener else null
     m_world.warmStarting = settings.enableWarmStarting
     m_world.positionCorrection = settings.enablePositionCorrection
     m_world.continuousPhysics = settings.enableTOI
+    m_world.gravity = settings.gravity
 
     if(m_world.allowSleep != settings.enableSleeping && !settings.enableSleeping) {
       for(b <- m_world.bodyList) b.wakeUp

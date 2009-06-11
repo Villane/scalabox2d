@@ -129,36 +129,39 @@ trait FengWrapper extends InputListener {
     val t1 = FengGUI.createWidget(classOf[Container])
 
     val gravity = FengGUI.createWidget(classOf[Label])
-    gravity.setText("Gravity")
+    gravity.setText("Gravity    ")
     val gCell = FengGUI.createWidget(classOf[TextEditor])
-    gCell.setRestrict(TextEditor.RESTRICT_NUMBERSONLY)
-    gCell.setMaxCharacters(4)
+    gCell.setRestrict(TextEditor.RESTRICT_NUMBERSONLYDECIMAL)
+    gCell.setMaxCharacters(6)
     gCell.updateMinSize()
     gCell.addTextChangedListener(new ITextChangedListener() {
       def textChanged(e:TextChangedEvent) {
         val s = e.getTrigger.getText.replaceAll("\n","")
-        //settings.gravity = Vector2f(0f, s.toInt)
-        println("Gravity" + e.getText)
+        settings.gravity = Vector2f(0f, s.toFloat)
       }
     })
     
     val hertz = FengGUI.createWidget(classOf[Label])
-    hertz.setText("Hertz")
+    hertz.setText("Hertz      ")
     val hCell = FengGUI.createWidget(classOf[TextEditor])
-    hCell.setRestrict(TextEditor.RESTRICT_NUMBERSONLY)
-    hCell.setMaxCharacters(4)
+    hCell.setRestrict(TextEditor.RESTRICT_NUMBERSONLYDECIMAL)
+    hCell.setMaxCharacters(3)
     hCell.updateMinSize()
     hCell.addTextChangedListener(new ITextChangedListener() {
       def textChanged(e:TextChangedEvent) {
         val s = e.getTrigger.getText.replaceAll("\n","")
-        //settings.hz = s.toInt
-        println("hz" + s.toInt)
+        settings.hz = s.toInt
       }
     })
 
-    t1.addWidget(gravity, gCell, hertz, hCell)
+    t1.addWidget(gravity, gCell)
+    t1.setExpandable(false)
 
     val t2 = FengGUI.createWidget(classOf[Container])
+    t2.addWidget(hertz, hCell)
+    t2.setExpandable(false)
+
+    val t3 = FengGUI.createWidget(classOf[Container])
 
     val velIters = FengGUI.createWidget(classOf[Label])
     velIters.setText("Iterations")
@@ -169,22 +172,23 @@ trait FengWrapper extends InputListener {
     vCell.addTextChangedListener(new ITextChangedListener() {
       def textChanged(e:TextChangedEvent) {
         val s = e.getTrigger.getText.replaceAll("\n","")
-        //settings.iterationCount = s.toInt
-        println("iterations" + s.toInt)
+        settings.iterationCount = s.toInt
       }
     })
+    //vCell.setExpandable(false)
 
     // TODO: implement position iterations 
     val posIters = FengGUI.createWidget(classOf[Label])
     posIters.setText("Pos Iters")
     val pCell = FengGUI.createWidget(classOf[TextEditor])
-    pCell.setRestrict(TextEditor.RESTRICT_NUMBERSONLY)
+    pCell.setRestrict(TextEditor.RESTRICT_NUMBERSONLYDECIMAL)
     pCell.setMaxCharacters(3)
     pCell.updateMinSize()
     // TODO - Add positionIteration listener
     
-    t2.addWidget(velIters, vCell, posIters, pCell)
-
+    t3.addWidget(velIters, vCell)
+    t3.setExpandable(false)
+    
     gCell.setText("-10")
     hCell.setText("60")
     vCell.setText("10")
@@ -217,7 +221,7 @@ trait FengWrapper extends InputListener {
         }
     })
 
-    tuning.addWidget(t1, t2, sleeping, warmStarting, timeOfImpact)
+    tuning.addWidget(t1, t2, t3, sleeping, warmStarting, timeOfImpact)
 
     val draw = FengGUI.createWidget(classOf[Container])
     draw.getAppearance.add(new TitledBorder("Draw"))
@@ -306,7 +310,7 @@ trait FengWrapper extends InputListener {
 
     draw.addWidget(shapes, joints, coreShapes, aabb, pairs)
     draw.addWidget(cPoints, cNormals, com, stastics)
-
+    
     w.getContentContainer.addWidget(buttons, spacer2, tuning, draw)
     w.setWidth(200)
     w.pack

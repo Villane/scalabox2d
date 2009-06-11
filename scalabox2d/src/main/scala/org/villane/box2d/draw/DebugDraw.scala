@@ -13,7 +13,7 @@ class DebugDraw(val draw: DebugDrawHandler) {
   val SLEEPING_COLOR = Color3f(255f*0.5f, 255f*0.5f, 255f*0.9f)
   val DYNAMIC_COLOR = Color3f(255f*0.9f, 255f*0.9f, 255f*0.9f)
   val PAIR_COLOR = Color3f(255f*0.9f, 255f*0.9f, 255f*0.3f)
-  val WORLDAABB_COLOR = Color3f(255.0f * 0.3f, 255.0f * 0.9f, 255.0f * 0.9f)
+  val WORLD_AABB_COLOR = Color3f(255.0f * 0.3f, 255.0f * 0.9f, 255.0f * 0.9f)
   val CORE_COLOR = Color3f(255f * 0.9f, 255f * 0.6f, 255f * 0.6f)
   val AABB_COLOR = Color3f(255f, 255f, 255f)
   
@@ -170,7 +170,7 @@ class DebugDraw(val draw: DebugDrawHandler) {
         worldUpper,
         (worldLower.x, worldUpper.y)
     )
-    draw.drawPolygon(vsw, WORLDAABB_COLOR)
+    draw.drawPolygon(vsw, WORLD_AABB_COLOR)
 
     if ((flags & DrawFlags.centerOfMass) != 0) {
       for (b <- bodies) {
