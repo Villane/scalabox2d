@@ -7,7 +7,7 @@ import box2d.shapes._
 import box2d.dynamics._
 import box2d.dynamics.joints._
 import box2d.dynamics.contacts._
-import box2d.settings.Settings
+import dsl.DSL._
 
 import scala.collection.jcl.ArrayList
 
@@ -60,7 +60,7 @@ abstract class AbstractExample(parent: TestbedMain) {
   /** Array of contact points - use m_pointCount to get number of active elements.  */
   var m_points: Array[ExampleContactPoint] = null
   /** The world object this example uses. */
-  var m_world: World = null
+  implicit var m_world: World = null
   /** The bomb body.  May be null if no bomb is active. */
   var m_bomb: Body = null
   /** Mouse joint.  May be null if mouse is not attached to anything. */
@@ -240,7 +240,6 @@ abstract class AbstractExample(parent: TestbedMain) {
     if (settings.drawJoints) debugDraw.draw.appendFlags(DrawFlags.joint);
     if (settings.drawCoreShapes) debugDraw.draw.appendFlags(DrawFlags.coreShape);
     if (settings.drawAABBs) debugDraw.draw.appendFlags(DrawFlags.aabb);
-    if (settings.drawOBBs) debugDraw.draw.appendFlags(DrawFlags.obb);
     if (settings.drawPairs) debugDraw.draw.appendFlags(DrawFlags.pair);
     if (settings.drawCOMs) debugDraw.draw.appendFlags(DrawFlags.centerOfMass);
 
@@ -248,7 +247,7 @@ abstract class AbstractExample(parent: TestbedMain) {
     m_world.positionCorrection = settings.enablePositionCorrection
     m_world.continuousPhysics = settings.enableTOI
 
-    if(m_world.allowSleep != settings.enableSleeping && settings.enableSleeping == false) {
+    if(m_world.allowSleep != settings.enableSleeping && !settings.enableSleeping) {
       for(b <- m_world.bodyList) b.wakeUp
     }
     m_world.allowSleep = settings.enableSleeping
@@ -396,33 +395,26 @@ abstract class AbstractExample(parent: TestbedMain) {
       m_bomb = null;
     }
 
-    val bd = new BodyDef
-    bd.allowSleep = true
-    bd.pos = position
-    bd.isBullet = true
-    m_bomb = m_world.createBody(bd)
-    m_bomb.linearVelocity = velocity * 0.05f
-
-    val sd = new CircleDef
-    sd.radius = 0.3f
-    sd.density = 20.0f
-    sd.restitution = 1.0f //0.1f
-    sd.friction = 0.0f
-
     val minV = position - (0.3f,0.3f)
     val maxV = position + (0.3f,0.3f)
     //AABB aabb = new AABB(minV, maxV);
     val inRange = (minV.x > m_worldAABB.lowerBound.x && minV.y > m_worldAABB.lowerBound.y &&
-                       maxV.x < m_worldAABB.upperBound.x && maxV.y < m_worldAABB.upperBound.y)
+                   maxV.x < m_worldAABB.upperBound.x && maxV.y < m_worldAABB.upperBound.y)
 
     if (inRange) {
-      m_bomb.createShape(sd);
-      m_bomb.computeMassFromShapes
+      m_bomb = body {
+        sleepingAllowed(true)
+        pos(position)
+        bullet(true)
+        circle(0.3f) density 20 restitution 1 friction 0
+        massFromShapes
+      }
+      m_bomb.linearVelocity = velocity * 0.05f
     } else {
       System.out.println("Bomb not created - out of world AABB");
     }
   }
-    
+
   //Shift+drag "slingshots" a bomb from any point using these functions
   /**
    * Begins spawning a bomb, spawn finishes and bomb is created upon calling completeBombSpawn().
@@ -509,17 +501,17 @@ abstract class AbstractExample(parent: TestbedMain) {
 
         // Query the world for overlapping shapes.
         val k_maxCount = 10;
-        val shapes = m_world.query(aabb, k_maxCount);
+        val fixtures = m_world.query(aabb, k_maxCount);
         
         var body: Body = null;
         var loop = true
-        for (j <- 0 until shapes.length if loop) {
-          val shapeBody = shapes(j).body
-            if (shapeBody.isStatic == false) {
-                val inside = shapes(j).testPoint(shapeBody.transform,p);
+        for (j <- 0 until fixtures.length if loop) {
+          val fixBody = fixtures(j).body
+            if (fixBody.isStatic == false) {
+                val inside = fixtures(j).shape.testPoint(fixBody.transform,p)
                 if (inside) {
-                    body = shapes(j).body;
-                    loop = false;
+                    body = fixtures(j).body
+                    loop = false
                 }
             }
         }
@@ -605,7 +597,7 @@ abstract class AbstractExample(parent: TestbedMain) {
 	 *	nullify the mouse joint.
 	 */
     class ConcreteDestructionListener extends DestructionListener {
-    	def sayGoodbye(shape: Shape) { }
+    	def sayGoodbye(fixture: Fixture) { }
     	def sayGoodbye(joint: Joint) {
     		if (test.m_mouseJoint == joint) {
     			test.m_mouseJoint = null;
@@ -643,8 +635,8 @@ abstract class AbstractExample(parent: TestbedMain) {
     		}
 
     		val cp = test.m_points(test.m_pointCount)
-    		cp.shape1 = point.shape1;
-    		cp.shape2 = point.shape2;
+    		cp.shape1 = point.fixture1.shape
+    		cp.shape2 = point.fixture2.shape
     		cp.position = point.pos
     		cp.normal = point.normal
     		cp.id = point.id
@@ -659,8 +651,8 @@ abstract class AbstractExample(parent: TestbedMain) {
     		}
 
     		val cp = test.m_points(test.m_pointCount)
-    		cp.shape1 = point.shape1;
-    		cp.shape2 = point.shape2;
+    		cp.shape1 = point.fixture1.shape
+    		cp.shape2 = point.fixture2.shape
     		cp.position = point.pos
     		cp.normal = point.normal
     		cp.id = point.id
@@ -675,8 +667,8 @@ abstract class AbstractExample(parent: TestbedMain) {
     		}
 
     		val cp = test.m_points(test.m_pointCount);
-    		cp.shape1 = point.shape1;
-    		cp.shape2 = point.shape2;
+    		cp.shape1 = point.fixture1.shape
+    		cp.shape2 = point.fixture2.shape
     		cp.position = point.pos
     		cp.normal = point.normal
     		cp.id = point.id

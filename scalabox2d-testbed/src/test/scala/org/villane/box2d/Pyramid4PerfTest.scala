@@ -2,7 +2,6 @@ package org.villane.box2d
 
 import vecmath._
 import vecmath.Preamble._
-import box2d.settings.Settings
 import box2d.draw._
 import box2d.shapes._
 import box2d.collision._
@@ -10,9 +9,10 @@ import box2d.dynamics._
 import box2d.dynamics.joints._
 import box2d.dynamics.contacts.ContactListener
 import box2d.testbed.TestSettings
+import dsl.DSL._
 
 object Pyramid4PerfTest {
-  var m_world: World = null
+  implicit var m_world: World = null
   var m_worldAABB: AABB = null
   val settings = new TestSettings
 
@@ -59,52 +59,38 @@ object Pyramid4PerfTest {
       m_worldAABB = m_world.aabb
 	}
 
-	def create() {
-		{
-			val sd = PolygonDef.box(50.0f, 10.0f)
+  def create() {
+    body {
+      pos(0, -10)
+      box(50, 10)
+    }
 
-			val bd = new BodyDef();
-			bd.pos = (0.0f, -10.0f)
-			val ground = m_world.createBody(bd);
-			ground.createShape(sd)
+    val box1 = box(0.5f, 0.5f) density 5f restitution 0f friction 0.9f
+	var x = Vector2f(-30.0f, 0.75f);
+	var y = Vector2f.Zero
+	val deltaX = Vector2f(0.5625f, 2.0f);
+	val deltaY = Vector2f(1.125f, 0.0f);
+
+    val num = 17
+    def loop = for (i <- 0 until num) {
+		y = x
+		for (j <- i until num) body {
+			pos(y)
+			fixture(box1)
+			massFromShapes
+
+			y += deltaY
 		}
-		{
-			val sd = PolygonDef.box(0.5f, 0.5f)
-			sd.density = 5.0f;
-			sd.restitution = 0.0f;
-			sd.friction = 0.9f;
-
-			var x = Vector2f(-30.0f, 0.75f);
-			var y = Vector2f.Zero
-			val deltaX = Vector2f(0.5625f, 2.0f);
-			val deltaY = Vector2f(1.125f, 0.0f);
-
-            val num = 17
-            def loop =
-			for (i <- 0 until num) {
-				y = x
-
-				for (j <- i until num) {
-					val bd = new BodyDef();
-					bd.pos = y
-					val body = m_world.createBody(bd);
-					body.createShape(sd);
-					body.computeMassFromShapes();
-
-					y += deltaY
-				}
-
-				x += deltaX
-			}
-   loop
-			x = (-10f, 0.75f)
-   loop
-			x = (10f, 0.75f)
-   loop
-			x = (30f, 0.75f)
-   loop
-		}
+		x += deltaX
 	}
+    loop
+    x = (-10f, 0.75f)
+    loop
+    x = (10f, 0.75f)
+    loop
+    x = (30f, 0.75f)
+    loop
+  }
 	
 	def step() {
 		var timeStep = if (settings.hz > 0.0f) 1.0f / settings.hz else 0.0f

@@ -2,7 +2,6 @@ package org.villane.box2d.testbed.slick
 
 import vecmath._
 import vecmath.Preamble._
-import box2d.settings.Settings
 import box2d.draw._
 import box2d.shapes._
 import box2d.collision._
@@ -62,7 +61,7 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
   var gameContainer: GameContainer = null
   
   val tests = new collection.mutable.ListBuffer[AbstractExample]
-  var currentTestIndex = 3
+  var currentTestIndex = 0
   var currentTest : AbstractExample = null
 
   def init(container: GameContainer) {
@@ -74,14 +73,13 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
     container.setTargetFrameRate(60)
     container.setShowFPS(false)
 
-    tests += new testbed.tests.CircularBreakout(this)
-    tests += new testbed.tests.Domino(this)
-    tests += new testbed.tests.Pyramid(this)
     tests += new testbed.tests.Bridge(this)
-    tests += new testbed.tests.Chain(this)
     tests += new testbed.tests.CCDTest(this)
+    tests += new testbed.tests.Chain(this)
     tests += new testbed.tests.Circles(this)
+    tests += new testbed.tests.Domino(this)
     tests += new testbed.tests.Overhang(this)
+    tests += new testbed.tests.Pyramid(this)
     tests += new testbed.tests.VaryingFriction(this)
     tests += new testbed.tests.VaryingRestitution(this)
     tests += new testbed.tests.VerticalStack(this)

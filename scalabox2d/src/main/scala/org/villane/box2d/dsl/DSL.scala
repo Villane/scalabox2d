@@ -5,6 +5,7 @@ import vecmath.Preamble._
 import shapes._
 import collision._
 import dynamics._
+import dynamics.joints._
 import collection.mutable.ListBuffer
 
 object DSL {
@@ -15,7 +16,7 @@ object DSL {
     val fixBuilders = new ListBuffer[FixtureBuilder]
   }
 
-  def body[T](block: => T)(implicit world: World) {
+  def body[T](block: => T)(implicit world: World) = {
     val ctx = new BodyCtx
     BodyCtx.set(ctx)
     block
@@ -26,6 +27,7 @@ object DSL {
     }
     if (ctx.massFromShapes) body.computeMassFromShapes
     BodyCtx.remove
+    body
   }
 
   def fixture(fd: FixtureDef) = {
@@ -52,6 +54,8 @@ object DSL {
   def box(halfW: Float, halfH: Float) = fbuilder(PolygonDef.box(halfW, halfH))
   def box(halfW: Float, halfH: Float, center: Vector2f) =
     fbuilder(PolygonDef.box(halfW, halfH, center))
+  def box(halfW: Float, halfH: Float, center: Vector2f, angle: Float) =
+    fbuilder(PolygonDef.box(halfW, halfH, center, angle))
 
   private def bbuilder = BodyCtx.get.bodyBuilder
 
@@ -67,6 +71,16 @@ object DSL {
   def bullet = bbuilder.bullet _
 
   def massFromShapes = BodyCtx.get.massFromShapes = true
+
+  def joint[JB <: JointBuilder](jBuilder: => JB)(implicit world: World) = {
+    val jDef = jBuilder.define
+    world.createJoint(jDef)
+  }
+
+  def revolute(bodies: (Body, Body)) = new RevoluteJointBuilder(
+    new RevoluteJointDef, bodies)
+  def distance(bodies: (Body, Body)) = new DistanceJointBuilder(
+    new DistanceJointDef, bodies)
 }
 
 class BodyBuilder(b: BodyDef) {

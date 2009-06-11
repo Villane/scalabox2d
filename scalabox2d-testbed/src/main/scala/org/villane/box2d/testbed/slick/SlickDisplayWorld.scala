@@ -2,7 +2,6 @@ package org.villane.box2d.testbed.slick
 
 import vecmath._
 import vecmath.Preamble._
-import box2d.settings.Settings
 import box2d.draw._
 import box2d.shapes._
 import box2d.collision._
@@ -50,7 +49,6 @@ class SlickDisplayWorld(world: World) extends BasicGame("Slick ScalaBox2D: World
     m_debugDraw.appendFlags(DrawFlags.joint);
     m_debugDraw.appendFlags(DrawFlags.coreShape);
     m_debugDraw.appendFlags(DrawFlags.aabb);
-    m_debugDraw.appendFlags(DrawFlags.obb);
     m_debugDraw.appendFlags(DrawFlags.pair);
     m_debugDraw.appendFlags(DrawFlags.centerOfMass);
   }

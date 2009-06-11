@@ -9,14 +9,14 @@ import org.villane.vecmath.Vector2f
  *
  */
 class TestSettings {
-  var hz = 60;
-  var iterationCount = 10;
+  var hz = 60
+  var iterationCount = 10
   var gravity = Vector2f(0f, -10f)
 
-  var enableWarmStarting = true;
-  var enablePositionCorrection = true;
-  var enableTOI = true;
-  var enableSleeping = true;
+  var enableWarmStarting = true
+  var enablePositionCorrection = true
+  var enableTOI = true
+  var enableSleeping = true
 
   /** Pause the simulation */
   var pause = false
@@ -25,19 +25,18 @@ class TestSettings {
   /** True if we should reset the demo for the next frame. */
   var reset = false
 
-  var drawShapes = true;
-  var drawJoints = true;
-  var drawCoreShapes = false;
-  var drawOBBs = false;
-  var drawCOMs = false;
-  var drawStats = false;
-  var drawImpulses = false;
-  var drawAABBs = false;
-  var drawPairs = false;
-  var drawContactPoints = false;
-  var drawContactNormals = false;
-  var drawContactForces = false;
-  var drawFrictionForces = false;
+  var drawShapes = true
+  var drawJoints = true
+  var drawCoreShapes = false
+  var drawCOMs = false
+  var drawStats = false
+  var drawImpulses = false
+  var drawAABBs = false
+  var drawPairs = false
+  var drawContactPoints = false
+  var drawContactNormals = false
+  var drawContactForces = false
+  var drawFrictionForces = false
 
-  var testIndex = 3
+  var testIndex = 0
 }

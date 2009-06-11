@@ -2,7 +2,6 @@ package org.villane.box2d
 
 import vecmath._
 import vecmath.Preamble._
-import box2d.settings.Settings
 import box2d.draw._
 import box2d.shapes._
 import box2d.collision._
@@ -10,13 +9,15 @@ import box2d.dynamics._
 import box2d.dynamics.joints._
 import box2d.dynamics.contacts.ContactListener
 import box2d.testbed.TestSettings
+import dsl.DSL._
 
 object PyramidPerfTest {
-  var m_world: World = null
+  implicit var m_world: World = null
   var m_worldAABB: AABB = null
   val settings = new TestSettings
 
   def main(args: Array[String]) {
+    Settings.threadedIslandSolving = false
     createWorld
     create
     var i = 0
@@ -27,7 +28,7 @@ object PyramidPerfTest {
     //m_world.bodyList foreach { b => if (!b.isStatic) x += 1 }
     //println("bodycount: " + x)
     //println("press enter")
-    //Console.readLine
+    Console.readLine
     var start = System.currentTimeMillis
     i = 0
     var s100 = 0L
@@ -49,49 +50,37 @@ object PyramidPerfTest {
     //IslandSolverWorker.stopWorkers
   }
 
-	/** Override this if you need to create a different world AABB or gravity vector */
-	def createWorld() {
+  def createWorld() {
       m_world = new World(AABB((-200,-100),(200,200)),
                           (0, -10f),
                           true)
       m_worldAABB = m_world.aabb
 	}
 
-	def create() {
-		{
-			val sd = PolygonDef.box(50.0f, 10.0f)
+  def create() {
+    body {
+      pos(0, -10)
+      box(50, 10)
+    }
 
-			val bd = new BodyDef();
-			bd.pos = (0.0f, -10.0f)
-			val ground = m_world.createBody(bd);
-			ground.createShape(sd)
-		}
-			val sd = PolygonDef.box(0.5f, 0.5f)
-			sd.density = 5.0f;
-			sd.restitution = 0.0f;
-			sd.friction = 0.9f;
+    val box1 = box(0.5f, 0.5f) density 5f restitution 0f friction 0.9f
 
-			var x = Vector2f(-10.0f, 0.75f);
-			var y = Vector2f.Zero
-			val deltaX = Vector2f(0.5625f, 2.0f);
-			val deltaY = Vector2f(1.125f, 0.0f);
+    var x = Vector2f(-10.0f, 0.75f)
+    var y = Vector2f.Zero
+    val Δx = Vector2f(0.5625f, 2.0f)
+    val Δy = Vector2f(1.125f, 0.0f)
 
-			for (i <- 0 until 25) {
-				y = x
-
-				for (j <- i until 25) {
-					val bd = new BodyDef();
-					bd.pos = y
-					val body = m_world.createBody(bd);
-					body.createShape(sd);
-					body.computeMassFromShapes();
-
-					y += deltaY
-				}
-
-				x += deltaX
-			}
-	}
+    for (i <- 0 until 25) {
+      y = x
+      for (j <- i until 25) body {
+        pos(y)
+        fixture(box1)
+        massFromShapes
+        y += Δy
+      }
+      x += Δx
+    }
+  }
 	
 	def step() {
 		var timeStep = if (settings.hz > 0.0f) 1.0f / settings.hz else 0.0f

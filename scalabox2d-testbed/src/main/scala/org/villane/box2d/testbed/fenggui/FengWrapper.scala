@@ -92,7 +92,6 @@ trait FengWrapper extends InputListener {
     testList.addItem("CCDTest")
     testList.addItem("Chain")
     testList.addItem("Circles")
-    testList.addItem("Circular Breakout")
     testList.addItem("Domino")
     testList.addItem("Overhang")
     testList.addItem("Pyramid")
@@ -107,20 +106,19 @@ trait FengWrapper extends InputListener {
           // TODO: bug the FengGUI guys about this nasty hack....
           val test = e.getSource.asInstanceOf[List].getSelectedItem.getText
           settings.testIndex = test match {
-            case "Bridge" => 3
-            case "CCDTest" => 5
-            case "Chain" => 4
-            case "Circles" => 6
-            case "Circular Breakout" => 0
-            case "Domino" => 1
-            case "Overhang" => 7
-            case "Pyramid" => 2
-            case "Varying Friction" => 8
-            case "Varying Restitution" => 9
-            case "Vertical Stack" => 10
+            case "Bridge" => 0
+            case "CCDTest" => 1
+            case "Chain" => 2
+            case "Circles" => 3
+            case "Domino" => 4
+            case "Overhang" => 5
+            case "Pyramid" => 6
+            case "Varying Friction" => 7
+            case "Varying Restitution" => 8
+            case "Vertical Stack" => 9
             case _ => 0
           }
-        
+
         }
       })
 
@@ -261,15 +259,6 @@ trait FengWrapper extends InputListener {
         }
     })
 
-    val obb = FengGUI.createCheckBox
-    obb.setText("OBBs")
-    obb.setSelected(false)
-    obb.addSelectionChangedListener(new ISelectionChangedListener() {
-        def selectionChanged(e:SelectionChangedEvent) {
-          settings.drawOBBs = !settings.drawOBBs
-        }
-    })
-
     val pairs = FengGUI.createCheckBox
     pairs.setText("Pairs")
     pairs.setSelected(false)
@@ -315,7 +304,7 @@ trait FengWrapper extends InputListener {
         }
     })
 
-    draw.addWidget(shapes, joints, coreShapes, aabb, obb, pairs)
+    draw.addWidget(shapes, joints, coreShapes, aabb, pairs)
     draw.addWidget(cPoints, cNormals, com, stastics)
 
     w.getContentContainer.addWidget(buttons, spacer2, tuning, draw)
