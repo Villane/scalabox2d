@@ -282,9 +282,9 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
     var sr = 0f
     // TODO NO CORE VERTICES!!!
     coreVertices foreach { v =>
-      sr = MathUtil.max(sr, MathUtil.distanceSquared(v, pivot))
+      sr = max(sr, distanceSquared(v, pivot))
     }
-    MathUtil.sqrt(sr)
+    sqrt(sr)
   }
 
   /** Core vertices and everything below is deprecated */

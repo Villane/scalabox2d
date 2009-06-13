@@ -222,7 +222,7 @@ class ContactSolver(contacts: Seq[Contact]) {
         var λ = - ccp.normalMass * (vn - ccp.velocityBias)
 
         // b2Clamp the accumulated force
-        val newImpulse = MathUtil.max(ccp.normalImpulse + λ, 0f)
+        val newImpulse = max(ccp.normalImpulse + λ, 0f)
         λ = newImpulse - ccp.normalImpulse
 
         // Apply contact impulse
@@ -266,7 +266,7 @@ class ContactSolver(contacts: Seq[Contact]) {
 
         // b2Clamp the accumulated force
         val maxFriction = friction * ccp.normalImpulse
-        val newImpulse = MathUtil.clamp(ccp.tangentImpulse + λ, -maxFriction, maxFriction)
+        val newImpulse = clamp(ccp.tangentImpulse + λ, -maxFriction, maxFriction)
         λ = newImpulse - ccp.tangentImpulse
 
         // Apply contact impulse
@@ -357,17 +357,17 @@ class ContactSolver(contacts: Seq[Contact]) {
         val separation = dpx*normal.x + dpy*normal.y + ccp.separation;//(dp ∙ normal) + ccp->separation;
 
         // Track max constraint error.
-        minSeparation = MathUtil.min(minSeparation, separation)
+        minSeparation = min(minSeparation, separation)
 
         // Prevent large corrections and allow slop.
-        val C = baumgarte * MathUtil.clamp(separation + Settings.linearSlop, -Settings.maxLinearCorrection, 0f)
+        val C = baumgarte * clamp(separation + Settings.linearSlop, -Settings.maxLinearCorrection, 0f)
 
         // Compute normal impulse
         var dImpulse = -ccp.equalizedMass * C
 
         // b2Clamp the accumulated impulse
         val impulse0 = ccp.positionImpulse
-        ccp.positionImpulse = MathUtil.max(impulse0 + dImpulse, 0f)
+        ccp.positionImpulse = max(impulse0 + dImpulse, 0f)
         dImpulse = ccp.positionImpulse - impulse0
 
         //val impulse = normal * dImpulse

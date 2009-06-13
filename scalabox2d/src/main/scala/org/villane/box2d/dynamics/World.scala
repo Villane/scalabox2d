@@ -341,7 +341,7 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
 
       if (!Settings.threadedIslandSolving) {
         island.solve(step, gravity, positionCorrection, allowSleep)
-        positionIterationCount = MathUtil.max(positionIterationCount, island.positionIterationCount).toInt
+        positionIterationCount = max(positionIterationCount, island.positionIterationCount).toInt
       }
 
       // Post solve cleanup.
@@ -370,7 +370,7 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
 
     if (Settings.threadedIslandSolving) {
       for (f <- futures) {
-        positionIterationCount = MathUtil.max(positionIterationCount, f.get).toInt
+        positionIterationCount = max(positionIterationCount, f.get).toInt
       }
     }
 
@@ -464,7 +464,7 @@ class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
             assert(0f <= toi && toi <= 1f)
 
             if (toi > 0f && toi < 1f) {
-              toi = MathUtil.min((1f - toi) * t0 + toi, 1f)
+              toi = min((1f - toi) * t0 + toi, 1f)
             }
 
             c.toi = toi

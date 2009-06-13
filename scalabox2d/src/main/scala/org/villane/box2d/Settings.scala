@@ -1,6 +1,6 @@
 package org.villane.box2d
 
-import vecmath.MathUtil.π
+import vecmath.Preamble.π
 
 /** Global tuning constants based on MKS units and various integer maximums (vertices per shape, pairs, etc.). */
 object Settings {

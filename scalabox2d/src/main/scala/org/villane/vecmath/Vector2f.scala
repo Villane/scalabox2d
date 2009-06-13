@@ -1,5 +1,7 @@
 package org.villane.vecmath
 
+import Preamble._
+
 /**
  * Vector2f creation methods and often used constant values.
  */
@@ -8,7 +10,7 @@ object Vector2f {
   val One = Vector2f(1, 1)
   val XUnit = Vector2f(1, 0)
   val YUnit = Vector2f(0, 1)
-  def polar(r: Float, theta: Float) = Vector2f(MathUtil.cos(theta) * r, MathUtil.sin(theta) * r)
+  def polar(r: Float, theta: Float) = Vector2f(cos(theta) * r, sin(theta) * r)
 
   // for debugging only
   var creationCount = 0L
@@ -52,8 +54,8 @@ case class Vector2f(x: Float, y: Float) {
   def abs = Vector2f(x.abs, y.abs)
 
   /** Polar coordinates */
-  def theta = Math.atan2(y, x).toFloat
-  def θ = Math.atan2(y, x).toFloat
+  def theta = atan2(y, x).toFloat
+  def θ = atan2(y, x).toFloat
 
   def to(v: Vector2f) = new Vector2fRange(this, v, Vector2f.One)
   def times(n: Int) = new Vector2fTimes(this, n, Vector2f.One)
@@ -66,7 +68,7 @@ case class Vector2f(x: Float, y: Float) {
    */
   def normalize = this / length
 
-  def length = MathUtil.sqrt(x * x + y * y)
+  def length = sqrt(x * x + y * y)
   def lengthSquared = x * x + y * y
 
   // Unlike with float extensions, calling clamp on an existing vector doesn't effect performance, so this shouldn't be static.

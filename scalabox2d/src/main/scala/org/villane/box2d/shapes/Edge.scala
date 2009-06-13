@@ -64,9 +64,9 @@ class Edge(defn: EdgeChainDef) extends Shape {
   }
 
   def computeSweepRadius(pivot: Vector2f) = {
-    val ds1 = MathUtil.distanceSquared(v1, pivot)
-    val ds2 = MathUtil.distanceSquared(v2, pivot)
-    MathUtil.sqrt(MathUtil.max(ds1, ds2))
+    val ds1 = distanceSquared(v1, pivot)
+    val ds2 = distanceSquared(v2, pivot)
+    sqrt(max(ds1, ds2))
   }
 
 }

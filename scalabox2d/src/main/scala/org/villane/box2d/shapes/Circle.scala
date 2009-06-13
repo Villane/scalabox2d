@@ -2,7 +2,6 @@ package org.villane.box2d.shapes
 
 import vecmath._
 import vecmath.Preamble._
-import MathUtil.π
 import Settings.ε
 
 /**
@@ -45,7 +44,7 @@ class Circle(val pos: Vector2f, val radius: Float) extends Shape {
       return SegmentCollide.Miss
 
     // Find the point of intersection of the line with the circle.
-    var a = -(c + MathUtil.sqrt(sigma))
+    var a = -(c + sqrt(sigma))
 
     // Is the intersection point on the segment?
     if (0.0f <= a && a <= maxLambda * rr) {
@@ -84,14 +83,14 @@ class Circle(val pos: Vector2f, val radius: Float) extends Shape {
     //Magic
     val r2 = radius * radius
     val l2 = l * l
-    val area = r2 * (MathUtil.asin(l / radius) + π / 2) + l * MathUtil.sqrt(r2 - l2)
-    val com = -2.0f / 3.0f * MathUtil.pow(r2-l2, 1.5f) / area
+    val area = r2 * (asin(l / radius) + π / 2) + l * sqrt(r2 - l2)
+    val com = -2.0f / 3.0f * pow(r2-l2, 1.5f) / area
 
     (area, p + normal * com)
   }
 
   def computeSweepRadius(pivot: Vector2f) = {
-    // ERKKI : in Box2D now it is: = MathUtil.distance(pos, pivot)
+    // ERKKI : in Box2D now it is: = distance(pos, pivot)
     val d = pos - pivot
     d.length + radius - Settings.toiSlop
   }

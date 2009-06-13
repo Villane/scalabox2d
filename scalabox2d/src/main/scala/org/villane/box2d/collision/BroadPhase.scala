@@ -763,7 +763,7 @@ class BroadPhase(val worldAABB: AABB, callback: PairListener) {
   def inRange(aabb: AABB) = {
     val d = max(aabb.lowerBound - worldAABB.upperBound,
                 worldAABB.lowerBound - aabb.upperBound)
-    MathUtil.max(d.x, d.y) < 0.0f
+    max(d.x, d.y) < 0.0f
   }
 
 }

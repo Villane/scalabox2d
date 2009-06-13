@@ -1,6 +1,7 @@
 package org.villane.box2d.collision
 
 import vecmath._
+import vecmath.Preamble._
 import shapes.Circle
 import Settings.ε
 
@@ -30,7 +31,7 @@ object CircleCollider {
       separation = -radiusSum
       normal = Vector2f.YUnit
     } else {
-      val dist = MathUtil.sqrt(distSqr)
+      val dist = sqrt(distSqr)
       separation = dist - radiusSum
       val a = 1 / dist
       normal = d * a

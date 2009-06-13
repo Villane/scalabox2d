@@ -5,16 +5,16 @@ package org.villane.vecmath
  * 
  * This class is not meant to be used explicitly.
  */
-class FloatExtensions(a: Float) {
-  def +(v: Vector2f) = v + a
-  def -(v: Vector2f) = Vector2f(a - v.x, a - v.y)
-  def *(v: Vector2f) = v * a
-  def /(v: Vector2f) = Vector2f(a / v.x, a / v.y)
+final class FloatExtensions(a: Float) {
+  final def +(v: Vector2f) = v + a
+  final def -(v: Vector2f) = Vector2f(a - v.x, a - v.y)
+  final def *(v: Vector2f) = v * a
+  final def /(v: Vector2f) = Vector2f(a / v.x, a / v.y)
 
-  def cross(v: Vector2f) = Vector2f(-a * v.y, a * v.x)
-  def ×(v: Vector2f) = Vector2f(-a * v.y, a * v.x)
+  final def cross(v: Vector2f) = Vector2f(-a * v.y, a * v.x)
+  final def ×(v: Vector2f) = Vector2f(-a * v.y, a * v.x)
 
-  def clamp(low: Float, high: Float) = MathUtil.clamp(a, low, high)
+  final def clamp(low: Float, high: Float) = Preamble.clamp(a, low, high)
 
-  def isValid = a != Float.NaN && a != Float.NegativeInfinity && a != Float.PositiveInfinity 
+  final def isValid = a != Float.NaN && a != Float.NegativeInfinity && a != Float.PositiveInfinity 
 }

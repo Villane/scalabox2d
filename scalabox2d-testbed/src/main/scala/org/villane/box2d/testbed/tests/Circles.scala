@@ -5,7 +5,6 @@ import vecmath.Preamble._
 import dynamics.joints._
 import dynamics._
 import shapes._
-import MathUtil.π
 import dsl.DSL._
 
 class Circles(_parent: TestbedMain) extends AbstractExample(_parent) {
@@ -51,8 +50,8 @@ class Circles(_parent: TestbedMain) extends AbstractExample(_parent) {
       val numPieces = 5
       val radius = 6f
       for (i <- 0 until numPieces) {
-        val x = radius * MathUtil.cos(2*π * (i.toFloat / (numPieces)))
-        val y = radius * MathUtil.sin(2*π * (i.toFloat / (numPieces)))
+        val x = radius * cos(2 * π * (i.toFloat / (numPieces)))
+        val y = radius * sin(2 * π * (i.toFloat / (numPieces)))
         circle((x, y), 1.2f) density 25.0f friction 0.1f restitution 0.9f
       }
       massFromShapes

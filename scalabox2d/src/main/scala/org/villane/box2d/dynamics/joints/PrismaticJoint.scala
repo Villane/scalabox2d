@@ -185,7 +185,7 @@ class PrismaticJoint(defn: PrismaticJointDef) extends Joint(defn) {
       val motorCdot = motorJacobian.compute(b1.linearVelocity, b1.angularVelocity, b2.linearVelocity, b2.angularVelocity) - motorSpeed
       var motorF = -step.invDt * motorMass * motorCdot
       val oldMotorForce = motorForce
-      motorForce = MathUtil.clamp(motorForce + motorF, -maxMotorForce, maxMotorForce)
+      motorForce = clamp(motorForce + motorF, -maxMotorForce, maxMotorForce)
       motorF = motorForce - oldMotorForce
 
       val P2 = step.dt * motorF
@@ -205,11 +205,11 @@ class PrismaticJoint(defn: PrismaticJointDef) extends Joint(defn) {
         limitForce += limitF
       } else if (limitState == LimitState.AT_LOWER_LIMIT) {
         val oldLimitForce = limitForce
-        limitForce = Math.max(limitForce + limitF, 0.0f)
+        limitForce = max(limitForce + limitF, 0.0f)
         limitF = limitForce - oldLimitForce
       } else if (limitState == LimitState.AT_UPPER_LIMIT) {
         val oldLimitForce = limitForce
-        limitForce = Math.min(limitForce + limitF, 0.0f)
+        limitForce = min(limitForce + limitF, 0.0f)
         limitF = limitForce - oldLimitForce
       }
 
@@ -242,7 +242,7 @@ class PrismaticJoint(defn: PrismaticJointDef) extends Joint(defn) {
     // Solve linear (point-to-line) constraint.
     var linearC = ay1 ∙ d
     // Prevent overly large corrections.
-    linearC = MathUtil.clamp(linearC, -Settings.maxLinearCorrection, Settings.maxLinearCorrection)
+    linearC = clamp(linearC, -Settings.maxLinearCorrection, Settings.maxLinearCorrection)
     val linearImpulse = -linearMass * linearC
 
     b1.sweep.c += (invMass1 * linearImpulse) * linearJacobian.linear1
@@ -257,7 +257,7 @@ class PrismaticJoint(defn: PrismaticJointDef) extends Joint(defn) {
     // Solve angular constraint.
     var angularC = b2.sweep.a - b1.sweep.a - referenceAngle
     // Prevent overly large corrections.
-    angularC = MathUtil.clamp(angularC, -Settings.maxAngularCorrection, Settings.maxAngularCorrection)
+    angularC = clamp(angularC, -Settings.maxAngularCorrection, Settings.maxAngularCorrection)
     val angularImpulse = -angularMass * angularC
 
     b1.sweep.a -= b1.invI * angularImpulse
@@ -282,28 +282,28 @@ class PrismaticJoint(defn: PrismaticJointDef) extends Joint(defn) {
 
       if (limitState == LimitState.EQUAL_LIMITS) {
         // Prevent large angular corrections
-        val limitC = MathUtil.clamp(translation, -Settings.maxLinearCorrection, Settings.maxLinearCorrection)
+        val limitC = clamp(translation, -Settings.maxLinearCorrection, Settings.maxLinearCorrection)
         limitImpulse = -motorMass * limitC
-        positionError = Math.max(positionError, angularC.abs)
+        positionError = max(positionError, angularC.abs)
       } else if (limitState == LimitState.AT_LOWER_LIMIT) {
         var limitC = translation - lowerTranslation
-        positionError = Math.max(positionError, -limitC)
+        positionError = max(positionError, -limitC)
 
         // Prevent large linear corrections and allow some slop.
-        limitC = MathUtil.clamp(limitC + Settings.linearSlop, -Settings.maxLinearCorrection, 0.0f)
+        limitC = clamp(limitC + Settings.linearSlop, -Settings.maxLinearCorrection, 0.0f)
         limitImpulse = -motorMass * limitC
         val oldLimitImpulse = limitPositionImpulse
-        limitPositionImpulse = Math.max(limitPositionImpulse + limitImpulse, 0.0f)
+        limitPositionImpulse = max(limitPositionImpulse + limitImpulse, 0.0f)
         limitImpulse = limitPositionImpulse - oldLimitImpulse
       } else if (limitState == LimitState.AT_UPPER_LIMIT) {
         var limitC = translation - upperTranslation
-        positionError = Math.max(positionError, limitC)
+        positionError = max(positionError, limitC)
 
         // Prevent large linear corrections and allow some slop.
-        limitC = MathUtil.clamp(limitC - Settings.linearSlop, 0.0f, Settings.maxLinearCorrection)
+        limitC = clamp(limitC - Settings.linearSlop, 0.0f, Settings.maxLinearCorrection)
         limitImpulse = -motorMass * limitC
         val oldLimitImpulse = limitPositionImpulse
-        limitPositionImpulse = Math.min(limitPositionImpulse + limitImpulse, 0.0f)
+        limitPositionImpulse = min(limitPositionImpulse + limitImpulse, 0.0f)
         limitImpulse = limitPositionImpulse - oldLimitImpulse
       }
 

@@ -172,7 +172,7 @@ object Distance {
           x2 = w2
         }
         g_GJK_Iterations = iter
-        return (MathUtil.sqrt(vSqr), x1, x2)
+        return (sqrt(vSqr), x1, x2)
       }
 
       pointCount match {
@@ -210,7 +210,7 @@ object Distance {
       var maxSqr = -Float.MaxValue
       var i = 0
       while (i < pointCount) {
-        maxSqr = MathUtil.max(maxSqr, points(i) ∙ points(i))
+        maxSqr = max(maxSqr, points(i) ∙ points(i))
         i += 1
       }
 
@@ -219,13 +219,13 @@ object Distance {
         v = x2 - x1
         vSqr = v ∙ v
 
-        return (MathUtil.sqrt(vSqr), x1, x2)
+        return (sqrt(vSqr), x1, x2)
       }
       iter += 1
     }
 
     g_GJK_Iterations = maxIterations;
-    return (MathUtil.sqrt(vSqr), x1, x2)
+    return (sqrt(vSqr), x1, x2)
   }
 
   def distanceCC(circle1: Circle, xf1: Transform2f,

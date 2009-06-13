@@ -130,7 +130,7 @@ class Simplex {
 
   def computeMetric = count match {
     case 1 => 0.0f
-    case 2 => MathUtil.distance(v1.w, v2.w)
+    case 2 => distance(v1.w, v2.w)
     case 3 => (v2.w - v1.w) cross (v3.w - v1.w)
     case _ => throw new IllegalStateException("call to computeMetric when count=" + count)
   }
@@ -395,7 +395,7 @@ object NewDistance {
 
     // Prepare output.
     val (pA, pB) = simplex.computeWitnessPoints
-    val out = DistanceOutput(pA, pB, MathUtil.distance(pA, pB), iter)
+    val out = DistanceOutput(pA, pB, vecmath.Preamble.distance(pA, pB), iter)
 
     // Cache the simplex.
     simplex.writeCache(cache)

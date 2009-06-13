@@ -3,7 +3,6 @@ package org.villane.box2d.dynamics.joints
 import vecmath.Vector2f
 import vecmath.Preamble._
 import Settings.ε
-import vecmath.MathUtil.π
 
 //C = norm(p2 - p1) - L
 //u = (p2 - p1) / norm(p2 - p1)

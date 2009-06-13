@@ -1,5 +1,7 @@
 package org.villane.vecmath
 
+import Preamble._
+
 object Matrix2f {
   val Zero = Matrix2f(0, 0, 0, 0)
   val One = Matrix2f(1, 1, 1, 1)
@@ -14,8 +16,8 @@ object Matrix2f {
    * @param angle rotation in radians
    */
   def rotation(angle: Float) = {
-    val c = MathUtil.cos(angle)
-    val s = MathUtil.sin(angle)
+    val c = cos(angle)
+    val s = sin(angle)
     Matrix2f(c, -s, s, c)
   }
 }

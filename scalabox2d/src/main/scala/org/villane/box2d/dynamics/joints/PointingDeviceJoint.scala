@@ -3,7 +3,6 @@ package org.villane.box2d.dynamics.joints
 import vecmath._
 import vecmath.Preamble._
 import dynamics._
-import MathUtil.π
 
 //p = attached point, m = mouse point
 //C = p - m

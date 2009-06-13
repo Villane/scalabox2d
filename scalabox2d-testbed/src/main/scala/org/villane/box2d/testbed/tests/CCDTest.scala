@@ -2,7 +2,6 @@ package org.villane.box2d.testbed.tests
 
 import vecmath._
 import vecmath.Preamble._
-import vecmath.MathUtil.π
 import dynamics.joints._
 import dynamics._
 import shapes._

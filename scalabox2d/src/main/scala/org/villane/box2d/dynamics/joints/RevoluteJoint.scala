@@ -131,7 +131,7 @@ class RevoluteJoint(defn: RevoluteJointDef) extends Joint(defn) {
       val motorCdot = b2.angularVelocity - b1.angularVelocity - motorSpeed
       var motorF = -step.invDt * motorMass * motorCdot
       val oldMotorForce = motorForce
-      motorForce = MathUtil.clamp(motorForce + motorF, -maxMotorTorque, maxMotorTorque)
+      motorForce = clamp(motorForce + motorF, -maxMotorTorque, maxMotorTorque)
       motorF = motorForce - oldMotorForce
 
       val P2 = step.dt * motorF
@@ -147,11 +147,11 @@ class RevoluteJoint(defn: RevoluteJointDef) extends Joint(defn) {
         limitForce += limitF
       } else if (limitState == LimitState.AT_LOWER_LIMIT) {
         val oldLimitForce = limitForce
-        limitForce = MathUtil.max(limitForce + limitF, 0.0f)
+        limitForce = max(limitForce + limitF, 0.0f)
         limitF = limitForce - oldLimitForce
       } else if (limitState == LimitState.AT_UPPER_LIMIT) {
         val oldLimitForce = limitForce
-        limitForce = MathUtil.min(limitForce + limitF, 0.0f)
+        limitForce = min(limitForce + limitF, 0.0f)
         limitF = limitForce - oldLimitForce
       }
 
@@ -213,28 +213,28 @@ class RevoluteJoint(defn: RevoluteJointDef) extends Joint(defn) {
 
       if (limitState == LimitState.EQUAL_LIMITS) {
         // Prevent large angular corrections
-        val limitC = MathUtil.clamp(angle, -Settings.maxAngularCorrection, Settings.maxAngularCorrection)
+        val limitC = clamp(angle, -Settings.maxAngularCorrection, Settings.maxAngularCorrection)
         limitImpulse = -motorMass * limitC
         angularError = limitC.abs
       } else if (limitState == LimitState.AT_LOWER_LIMIT) {
         var limitC = angle - lowerAngle
-        angularError = MathUtil.max(0.0f, -limitC)
+        angularError = max(0.0f, -limitC)
 
         // Prevent large angular corrections and allow some slop.
-        limitC = MathUtil.clamp(limitC + Settings.angularSlop, -Settings.maxAngularCorrection, 0.0f)
+        limitC = clamp(limitC + Settings.angularSlop, -Settings.maxAngularCorrection, 0.0f)
         limitImpulse = -motorMass * limitC
         val oldLimitImpulse = limitPositionImpulse
-        limitPositionImpulse = MathUtil.max(limitPositionImpulse + limitImpulse, 0.0f)
+        limitPositionImpulse = max(limitPositionImpulse + limitImpulse, 0.0f)
         limitImpulse = limitPositionImpulse - oldLimitImpulse
       } else if (limitState == LimitState.AT_UPPER_LIMIT) {
         var limitC = angle - upperAngle
-        angularError = MathUtil.max(0.0f, limitC)
+        angularError = max(0.0f, limitC)
 
         // Prevent large angular corrections and allow some slop.
-        limitC = MathUtil.clamp(limitC - Settings.angularSlop, 0.0f, Settings.maxAngularCorrection)
+        limitC = clamp(limitC - Settings.angularSlop, 0.0f, Settings.maxAngularCorrection)
         limitImpulse = -motorMass * limitC
         val oldLimitImpulse = limitPositionImpulse
-        limitPositionImpulse = MathUtil.min(limitPositionImpulse + limitImpulse, 0.0f)
+        limitPositionImpulse = min(limitPositionImpulse + limitImpulse, 0.0f)
         limitImpulse = limitPositionImpulse - oldLimitImpulse
       }
 

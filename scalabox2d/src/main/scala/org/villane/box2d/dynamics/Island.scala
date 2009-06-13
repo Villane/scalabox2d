@@ -170,7 +170,7 @@ class Island(val bodyCapacity: Int,
           minSleepTime = 0f
         } else {
           b.sleepTime += step.dt
-          minSleepTime = MathUtil.min(minSleepTime, b.sleepTime)
+          minSleepTime = min(minSleepTime, b.sleepTime)
         }
         }
       }

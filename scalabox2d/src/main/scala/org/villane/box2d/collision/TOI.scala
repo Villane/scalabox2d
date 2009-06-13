@@ -67,7 +67,7 @@ object TOI {
         if (distance > 2.0f * Settings.toiSlop) {
           targetDistance = 1.5f * Settings.toiSlop;
         } else {
-          targetDistance = MathUtil.max(0.05f * Settings.toiSlop, distance - 0.5f * Settings.toiSlop);
+          targetDistance = max(0.05f * Settings.toiSlop, distance - 0.5f * Settings.toiSlop);
         }
       }
 
