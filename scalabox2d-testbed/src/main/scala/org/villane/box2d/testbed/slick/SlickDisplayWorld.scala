@@ -43,13 +43,13 @@ class SlickDisplayWorld(world: World) extends BasicGame("Slick ScalaBox2D: World
   }
 
   def update(container: GameContainer, delta: Int) {
-    m_debugDraw.drawFlags = 0
-    m_debugDraw.appendFlags(DrawFlags.shape);
-    m_debugDraw.appendFlags(DrawFlags.joint);
-    m_debugDraw.appendFlags(DrawFlags.coreShape);
-    m_debugDraw.appendFlags(DrawFlags.aabb);
-    m_debugDraw.appendFlags(DrawFlags.pair);
-    m_debugDraw.appendFlags(DrawFlags.centerOfMass);
+    dd.flags = 0
+    dd.appendFlags(DrawFlags.Shapes)
+    dd.appendFlags(DrawFlags.Joints)
+    dd.appendFlags(DrawFlags.CoreShapes)
+    dd.appendFlags(DrawFlags.AABBs)
+    dd.appendFlags(DrawFlags.Pairs)
+    dd.appendFlags(DrawFlags.CenterOfMass)
   }
 
   def render(container: GameContainer, g: Graphics) {

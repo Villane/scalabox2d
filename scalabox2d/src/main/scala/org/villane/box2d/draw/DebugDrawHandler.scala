@@ -3,34 +3,12 @@ package org.villane.box2d.draw
 import vecmath._
 import vecmath.Preamble._
 
-object DrawFlags {
-  /** draw shapes */
-  val shape = 0x0001
-  /** draw joint connections */
-  val joint = 0x0002
-  /** @deprecated draw core (TOI) shapes */
-  val coreShape = 0x0004
-  /** draw axis aligned bounding boxes */
-  val aabb = 0x0008
-  /** draw broad-phase pairs */
-  val pair = 0x0020
-  /** draw center of mass frame */
-  val centerOfMass = 0x0040
-}
-
 /**
  * Implement this abstract class to allow JBox2d to automatically draw your
  * physics for debugging purposes. Not intended to replace your own custom
  * rendering routines!
  */
 trait DebugDrawHandler {
-  /// Implement and register this class with a b2World to provide debug drawing of physics
-  /// entities in your game.
-  var drawFlags = 0
-
-  def appendFlags(flags: Int) = drawFlags |= flags
-  def clearFlags(flags: Int) = drawFlags &= ~flags
-
   /// Draw a closed polygon provided in CCW order.
   def drawPolygon(vertices: Array[Vector2], color: Color3f)
 
