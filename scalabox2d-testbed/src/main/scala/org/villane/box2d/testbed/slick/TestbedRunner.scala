@@ -57,8 +57,8 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
 
   var mouseButton = 0
   var mousePressed = false
-  var mousePos = Vector2f.Zero
-  var mousePosOld = Vector2f.Zero
+  var mousePos = Vector2.Zero
+  var mousePosOld = Vector2.Zero
   var gameContainer: GameContainer = null
   
   val tests = new collection.mutable.ListBuffer[AbstractExample]
@@ -92,7 +92,7 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
 
   def update(container: GameContainer, delta: Int) {
 
-    Vector2f.creationCount = 0;
+    Vector2.creationCount = 0;
 
     if (settings.reset || settings.testIndex != currentTestIndex) {
       currentTestIndex = settings.testIndex

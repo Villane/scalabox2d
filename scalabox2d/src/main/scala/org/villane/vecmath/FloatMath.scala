@@ -33,9 +33,9 @@ trait FloatMath {
 
   final def pow(a: Float, b: Float) = Math.pow(a, b).toFloat
 
-  final def distance(a: Vector2f, b: Vector2f) = (a - b).length
+  final def distance(a: Vector2, b: Vector2) = (a - b).length
 
-  final def distanceSquared(a: Vector2f, b: Vector2f) = {
+  final def distanceSquared(a: Vector2, b: Vector2) = {
     val d = a - b
     d dot d
   }

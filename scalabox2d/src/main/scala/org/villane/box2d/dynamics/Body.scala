@@ -40,13 +40,13 @@ class Body(bd: BodyDef, val world: World) {
   var contactList: List[ContactEdge] = Nil
   var jointList: List[JointEdge] = Nil
   
-  private[this] var _transform = Transform2f(bd.pos, Matrix2f.rotation(bd.angle))
+  private[this] var _transform = Transform2(bd.pos, Matrix22.rotation(bd.angle))
   def pos = _transform.pos
   /** The swept motion for CCD */
   var sweep = new Sweep  
-  var linearVelocity = Vector2f.Zero
+  var linearVelocity = Vector2.Zero
   var angularVelocity = 0f
-  var force = Vector2f.Zero
+  var force = Vector2.Zero
   var torque = 0f
 
   def transform = _transform
@@ -59,12 +59,12 @@ class Body(bd: BodyDef, val world: World) {
    * @return false if the movement put a shape outside the world. In this case the
    * body is automatically frozen.
    */
-  def setTransform(pos: Vector2f, angle: Float): Boolean = {
+  def setTransform(pos: Vector2, angle: Float): Boolean = {
     assert(!world.lock)
     if (world.lock) return true
     if (isFrozen) return false
 
-    _transform = Transform2f(pos, angle)
+    _transform = Transform2(pos, angle)
 
     sweep.c = transform * sweep.localCenter
     sweep.c0 = sweep.c
@@ -83,7 +83,7 @@ class Body(bd: BodyDef, val world: World) {
 
     if (freeze) {
       flags |= BodyFlags.frozen
-      linearVelocity = Vector2f.Zero
+      linearVelocity = Vector2.Zero
       angularVelocity = 0f
       for (f <- fixtures) {
         f.destroyProxy(world.broadPhase)
@@ -149,17 +149,17 @@ class Body(bd: BodyDef, val world: World) {
   /** Get a copy of the local position of the center of mass. */
   def localCenter = sweep.localCenter
 
-  def toWorldPoint(localPoint: Vector2f) = _transform * localPoint
-  def toWorldVector(localVector: Vector2f) = _transform.rot * localVector
-  def toLocalPoint(worldPoint: Vector2f) = _transform ** worldPoint
-  def toLocalVector(worldVector: Vector2f) = _transform.rot ** worldVector
+  def toWorldPoint(localPoint: Vector2) = _transform * localPoint
+  def toWorldVector(localVector: Vector2) = _transform.rot * localVector
+  def toLocalPoint(worldPoint: Vector2) = _transform ** worldPoint
+  def toLocalVector(worldVector: Vector2) = _transform.rot ** worldVector
   
   /**
    * Get the world linear velocity of a world point attached to this body.
    * @param worldPoint a point in world coordinates.
    * @return the world velocity of a point.
    */
-  def getLinearVelocityFromWorldPoint(worldPoint: Vector2f) =
+  def getLinearVelocityFromWorldPoint(worldPoint: Vector2) =
     linearVelocity + (angularVelocity × (worldPoint - sweep.c))
 
   /**
@@ -167,7 +167,7 @@ class Body(bd: BodyDef, val world: World) {
    * @param localPoint a point in local coordinates.
    * @return the world velocity of a point.
    */
-  def getLinearVelocityFromLocalPoint(localPoint: Vector2f) =
+  def getLinearVelocityFromLocalPoint(localPoint: Vector2) =
     getLinearVelocityFromWorldPoint(toWorldPoint(localPoint))
 
   /**
@@ -177,7 +177,7 @@ class Body(bd: BodyDef, val world: World) {
    * @param force the world force vector, usually in Newtons (N).
    * @param point the world position of the point of application.
    */
-  def applyForce(force: Vector2f, point: Vector2f) {
+  def applyForce(force: Vector2, point: Vector2) {
     if (isSleeping) wakeUp()
     this.force += force
     this.torque += (point - sweep.c) × force
@@ -201,7 +201,7 @@ class Body(bd: BodyDef, val world: World) {
    * @param impulse the world impulse vector, usually in N-seconds or kg-m/s.
    * @param point the world position of the point of application.
    */
-  def applyImpulse(impulse: Vector2f, point: Vector2f) {
+  def applyImpulse(impulse: Vector2, point: Vector2) {
     if (isSleeping) wakeUp()
     linearVelocity += impulse * invMass
     angularVelocity += invI * ((point - sweep.c) × impulse)
@@ -243,7 +243,7 @@ class Body(bd: BodyDef, val world: World) {
     I = 0f
     invI = 0f
 
-    var center = Vector2f.Zero
+    var center = Vector2.Zero
     for (f <- fixtures) {
       val massData = f.computeMass()
       mass += massData.mass
@@ -303,8 +303,8 @@ class Body(bd: BodyDef, val world: World) {
 
   /** For internal use only. */
   def synchronizeFixtures(): Boolean = {
-    val rot = Matrix2f.rotation(sweep.a0)
-    val xf1 = new Transform2f(sweep.c0 - (rot * sweep.localCenter), rot)
+    val rot = Matrix22.rotation(sweep.a0)
+    val xf1 = new Transform2(sweep.c0 - (rot * sweep.localCenter), rot)
 
     var inRange = true
     val iter = fixtures.elements
@@ -315,7 +315,7 @@ class Body(bd: BodyDef, val world: World) {
 
     if (!inRange) {
       flags |= BodyFlags.frozen
-      linearVelocity = Vector2f.Zero
+      linearVelocity = Vector2.Zero
       angularVelocity = 0f
       for (f <- fixtures) {
         f.destroyProxy(world.broadPhase)
@@ -337,11 +337,11 @@ class Body(bd: BodyDef, val world: World) {
 
     //m_xf.position.x = m_sweep.c.x - (m_xf.R.col1.x * v1.x + m_xf.R.col2.x * v1.y);
     //m_xf.position.y = m_sweep.c.y - (m_xf.R.col1.y * v1.x + m_xf.R.col2.y * v1.y);
-    val r = Matrix2f.rotation(sweep.a)
+    val r = Matrix22.rotation(sweep.a)
     val v1 = sweep.localCenter
     val vx = sweep.c.x - (r.a11 * v1.x + r.a12 * v1.y)
     val vy = sweep.c.y - (r.a21 * v1.x + r.a22 * v1.y)
-    _transform = Transform2f(Vector2f(vx,vy), r)
+    _transform = Transform2(Vector2(vx,vy), r)
   }
 
   /**
@@ -375,9 +375,9 @@ class Body(bd: BodyDef, val world: World) {
   def putToSleep() {
     flags |= BodyFlags.sleep
     sleepTime = 0f
-    linearVelocity = Vector2f.Zero
+    linearVelocity = Vector2.Zero
 	angularVelocity = 0f
-    force = Vector2f.Zero
+    force = Vector2.Zero
     torque = 0f
   }
 

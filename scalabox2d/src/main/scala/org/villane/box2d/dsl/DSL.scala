@@ -48,13 +48,13 @@ object DSL {
   }
 
   def shape(shapeDef: ShapeDef) = fbuilder(shapeDef)
-  def circle(radius: Float) = fbuilder(CircleDef(Vector2f.Zero, radius))
-  def circle(pos: Vector2f, radius: Float) = fbuilder(CircleDef(pos, radius))
-  def polygon(vertices: Vector2f*) = fbuilder(PolygonDef(vertices.toArray))
+  def circle(radius: Float) = fbuilder(CircleDef(Vector2.Zero, radius))
+  def circle(pos: Vector2, radius: Float) = fbuilder(CircleDef(pos, radius))
+  def polygon(vertices: Vector2*) = fbuilder(PolygonDef(vertices.toArray))
   def box(halfW: Float, halfH: Float) = fbuilder(PolygonDef.box(halfW, halfH))
-  def box(halfW: Float, halfH: Float, center: Vector2f) =
+  def box(halfW: Float, halfH: Float, center: Vector2) =
     fbuilder(PolygonDef.box(halfW, halfH, center))
-  def box(halfW: Float, halfH: Float, center: Vector2f, angle: Float) =
+  def box(halfW: Float, halfH: Float, center: Vector2, angle: Float) =
     fbuilder(PolygonDef.box(halfW, halfH, center, angle))
 
   private def bbuilder = BodyCtx.get.bodyBuilder
@@ -86,7 +86,7 @@ object DSL {
 class BodyBuilder(b: BodyDef) {
   def userData(userData: AnyRef) = { b.userData = userData; this }
   def mass(mass: Mass) = { b.mass = mass; this }
-  def pos(pos: Vector2f) = { b.pos = pos; this } 
+  def pos(pos: Vector2) = { b.pos = pos; this } 
   def angle(angle: Float) = { b.angle = angle; this } 
   def linearDamping(linearDamping: Float) = { b.linearDamping = linearDamping; this }
   def angularDamping(angularDamping: Float) = { b.angularDamping = angularDamping; this }

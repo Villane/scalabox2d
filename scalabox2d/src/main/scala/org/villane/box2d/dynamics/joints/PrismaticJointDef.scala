@@ -1,16 +1,16 @@
 package org.villane.box2d.dynamics.joints
 
-import vecmath.Vector2f
+import vecmath.Vector2
 
 class PrismaticJointDef extends JointDef {
   /** The local anchor point relative to body1's origin. */
-  var localAnchor1 = Vector2f.Zero
+  var localAnchor1 = Vector2.Zero
 
   /** The local anchor point relative to body2's origin. */
-  var localAnchor2 = Vector2f.Zero
+  var localAnchor2 = Vector2.Zero
 
   /** The local translation axis in body1. */
-  var localAxis1 = Vector2f.Zero
+  var localAxis1 = Vector2.Zero
   
   /** The constrained angle between the bodies: body2_angle - body1_angle. */
   var referenceAngle = 0f
@@ -39,7 +39,7 @@ class PrismaticJointDef extends JointDef {
   /**
    * Initialize the bodies, anchors, and reference angle using the world anchor.
    */
-  def this(b1: Body, b2: Body, anchor: Vector2f, axis: Vector2f) {
+  def this(b1: Body, b2: Body, anchor: Vector2, axis: Vector2) {
     this()
     body1 = b1;
     body2 = b2;

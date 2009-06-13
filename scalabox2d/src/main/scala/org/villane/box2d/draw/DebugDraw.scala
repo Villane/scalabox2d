@@ -18,7 +18,7 @@ class DebugDraw(val draw: DebugDrawHandler) {
   val AABB_COLOR = Color3f(255f, 255f, 255f)
   
   /** For internal use */
-  def drawShape(shape: Shape, xf: Transform2f, color: Color3f, core: Boolean) {
+  def drawShape(shape: Shape, xf: Transform2, color: Color3f, core: Boolean) {
     
     val coreColor = CORE_COLOR
 
@@ -153,7 +153,7 @@ class DebugDraw(val draw: DebugDrawHandler) {
                (worldLower.x + invQ.x * bp.m_bounds(0)(p.upperBounds(0)).value,
                 worldLower.y + invQ.y * bp.m_bounds(1)(p.upperBounds(1)).value))
 
-          val vs: Array[Vector2f] = Array(
+          val vs: Array[Vector2] = Array(
             b.lowerBound,
               (b.upperBound.x, b.lowerBound.y),
               b.upperBound,
@@ -164,7 +164,7 @@ class DebugDraw(val draw: DebugDrawHandler) {
       }
     }
 
-    val vsw: Array[Vector2f] = Array(
+    val vsw: Array[Vector2] = Array(
       worldLower,
         (worldUpper.x, worldLower.y),
         worldUpper,
@@ -174,7 +174,7 @@ class DebugDraw(val draw: DebugDrawHandler) {
 
     if ((flags & DrawFlags.centerOfMass) != 0) {
       for (b <- bodies) {
-        val xf = Transform2f(b.worldCenter, b.transform.rot)
+        val xf = Transform2(b.worldCenter, b.transform.rot)
         draw.drawTransform(xf)
       }
     }

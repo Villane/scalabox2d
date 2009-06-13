@@ -1,6 +1,6 @@
 package org.villane.box2d.testbed.fenggui
 
-import org.villane.vecmath.Vector2f
+import org.villane.vecmath.Vector2
 
 import org.fenggui.{FengGUI, Label, Display, Button, List}
 import org.fenggui.{Container, ComboBox, TextEditor, CheckBox}
@@ -137,7 +137,7 @@ trait FengWrapper extends InputListener {
     gCell.addTextChangedListener(new ITextChangedListener() {
       def textChanged(e:TextChangedEvent) {
         val s = e.getTrigger.getText.replaceAll("\n","")
-        settings.gravity = Vector2f(0f, s.toFloat)
+        settings.gravity = Vector2(0f, s.toFloat)
       }
     })
     

@@ -3,17 +3,17 @@ package org.villane.box2d.shapes
 import vecmath._
 
 object SegmentCollide {
-  val Miss = SegmentCollide(SegmentCollideResult.Miss, 0, Vector2f.Zero)
-  def hit(lambda: Float, normal: Vector2f) =
+  val Miss = SegmentCollide(SegmentCollideResult.Miss, 0, Vector2.Zero)
+  def hit(lambda: Float, normal: Vector2) =
     SegmentCollide(SegmentCollideResult.Hit, lambda, normal)
-  def startsInside(lambda: Float, normal: Vector2f) =
+  def startsInside(lambda: Float, normal: Vector2) =
     SegmentCollide(SegmentCollideResult.StartsInside, lambda, normal)
 }
 
 case class SegmentCollide(
   result: SegmentCollideResult,
   lambda: Float,
-  normal: Vector2f
+  normal: Vector2
 )
 
 sealed trait SegmentCollideResult
@@ -25,7 +25,7 @@ object SegmentCollideResult {
 }
 
 /** A line segment */
-class Segment(val p1: Vector2f, val p2: Vector2f) {
+class Segment(val p1: Vector2, val p2: Vector2) {
   /** Ray cast against this segment with another segment. */
   def testSegment(segment: Segment, maxLambda: Float): SegmentCollide = {
     val s = segment.p1

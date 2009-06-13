@@ -9,8 +9,8 @@ import Settings.ε
  * Circle/circle overlap solver - for internal use only.
  */
 object CircleCollider {
-  def collideCircles(circle1: Circle, xf1: Transform2f,
-            circle2: Circle, xf2: Transform2f): Option[Manifold] = {
+  def collideCircles(circle1: Circle, xf1: Transform2,
+            circle2: Circle, xf2: Transform2): Option[Manifold] = {
     var p1 = xf1 * circle1.pos
     var p2 = xf2 * circle2.pos
     val d = p2 - p1
@@ -26,10 +26,10 @@ object CircleCollider {
     }
 
     var separation = 0f
-    var normal: Vector2f = null
+    var normal: Vector2 = null
     if (distSqr < ε) {
       separation = -radiusSum
-      normal = Vector2f.YUnit
+      normal = Vector2.YUnit
     } else {
       val dist = sqrt(distSqr)
       separation = dist - radiusSum

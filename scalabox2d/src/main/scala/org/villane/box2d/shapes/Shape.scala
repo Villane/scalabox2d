@@ -26,7 +26,7 @@ abstract class Shape {
    * @param p a point in world coordinates.
    * @return true if the point is within the shape
    */
-  def testPoint(t: Transform2f, p: Vector2f): Boolean
+  def testPoint(t: Transform2, p: Vector2): Boolean
   /**
    * Perform a ray cast against this shape.
    * @param t world transform
@@ -37,9 +37,9 @@ abstract class Shape {
 	/// @param normal returns the normal at the contact point. If there is no intersection, the normal
 	/// is not set.
    */
-  def testSegment(t: Transform2f, segment: Segment, maxLambda: Float): SegmentCollide
+  def testSegment(t: Transform2, segment: Segment, maxLambda: Float): SegmentCollide
 
-  def computeAABB(t: Transform2f): AABB
+  def computeAABB(t: Transform2): AABB
   def computeMass(density: Float): Mass
   /**
    * Compute the volume and centroid of this shape intersected with a half plane
@@ -48,8 +48,8 @@ abstract class Shape {
    * @param xf the shape transform
    * @return the total volume less than offset along normal and the centroid
    */
-  def computeSubmergedArea(normal: Vector2f, offset: Float, t: Transform2f): (Float, Vector2f)
+  def computeSubmergedArea(normal: Vector2, offset: Float, t: Transform2): (Float, Vector2)
 
-  def computeSweepRadius(pivot: Vector2f): Float
+  def computeSweepRadius(pivot: Vector2): Float
 
 }

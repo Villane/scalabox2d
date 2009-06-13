@@ -153,9 +153,9 @@ class ContactSolver(contacts: Seq[Contact]) {
           val py = ccp.normalImpulse * normal.y + ccp.tangentImpulse * tangenty
 
           b1.angularVelocity -= invI1 * (ccp.r1.x * py - ccp.r1.y * px)
-          b1.linearVelocity -= Vector2f(px * invMass1, py * invMass1)
+          b1.linearVelocity -= Vector2(px * invMass1, py * invMass1)
           b2.angularVelocity += invI2 * (ccp.r2.x * py - ccp.r2.y * px)
-          b2.linearVelocity += Vector2f(px * invMass2, py * invMass2)
+          b2.linearVelocity += Vector2(px * invMass2, py * invMass2)
         }
       } else {
         var iCCP = 0
@@ -288,9 +288,9 @@ class ContactSolver(contacts: Seq[Contact]) {
 
         ccp.tangentImpulse = newImpulse
       }
-      b1.linearVelocity = Vector2f(v1x, v1y)
+      b1.linearVelocity = Vector2(v1x, v1y)
       b1.angularVelocity = w1
-      b2.linearVelocity = Vector2f(v2x, v2y)
+      b2.linearVelocity = Vector2(v2x, v2y)
       b2.angularVelocity = w2
     }
   }
@@ -375,12 +375,12 @@ class ContactSolver(contacts: Seq[Contact]) {
         val impulsey = normal.y * dImpulse
 
         //b1.sweep.c -= impulse * invMass1
-        b1.sweep.c -= Vector2f(impulsex * invMass1, impulsey * invMass1)
+        b1.sweep.c -= Vector2(impulsex * invMass1, impulsey * invMass1)
         b1.sweep.a -= invI1 * (r1x*impulsey - r1y*impulsex)//(r1 × impulse);
         b1.synchronizeTransform()
 
         //b2.sweep.c += impulse * invMass2 
-        b2.sweep.c += Vector2f(impulsex * invMass2, impulsey * invMass2)
+        b2.sweep.c += Vector2(impulsex * invMass2, impulsey * invMass2)
         b2.sweep.a += invI2 * (r2x*impulsey - r2y*impulsex)//(r2 × impulse);
         b2.synchronizeTransform()
       }

@@ -5,8 +5,8 @@ import vecmath.Preamble._
 import Settings.ε
 
 object Polygon {
-  def computeCentroid(vertices: Array[Vector2f]) = {
-    var c = Vector2f.Zero
+  def computeCentroid(vertices: Array[Vector2]) = {
+    var c = Vector2.Zero
     var area = 0f
     forTriangles(vertices) { t =>
       area += t.area
@@ -20,14 +20,14 @@ object Polygon {
 
   object Triangle {
     val inv3 = 1f / 3
-    def apply(pRef: Vector2f, vertices: Array[Vector2f], p2index: Int): Triangle = apply(
+    def apply(pRef: Vector2, vertices: Array[Vector2], p2index: Int): Triangle = apply(
       pRef,
       vertices(p2index),
       if (p2index + 1 < vertices.length) vertices(p2index + 1) else vertices(0)
     )
   }
 
-  case class Triangle(p1: Vector2f, p2: Vector2f, p3: Vector2f) {
+  case class Triangle(p1: Vector2, p2: Vector2, p3: Vector2) {
     lazy val e1 = p2 - p1
     lazy val e2 = p3 - p1
     lazy val e3 = p3 - p2
@@ -36,13 +36,13 @@ object Polygon {
     lazy val center = area * Triangle.inv3 * (p1 + p2 + p3)
   }
 
-  def forTriangles[T](vertices: Array[Vector2f])(block: Triangle => T) = {
+  def forTriangles[T](vertices: Array[Vector2])(block: Triangle => T) = {
     val count = vertices.size
     assert(count >= 3)
 
     // pRef is the reference point for forming triangles.
     // It's location doesn't change the result (except for rounding error).
-    val pRef = Vector2f.Zero
+    val pRef = Vector2.Zero
     // This code would put the reference point inside the polygon.
     // for (int32 i = 0; i < count; ++i)
     // {
@@ -67,7 +67,7 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
   val centroid = Polygon.computeCentroid(vertices)
 
   def computeNormals = {
-    val ns = new Array[Vector2f](vertexCount)
+    val ns = new Array[Vector2](vertexCount)
     var i = 0
     // Compute normals. Ensure the edges have non-zero length.
     // TODO forEdges?
@@ -79,7 +79,7 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
     ns
   }
 
-  def testPoint(t: Transform2f, p: Vector2f): Boolean = {
+  def testPoint(t: Transform2, p: Vector2): Boolean = {
     val pLocal = t.rot ** (p - t.pos)
    	for (i <- 0 until vertexCount) {
    	  val dot = normals(i) ∙ (pLocal - vertices(i))
@@ -88,7 +88,7 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
    	true
   }
 
-  def testSegment(t: Transform2f, segment: Segment, maxLambda: Float): SegmentCollide = {
+  def testSegment(t: Transform2, segment: Segment, maxLambda: Float): SegmentCollide = {
     var lower = 0f
     var upper = maxLambda
 
@@ -131,10 +131,10 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
     if (index >= 0)
       SegmentCollide.hit(lower, t.rot * normals(index))
     else
-      SegmentCollide.startsInside(0, Vector2f.Zero)
+      SegmentCollide.startsInside(0, Vector2.Zero)
   }
 
-  def computeAABB(t: Transform2f) = {
+  def computeAABB(t: Transform2) = {
     var lower = t * vertices(0)
     var upper = lower
     var i = 1
@@ -144,8 +144,8 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
       upper = max(upper, v)
       i += 1
     }
-    AABB(Vector2f(lower.x - radius, lower.y - radius),
-         Vector2f(upper.x + radius, upper.y + radius))
+    AABB(Vector2(lower.x - radius, lower.y - radius),
+         Vector2(upper.x + radius, upper.y + radius))
     // INLINED FROM
     //val vTrans = vertices map (t * _)
     //val lower = vTrans reduceLeft min
@@ -156,7 +156,7 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
 
   def computeMass(density: Float) = {
     var area = 0f
-    var center = Vector2f.Zero
+    var center = Vector2.Zero
     var I = 0f
 
     import Polygon.Triangle._
@@ -186,8 +186,8 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
     Mass(mass, center, I * density)
   }
 
-  def computeSubmergedArea(normal: Vector2f, offset: Float, t: Transform2f):
-    (Float, Vector2f) = {
+  def computeSubmergedArea(normal: Vector2, offset: Float, t: Transform2):
+    (Float, Vector2) = {
     //Transform plane into shape co-ordinates
     val normalL = t.rot ** normal
     val offsetL = offset - (normal dot t.pos)
@@ -225,7 +225,7 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
           return (mass.mass, t * mass.center)
         } else {
           //Completely dry
-          return (0, Vector2f.Zero)
+          return (0, Vector2.Zero)
         }
       case 1 =>
         if (intoIndex == -1) {
@@ -241,20 +241,20 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
     val intoLambda = (0 - depths(intoIndex)) / (depths(intoIndex2) - depths(intoIndex))
     val outoLambda = (0 - depths(outoIndex)) / (depths(outoIndex2) - depths(outoIndex))
 
-    val intoVec = Vector2f(
+    val intoVec = Vector2(
       vertices(intoIndex).x * (1-intoLambda) + vertices(intoIndex2).x * intoLambda,
       vertices(intoIndex).y * (1-intoLambda) + vertices(intoIndex2).y * intoLambda
     )
-    val outoVec = Vector2f(
+    val outoVec = Vector2(
       vertices(outoIndex).x * (1-outoLambda) + vertices(outoIndex2).x * outoLambda,
       vertices(outoIndex).y * (1-outoLambda) + vertices(outoIndex2).y * outoLambda
     )
 
     // Initialize accumulator
     var area = 0f
-    var center = Vector2f.Zero
+    var center = Vector2.Zero
     var p2 = vertices(intoIndex2)
-    var p3: Vector2f = null
+    var p3: Vector2 = null
 
     import Polygon.Triangle
     import Triangle.inv3
@@ -277,7 +277,7 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
     (area, t * center)
   }
 
-  def computeSweepRadius(pivot: Vector2f) = {
+  def computeSweepRadius(pivot: Vector2) = {
     assert(vertices.length > 0)
     var sr = 0f
     // TODO NO CORE VERTICES!!!
@@ -292,7 +292,7 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
   def computeCoreVertices = {
     // Create core polygon shape by shifting edges inward.
     // Also compute the min/max radius for CCD.
-    val cvs = new Array[Vector2f](vertexCount)
+    val cvs = new Array[Vector2](vertexCount)
     for (i <- 0 until vertexCount) {
       val i1 = if (i - 1 >= 0) i - 1 else vertexCount - 1
       val i2 = i
@@ -301,7 +301,7 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
       val n2 = normals(i2)
       val v = vertices(i) - centroid
 
-      val d = Vector2f(n1 ∙ v - Settings.toiSlop, n2 ∙ v - Settings.toiSlop)
+      val d = Vector2(n1 ∙ v - Settings.toiSlop, n2 ∙ v - Settings.toiSlop)
 
       // Shifting the edge inward by b2_toiSlop should
       // not cause the plane to pass the centroid.
@@ -309,7 +309,7 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
       // Your shape has a radius/extent less than b2_toiSlop.
       assert(d.x >= 0f)
       assert(d.y >= 0f)
-      val A = Matrix2f(n1.x, n1.y, n2.x, n2.y)
+      val A = Matrix22(n1.x, n1.y, n2.x, n2.y)
       cvs(i) = A.solve(d) + centroid
     }
     cvs
@@ -319,7 +319,7 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
    * Get the support point in the given world direction.
    * Use the supplied transform.
    */
-  def support(xf: Transform2f, d: Vector2f) = {
+  def support(xf: Transform2, d: Vector2) = {
     val dLocal = xf.rot ** d
 
     var bestIndex = 0
@@ -335,6 +335,6 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
   }
 
   /** Get the first vertex and apply the supplied transform. */
-  def getFirstVertex(t: Transform2f) = t * coreVertices(0)
+  def getFirstVertex(t: Transform2) = t * coreVertices(0)
 
 }

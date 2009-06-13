@@ -6,7 +6,7 @@ import vecmath.Preamble._
 /**
  * An axis-aligned bounding box
  */
-case class AABB(lowerBound: Vector2f, upperBound: Vector2f) {
+case class AABB(lowerBound: Vector2, upperBound: Vector2) {
   def size = upperBound - lowerBound
   def center = lowerBound + (upperBound - lowerBound) / 2
 

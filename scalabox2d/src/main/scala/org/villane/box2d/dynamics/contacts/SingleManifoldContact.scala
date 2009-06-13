@@ -1,6 +1,6 @@
 package org.villane.box2d.dynamics.contacts
 
-import vecmath.Vector2f
+import vecmath.Vector2
 import collision.Manifold
 import collision.ManifoldPoint
 
@@ -11,7 +11,7 @@ trait SingleManifoldContact extends Contact {
   var manifoldHolder: Option[Manifold] = None
   def manifolds = if (manifoldHolder.isEmpty) Nil else manifoldHolder.get :: Nil
 
-  def notifyListener(listener: ContactListener, mp: ManifoldPoint, normal: Vector2f, event: EventType) {
+  def notifyListener(listener: ContactListener, mp: ManifoldPoint, normal: Vector2, event: EventType) {
     if (listener != null) {
       val b1 = fixture1.body
       val b2 = fixture2.body

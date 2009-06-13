@@ -15,9 +15,9 @@ import vecmath._
  */
 class Sweep {
   /** Local center of mass position */
-  var localCenter = Vector2f.Zero 
+  var localCenter = Vector2.Zero 
   /** Center world positions */
-  var c0, c = Vector2f.Zero
+  var c0, c = Vector2.Zero
   /** World angles */
   var a0, a = 0f 
   /** Time interval = [t0,1], where t0 is in [0,1] */
@@ -41,13 +41,13 @@ class Sweep {
       val α = (t - t0) / (1f - t0)
       val pos = c0 * (1f - α) + c * α
       val angle = (1f - α) * a0 + α * a
-      Transform2f(pos, angle)
+      Transform2(pos, angle)
     } else {
-      Transform2f(c, a)
+      Transform2(c, a)
     }
 
     // Shift to origin
-    Transform2f(xf.pos - (xf.rot * localCenter), xf.rot) 
+    Transform2(xf.pos - (xf.rot * localCenter), xf.rot) 
   }
 
   /** 

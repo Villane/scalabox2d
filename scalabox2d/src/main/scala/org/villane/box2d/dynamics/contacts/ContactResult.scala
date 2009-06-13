@@ -1,6 +1,6 @@
 package org.villane.box2d.dynamics.contacts
 
-import vecmath.Vector2f
+import vecmath.Vector2
 import shapes.Shape
 import collision.ContactID
 
@@ -11,9 +11,9 @@ case class ContactResult(
   /** The second shape */
   fixture2: Fixture,
   /** Position in world coordinates */
-  pos: Vector2f,
+  pos: Vector2,
   /** Points from shape1 to shape2 */
-  normal: Vector2f,
+  normal: Vector2,
   /** The normal impulse applied to body2 */
   normalImpulse: Float,
   /** The tangent impulse applied to body2 */

@@ -1,6 +1,6 @@
 package org.villane.box2d.dynamics.joints
 
-import vecmath.Vector2f
+import vecmath.Vector2
 import vecmath.Preamble._
 import Settings.ε
 
@@ -21,7 +21,7 @@ class DistanceJoint(defn: DistanceJointDef) extends Joint(defn) {
   val localAnchor2 = defn.localAnchor2
   val length = defn.length
   var impulse = 0.0f
-  var u = Vector2f.Zero
+  var u = Vector2.Zero
   // effective mass for the constraint.
   var mass = 0.0f
   val frequencyHz = defn.frequencyHz
@@ -52,7 +52,7 @@ class DistanceJoint(defn: DistanceJointDef) extends Joint(defn) {
     if (len > Settings.linearSlop) {
       u /= len
     } else {
-      u = Vector2f.Zero
+      u = Vector2.Zero
     }
 
     val cr1u = r1 × u
@@ -103,7 +103,7 @@ class DistanceJoint(defn: DistanceJointDef) extends Joint(defn) {
     val r1 = b1.transform.rot * (localAnchor1 - b1.localCenter)
     val r2 = b2.transform.rot * (localAnchor2 - b2.localCenter)
 
-    var d = Vector2f(b2.sweep.c.x + r2.x - b1.sweep.c.x - r1.x,
+    var d = Vector2(b2.sweep.c.x + r2.x - b1.sweep.c.x - r1.x,
                      b2.sweep.c.y + r2.y - b1.sweep.c.y - r1.y)
 
     val len = d.length

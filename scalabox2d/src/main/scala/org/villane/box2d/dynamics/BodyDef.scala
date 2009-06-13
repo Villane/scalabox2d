@@ -1,12 +1,12 @@
 package org.villane.box2d.dynamics
 
-import vecmath.Vector2f
+import vecmath.Vector2
 import shapes.Mass
 
 class BodyDef {
   var userData: AnyRef = null
   var mass = Mass.Zero
-  var pos = Vector2f.Zero
+  var pos = Vector2.Zero
   var angle = 0f
 
   /**

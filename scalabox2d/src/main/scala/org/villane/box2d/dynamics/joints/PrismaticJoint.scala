@@ -128,9 +128,9 @@ class PrismaticJoint(defn: PrismaticJointDef) extends Joint(defn) {
     }
 
     if (step.warmStarting) {
-      val P1 = Vector2f( step.dt * (force * linearJacobian.linear1.x + (motorForce + limitForce) * motorJacobian.linear1.x),
+      val P1 = Vector2( step.dt * (force * linearJacobian.linear1.x + (motorForce + limitForce) * motorJacobian.linear1.x),
     							step.dt * (force * linearJacobian.linear1.y + (motorForce + limitForce) * motorJacobian.linear1.y) )
-      val P2 = Vector2f( step.dt * (force * linearJacobian.linear2.x + (motorForce + limitForce) * motorJacobian.linear2.x),
+      val P2 = Vector2( step.dt * (force * linearJacobian.linear2.x + (motorForce + limitForce) * motorJacobian.linear2.x),
     							step.dt * (force * linearJacobian.linear2.y + (motorForce + limitForce) * motorJacobian.linear2.y) )
       val L1 = step.dt * (force * linearJacobian.angular1 - torque + (motorForce + limitForce) * motorJacobian.angular1)
       val L2 = step.dt * (force * linearJacobian.angular2 + torque + (motorForce + limitForce) * motorJacobian.angular2)
@@ -359,7 +359,7 @@ class PrismaticJoint(defn: PrismaticJointDef) extends Joint(defn) {
   def reactionForce = {
     val ax1 = body1.transform.rot * localXAxis1
     val ay1 = body1.transform.rot * localYAxis1
-    Vector2f(limitForce * ax1.x + force * ay1.x,
+    Vector2(limitForce * ax1.x + force * ay1.x,
              limitForce * ax1.y + force * ay1.y)
   }
 

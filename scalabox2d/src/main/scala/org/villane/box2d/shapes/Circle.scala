@@ -10,9 +10,9 @@ import Settings.ε
  * pos - position
  * radius - radius of the circle
  */
-class Circle(val pos: Vector2f, val radius: Float) extends Shape {
+class Circle(val pos: Vector2, val radius: Float) extends Shape {
 
-  def testPoint(t: Transform2f, p: Vector2f) = {
+  def testPoint(t: Transform2, p: Vector2) = {
    	val center = t * pos
    	val d = p - center
   	(d ∙ d) <= (radius * radius)
@@ -24,14 +24,14 @@ class Circle(val pos: Vector2f, val radius: Float) extends Shape {
    * x = s + a * r
    * norm(x) = radius
    */
-  def testSegment(t: Transform2f, segment: Segment, maxLambda: Float): SegmentCollide = {
+  def testSegment(t: Transform2, segment: Segment, maxLambda: Float): SegmentCollide = {
     val p = t * pos
     val s = segment.p1 - p
     val b = (s dot s) - radius * radius
 
     // Does the segment start inside the circle?
     if (b < 0.0f)
-      return SegmentCollide.startsInside(0, Vector2f.Zero)
+      return SegmentCollide.startsInside(0, Vector2.Zero)
 
     // Solve quadratic equation.
     val r = segment.p2 - segment.p1
@@ -55,7 +55,7 @@ class Circle(val pos: Vector2f, val radius: Float) extends Shape {
 	SegmentCollide.Miss
   }
 
-  def computeAABB(t: Transform2f) = {
+  def computeAABB(t: Transform2) = {
     val p = t * pos
     AABB(p - radius, p + radius)
   }
@@ -67,13 +67,13 @@ class Circle(val pos: Vector2f, val radius: Float) extends Shape {
     Mass(mass, pos, i)
   }
 
-  def computeSubmergedArea(normal: Vector2f, offset: Float, t: Transform2f):
-    (Float, Vector2f) = {
+  def computeSubmergedArea(normal: Vector2, offset: Float, t: Transform2):
+    (Float, Vector2) = {
     val p = t * pos
     val l = -((normal dot p) - offset)
     if (l < -radius + ε) {
       // Completely dry
-      return (0, Vector2f.Zero)
+      return (0, Vector2.Zero)
     }
     if (l > radius) {
       // Completely wet
@@ -89,7 +89,7 @@ class Circle(val pos: Vector2f, val radius: Float) extends Shape {
     (area, p + normal * com)
   }
 
-  def computeSweepRadius(pivot: Vector2f) = {
+  def computeSweepRadius(pivot: Vector2) = {
     // ERKKI : in Box2D now it is: = distance(pos, pivot)
     val d = pos - pivot
     d.length + radius - Settings.toiSlop

@@ -6,16 +6,16 @@ import shapes._
 import Settings.ε
 
 case class DistanceInput(
-  tA: Transform2f,
-  tB: Transform2f,
+  tA: Transform2,
+  tB: Transform2,
   useRadii: Boolean
 )
 
 case class DistanceOutput(
   /** closest point on shape1 */
-  var pA: Vector2f,
+  var pA: Vector2,
   /** closest point on shape2 */
-  var pB: Vector2f,
+  var pB: Vector2,
   var distance: Float,
   /** number of GJK iterations used */
   iterations: Float
@@ -35,11 +35,11 @@ class SimplexCache {
 
 class SimplexVertex {
   /** support point in shapeA */
-  var wA: Vector2f = null
+  var wA: Vector2 = null
   /** support point in shapeB */
-  var wB: Vector2f = null
+  var wB: Vector2 = null
   /** wB - wA */
-  var w: Vector2f = null
+  var w: Vector2 = null
   /** barycentric coordinate for closest point */
   var a = 0f
   /** wA index */
@@ -59,8 +59,8 @@ class Simplex {
   def v3_=(v: SimplexVertex) = vertices(2) = v
 
   def readCache(cache: SimplexCache,
-                shapeA: Shape with SupportsNewDistance, tA: Transform2f,
-                shapeB: Shape with SupportsNewDistance, tB: Transform2f) {
+                shapeA: Shape with SupportsNewDistance, tA: Transform2,
+                shapeB: Shape with SupportsNewDistance, tB: Transform2) {
     assert(0 <= cache.count && cache.count <= 3)
 
     // Copy data from cache.
@@ -115,7 +115,7 @@ class Simplex {
   def computeClosestPoint = count match {
     case 1 => v1.w
     case 2 => v1.a * v1.w + v2.a * v2.w
-    case 3 => Vector2f.Zero
+    case 3 => Vector2.Zero
     case _ => throw new IllegalStateException("call to computeClosestPoint when count=" + count)
   }
 

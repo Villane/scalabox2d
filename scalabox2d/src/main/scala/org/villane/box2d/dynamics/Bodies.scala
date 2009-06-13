@@ -10,7 +10,7 @@ object Bodies {
 class BodyBuilder(b: BodyDef) {
   def withUserData(userData: AnyRef) = { b.userData = userData; this }
   def withMass(mass: Mass) = { b.mass = mass; this }
-  def withPos(pos: Vector2f) = { b.pos = pos; this } 
+  def withPos(pos: Vector2) = { b.pos = pos; this } 
   def withAngle(angle: Float) = { b.angle = angle; this } 
   def withLinearDamping(linearDamping: Float) = { b.linearDamping = linearDamping; this }
   def withAngularDamping(angularDamping: Float) = { b.angularDamping = angularDamping; this }

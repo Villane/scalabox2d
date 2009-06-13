@@ -35,7 +35,7 @@ class Island(val bodyCapacity: Int,
   def add(contact: Contact) = contacts += contact
   def add(joint: Joint) = joints += joint
 
-  def solve(step: TimeStep, gravity: Vector2f, correctPositions: Boolean, allowSleep: Boolean) {
+  def solve(step: TimeStep, gravity: Vector2, correctPositions: Boolean, allowSleep: Boolean) {
     // Integrate velocities and apply damping.
     for (b <- bodies) {
       if (!b.isStatic) {
@@ -44,7 +44,7 @@ class Island(val bodyCapacity: Int,
       b.angularVelocity += step.dt * b.invI * b.torque
 
       // Reset forces.
-      b.force = Vector2f.Zero
+      b.force = Vector2.Zero
       b.torque = 0f
 
       // Apply damping.
@@ -178,7 +178,7 @@ class Island(val bodyCapacity: Int,
       if (minSleepTime >= Settings.timeToSleep) {
         for (b <- bodies) {
           b.flags |= BodyFlags.sleep
-          b.linearVelocity = Vector2f.Zero
+          b.linearVelocity = Vector2.Zero
           b.angularVelocity = 0f
         }
       }

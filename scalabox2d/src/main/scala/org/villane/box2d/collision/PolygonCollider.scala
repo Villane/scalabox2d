@@ -7,11 +7,11 @@ import collision._
 
 /** Holder class used internally in CollidePoly. */
 case class MaxSeparation(bestFaceIndex: Int, bestSeparation: Float)
-case class ClipVertex(v: Vector2f, id: ContactID)
+case class ClipVertex(v: Vector2, id: ContactID)
 
 object PolygonCollider {
   def clipSegmentToLine(vIn: List[ClipVertex],
-                        normal: Vector2f, offset: Float): List[ClipVertex] = (vIn: @unchecked) match {
+                        normal: Vector2, offset: Float): List[ClipVertex] = (vIn: @unchecked) match {
   case vIn0 :: vIn1 :: _ =>
     // Calculate the distance of end points to the line
     val distance0 = (normal ∙ vIn0.v) - offset
@@ -37,8 +37,8 @@ object PolygonCollider {
     vOut.toList
   }
 
-  def edgeSeparation(poly1: Polygon, xf1: Transform2f, edge1: Int, 
-                     poly2: Polygon, xf2: Transform2f): Float = {
+  def edgeSeparation(poly1: Polygon, xf1: Transform2, edge1: Int, 
+                     poly2: Polygon, xf2: Transform2): Float = {
 
     val count1 = poly1.vertexCount
     val vertices1 = poly1.vertices
@@ -74,8 +74,8 @@ object PolygonCollider {
 
   // Find the max separation between poly1 and poly2 using face normals
   // from poly1.
-  def findMaxSeparation(poly1: Polygon, xf1: Transform2f,
-                        poly2: Polygon, xf2: Transform2f): MaxSeparation = {
+  def findMaxSeparation(poly1: Polygon, xf1: Transform2,
+                        poly2: Polygon, xf2: Transform2): MaxSeparation = {
     val count1 = poly1.vertexCount
     val normals1 = poly1.normals
 
@@ -152,8 +152,8 @@ object PolygonCollider {
     return MaxSeparation(bestEdge, bestSeparation)
   }
 
-  def findIncidentEdge(poly1: Polygon, xf1: Transform2f, edge1: Int,
-                       poly2: Polygon, xf2: Transform2f) = {
+  def findIncidentEdge(poly1: Polygon, xf1: Transform2, edge1: Int,
+                       poly2: Polygon, xf2: Transform2) = {
     val count1 = poly1.vertexCount
     val normals1 = poly1.normals
 
@@ -200,8 +200,8 @@ object PolygonCollider {
   // Clip
 
   // The normal points from 1 to 2
-  def collidePolygons(polyA: Polygon, xfA: Transform2f,
-                      polyB: Polygon, xfB: Transform2f): Option[Manifold] = {
+  def collidePolygons(polyA: Polygon, xfA: Transform2,
+                      polyB: Polygon, xfB: Transform2): Option[Manifold] = {
     //testbed.PTest.debugCount++;
     
     val sepA = findMaxSeparation(polyA, xfA, polyB, xfB)
@@ -236,8 +236,8 @@ object PolygonCollider {
 
     //v11 = XForm.mul(xf1, v11);
     //v12 = XForm.mul(xf1, v12);
-    //val Vector2f(v11x, v11y) = xf1 * v11
-    //val Vector2f(v12x, v12y) = xf1 * v12
+    //val Vector2(v11x, v11y) = xf1 * v11
+    //val Vector2(v12x, v12y) = xf1 * v12
     val v11x = xf1.pos.x + xf1.rot.a11 * v11.x + xf1.rot.a12 * v11.y
     val v11y = xf1.pos.y + xf1.rot.a21 * v11.x + xf1.rot.a22 * v11.y
     val v12x = xf1.pos.x + xf1.rot.a11 * v12.x + xf1.rot.a12 * v12.y 

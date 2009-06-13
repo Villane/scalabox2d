@@ -17,8 +17,8 @@ class JointBuilder(j: JointDef, bodies: (Body, Body)) {
 
 class DistanceJointBuilder(j: DistanceJointDef, bodies: (Body, Body))
   extends JointBuilder(j, bodies) {
-  def localAnchor1(v: Vector2f) = { j.localAnchor1 = v; this }
-  def localAnchor2(v: Vector2f) = { j.localAnchor2 = v; this }
+  def localAnchor1(v: Vector2) = { j.localAnchor1 = v; this }
+  def localAnchor2(v: Vector2) = { j.localAnchor2 = v; this }
   def length(v: Float) = { j.length = v; this }
   def frequencyHz(v: Float) = { j.frequencyHz = v; this }
   def dampingRatio(v: Float) = { j.dampingRatio = v; this }
@@ -26,10 +26,10 @@ class DistanceJointBuilder(j: DistanceJointDef, bodies: (Body, Body))
 
 class RevoluteJointBuilder(j: RevoluteJointDef, bodies: (Body, Body))
   extends JointBuilder(j, bodies) {
-  def localAnchor1(v: Vector2f) = { j.localAnchor1 = v; this }
-  def localAnchor2(v: Vector2f) = { j.localAnchor2 = v; this }
+  def localAnchor1(v: Vector2) = { j.localAnchor1 = v; this }
+  def localAnchor2(v: Vector2) = { j.localAnchor2 = v; this }
   def referenceAngle(v: Float) = { j.referenceAngle = v; this }
-  def anchor(v: Vector2f) = {
+  def anchor(v: Vector2) = {
     j.localAnchor1 = j.body1.toLocalPoint(v)
     j.localAnchor2 = j.body2.toLocalPoint(v)
     j.referenceAngle = j.body2.angle - j.body1.angle

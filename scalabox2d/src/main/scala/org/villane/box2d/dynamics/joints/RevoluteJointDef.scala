@@ -1,6 +1,6 @@
 package org.villane.box2d.dynamics.joints
 
-import vecmath.Vector2f
+import vecmath.Vector2
 
 /**
  * Revolute joint definition. This requires defining an
@@ -17,10 +17,10 @@ import vecmath.Vector2f
  */
 class RevoluteJointDef extends JointDef {
   /** The local anchor point relative to body1's origin. */
-  var localAnchor1 = Vector2f.Zero
+  var localAnchor1 = Vector2.Zero
 
   /** The local anchor point relative to body2's origin. */
-  var localAnchor2 = Vector2f.Zero
+  var localAnchor2 = Vector2.Zero
 
   /** The body2 angle minus body1 angle in the reference state (radians). */
   var referenceAngle = 0f
@@ -49,7 +49,7 @@ class RevoluteJointDef extends JointDef {
   /**
    * Initialize the bodies, anchors, and reference angle using the world anchor.
    */
-  def this(b1: Body, b2: Body, anchor: Vector2f) {
+  def this(b1: Body, b2: Body, anchor: Vector2) {
     this()
     body1 = b1;
     body2 = b2;

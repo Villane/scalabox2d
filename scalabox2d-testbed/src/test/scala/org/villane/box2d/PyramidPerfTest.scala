@@ -46,7 +46,7 @@ object PyramidPerfTest {
     println((end - start) + " ms")
     println(" first 100: " + (s100 - start) + " ms")
     println(" last  900: " + (end - s100) + " ms")
-    println("vectors created:" + Vector2f.creationCount)
+    println("vectors created:" + Vector2.creationCount)
     //IslandSolverWorker.stopWorkers
   }
 
@@ -65,10 +65,10 @@ object PyramidPerfTest {
 
     val box1 = box(0.5f, 0.5f) density 5f restitution 0f friction 0.9f
 
-    var x = Vector2f(-10.0f, 0.75f)
-    var y = Vector2f.Zero
-    val Δx = Vector2f(0.5625f, 2.0f)
-    val Δy = Vector2f(1.125f, 0.0f)
+    var x = Vector2(-10.0f, 0.75f)
+    var y = Vector2.Zero
+    val Δx = Vector2(0.5625f, 2.0f)
+    val Δy = Vector2(1.125f, 0.0f)
 
     for (i <- 0 until 25) {
       y = x

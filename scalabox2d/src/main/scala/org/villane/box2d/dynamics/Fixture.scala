@@ -40,10 +40,10 @@ class Fixture(defn: FixtureDef, val body: Body) {
 
   def computeMass() = shape.computeMass(density)
 
-  def computeSweepRadius(pivot: Vector2f) = shape.computeSweepRadius(pivot)
+  def computeSweepRadius(pivot: Vector2) = shape.computeSweepRadius(pivot)
 
   /** Internal */
-  def createProxy(broadPhase: BroadPhase, transform: Transform2f) {
+  def createProxy(broadPhase: BroadPhase, transform: Transform2) {
     assert(proxyId == PairManager.NullProxy)
 
     val aabb = shape.computeAABB(transform)
@@ -68,7 +68,7 @@ class Fixture(defn: FixtureDef, val body: Body) {
   }
 
   /** Internal */
-  def synchronize(broadPhase: BroadPhase, transform1: Transform2f, transform2: Transform2f): Boolean = {
+  def synchronize(broadPhase: BroadPhase, transform1: Transform2, transform2: Transform2): Boolean = {
     if (proxyId == PairManager.NullProxy) return false
 
     // Compute an AABB that covers the swept shape (may miss some rotation effect).
@@ -82,7 +82,7 @@ class Fixture(defn: FixtureDef, val body: Body) {
   }
 
   /** Internal */
-  def refilterProxy(broadPhase: BroadPhase, transform: Transform2f) {
+  def refilterProxy(broadPhase: BroadPhase, transform: Transform2) {
     if (proxyId == PairManager.NullProxy) return
 
     broadPhase.destroyProxy(proxyId)

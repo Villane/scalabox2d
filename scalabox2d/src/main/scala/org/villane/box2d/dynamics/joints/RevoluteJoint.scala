@@ -22,12 +22,12 @@ object LimitState extends Enumeration {
 class RevoluteJoint(defn: RevoluteJointDef) extends Joint(defn) {
   val localAnchor1 = defn.localAnchor1 // relative
   val localAnchor2 = defn.localAnchor2
-  var pivotForce = Vector2f.Zero
+  var pivotForce = Vector2.Zero
   var motorForce = 0f
   var limitForce = 0f
   var limitPositionImpulse = 0f
 
-  var pivotMass = Matrix2f.Zero // effective mass for point-to-point constraint.
+  var pivotMass = Matrix22.Zero // effective mass for point-to-point constraint.
   var motorMass = 0f // effective mass for motor/limit angular constraint.
 
   val enableMotor = defn.enableMotor
@@ -56,11 +56,11 @@ class RevoluteJoint(defn: RevoluteJointDef) extends Joint(defn) {
     val invI1 = b1.invI
     val invI2 = b2.invI
 
-    val K1 = Matrix2f(invMass1 + invMass2, 0f,
+    val K1 = Matrix22(invMass1 + invMass2, 0f,
                       0f, invMass1 + invMass2)
-    val K2 = Matrix2f(invI1 * r1.y * r1.y, -invI1 * r1.x * r1.y,
+    val K2 = Matrix22(invI1 * r1.y * r1.y, -invI1 * r1.x * r1.y,
                       -invI1 * r1.x * r1.y, invI1 * r1.x * r1.x)
-    val K3 = Matrix2f(invI2 * r2.y * r2.y, -invI2 * r2.x * r2.y,
+    val K3 = Matrix22(invI2 * r2.y * r2.y, -invI2 * r2.x * r2.y,
                       -invI2 * r2.x * r2.y, invI2 * r2.x * r2.x)
     val K = K1 + K2 + K3
     pivotMass = K.invert
@@ -100,7 +100,7 @@ class RevoluteJoint(defn: RevoluteJointDef) extends Joint(defn) {
       b2.linearVelocity += step.dt * invMass2 * pivotForce
       b2.angularVelocity += step.dt * invI2 * ((r2 × pivotForce) + motorForce + limitForce)
     } else {
-      pivotForce = Vector2f.Zero
+      pivotForce = Vector2.Zero
       motorForce = 0.0f
       limitForce = 0.0f
     }
@@ -184,11 +184,11 @@ class RevoluteJoint(defn: RevoluteJointDef) extends Joint(defn) {
     val invI1 = b1.invI
     val invI2 = b2.invI
 
-    val K1 = Matrix2f(invMass1 + invMass2, 0.0f,
+    val K1 = Matrix22(invMass1 + invMass2, 0.0f,
                       0.0f, invMass1 + invMass2)
-    val K2 = Matrix2f(invI1 * r1.y * r1.y, -invI1 * r1.x * r1.y,
+    val K2 = Matrix22(invI1 * r1.y * r1.y, -invI1 * r1.x * r1.y,
                       -invI1 * r1.x * r1.y, invI1 * r1.x * r1.x)
-    val K3 = Matrix2f(invI2 * r2.y * r2.y, -invI2 * r2.x * r2.y,
+    val K3 = Matrix22(invI2 * r2.y * r2.y, -invI2 * r2.x * r2.y,
                       -invI2 * r2.x * r2.y, invI2 * r2.x * r2.x)
 
     val K = K1 + K2 + K3

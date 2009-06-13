@@ -1,12 +1,12 @@
 package org.villane.box2d.dynamics.contacts
 
-import vecmath.Vector2f
+import vecmath.Vector2
 import collision.Manifold
 import dynamics.Body
 
 class ContactConstraint {
   var points: Array[ContactConstraintPoint] = null
-  var normal = Vector2f.Zero
+  var normal = Vector2.Zero
   var manifold: Manifold = null
   var body1: Body = null
   var body2: Body = null

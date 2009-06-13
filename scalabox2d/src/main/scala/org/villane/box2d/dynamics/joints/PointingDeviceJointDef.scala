@@ -1,13 +1,13 @@
 package org.villane.box2d.dynamics.joints
 
-import vecmath.Vector2f
+import vecmath.Vector2
 
 class PointingDeviceJointDef extends JointDef {
   /**
    * The initial world target point. This is assumed
    * to coincide with the body anchor initially.
    */
-  var target = Vector2f.Zero
+  var target = Vector2.Zero
 
   /** 
    * The maximum constraint force that can be exerted

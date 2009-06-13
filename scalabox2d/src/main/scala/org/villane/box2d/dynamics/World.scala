@@ -14,7 +14,7 @@ import collection.jcl.ArrayList
 /**
  * The world that physics takes place in.
  */
-class World(val aabb: AABB, var gravity: Vector2f, doSleep: Boolean) {
+class World(val aabb: AABB, var gravity: Vector2, doSleep: Boolean) {
   var lock = false
   
   val contactManager = new ContactManager

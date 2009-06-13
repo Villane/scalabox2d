@@ -61,8 +61,8 @@ class SlickDisplayWorld(world: World) extends BasicGame("Slick ScalaBox2D: World
 
   var mouseButton = 0
   var mousePressed = false
-  var mousePos = Vector2f.Zero
-  var mousePosOld = Vector2f.Zero
+  var mousePos = Vector2.Zero
+  var mousePosOld = Vector2.Zero
     /**
      * Handle mouseDown events.
      * @param p The screen location that the mouse is down at.

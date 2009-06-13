@@ -9,8 +9,8 @@ import Settings.ε
  * Polygon/circle overlap solver - for internal use only.
  */
 object PolygonCircleCollider {
-  def collidePolygonAndCircle(polygon: Polygon, xf1: Transform2f,
-            circle: Circle, xf2: Transform2f): Option[Manifold] = {
+  def collidePolygonAndCircle(polygon: Polygon, xf1: Transform2,
+            circle: Circle, xf2: Transform2): Option[Manifold] = {
     // Compute circle position in the frame of the polygon.
     val c = xf2 * circle.pos
     val cLocal = xf1 ** c

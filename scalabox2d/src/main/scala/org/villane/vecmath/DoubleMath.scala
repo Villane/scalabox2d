@@ -28,9 +28,9 @@ trait DoubleMath {
 
   final def pow(a: Double, b: Double) = Math.pow(a, b)
 
-  final def distance(a: Vector2f, b: Vector2f) = (a - b).length
+  final def distance(a: Vector2, b: Vector2) = (a - b).length
 
-  final def distanceSquared(a: Vector2f, b: Vector2f) = {
+  final def distanceSquared(a: Vector2, b: Vector2) = {
     val d = a - b
     d dot d
   }

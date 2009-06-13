@@ -44,15 +44,15 @@ abstract class AbstractExample(parent: TestbedMain) {
   var newKeyDown = new Array[Boolean](255)
 
   /** Screen coordinates of mouse */
-  var mouseScreen = Vector2f.Zero
+  var mouseScreen = Vector2.Zero
   /** World coordinates of mouse */
-  var mouseWorld = Vector2f.Zero
+  var mouseWorld = Vector2.Zero
   /** Screen coordinates of mouse on last frame */
-  var pmouseScreen = Vector2f.Zero
+  var pmouseScreen = Vector2.Zero
   /** Was the mouse pressed last frame?  True if either right or left button was down. */
   var pmousePressed = false
   /** The point at which we will place a bomb when completeBombSpawn() is called. */
-  var bombSpawnPoint = Vector2f.Zero
+  var bombSpawnPoint = Vector2.Zero
   /** True if a bomb has started spawning but has not been created yet. */
   var bombSpawning = false
   /** Number of active points in m_points array. */
@@ -171,9 +171,9 @@ abstract class AbstractExample(parent: TestbedMain) {
     }
     
     settings = new TestSettings
-    mouseScreen = Vector2f(parent.mouseX, parent.mouseY)
-    mouseWorld = Vector2f.Zero
-    pmouseScreen = Vector2f(mouseScreen.x,mouseScreen.y)
+    mouseScreen = Vector2(parent.mouseX, parent.mouseY)
+    mouseWorld = Vector2.Zero
+    pmouseScreen = Vector2(mouseScreen.x,mouseScreen.y)
     pmousePressed = false
 
     createWorld
@@ -290,7 +290,7 @@ abstract class AbstractExample(parent: TestbedMain) {
       textLine += textLineHeight
       debugDraw.draw.drawString(2, textLine, "average free memory: "+memFree, white)
       textLine += textLineHeight + 5
-      debugDraw.draw.drawString(2, textLine, "Vec2 creations/frame: " + Vector2f.creationCount, white)
+      debugDraw.draw.drawString(2, textLine, "Vec2 creations/frame: " + Vector2.creationCount, white)
       textLine += textLineHeight
       debugDraw.draw.drawString(2, textLine, "Average FPS (" + fpsAverageCount + " frames): " + averagedFPS, white)
       textLine += textLineHeight
@@ -306,7 +306,7 @@ abstract class AbstractExample(parent: TestbedMain) {
     }
 
     if (bombSpawning) {
-      debugDraw.draw.drawSolidCircle(bombSpawnPoint, 0.3f, Vector2f(1.0f,0.0f),Color3f(255f*0.5f,255f*0.5f,255f*0.5f));
+      debugDraw.draw.drawSolidCircle(bombSpawnPoint, 0.3f, Vector2(1.0f,0.0f),Color3f(255f*0.5f,255f*0.5f,255f*0.5f));
       debugDraw.draw.drawSegment(bombSpawnPoint, mouseWorld, Color3f(55f*0.5f,55f*0.5f,255f*0.5f));
     }
 
@@ -333,7 +333,7 @@ abstract class AbstractExample(parent: TestbedMain) {
 
         if (settings.drawContactNormals) {
           val p1 = point.position;
-          val p2 = Vector2f( p1.x + k_axisScale * point.normal.x,
+          val p2 = Vector2( p1.x + k_axisScale * point.normal.x,
                              p1.y + k_axisScale * point.normal.y);
           debugDraw.draw.drawSegment(p1, p2, new Color3f(0.4f*255f, 0.9f*255f, 0.4f*255f));
         } 
@@ -379,7 +379,7 @@ abstract class AbstractExample(parent: TestbedMain) {
   /** Space launches a bomb from a random default position. */
   def launchBomb() {
     val rnd = 0f //XXX parent.random(-15.0f, 15.0f)
-    val pos = Vector2f(rnd, 30.0f);
+    val pos = Vector2(rnd, 30.0f);
     val vel = pos * (-5.0f)
     launchBomb(pos, vel)
   }
@@ -389,7 +389,7 @@ abstract class AbstractExample(parent: TestbedMain) {
    * @param position Position to launch bomb from.
    * @param velocity Velocity to launch bomb with.
    */
-  def launchBomb(position: Vector2f, velocity: Vector2f) {
+  def launchBomb(position: Vector2, velocity: Vector2) {
     if (m_bomb != null) {
       m_world.destroyBody(m_bomb);
       m_bomb = null;
@@ -421,7 +421,7 @@ abstract class AbstractExample(parent: TestbedMain) {
    * When a bomb is spawning, it is not an active body but its position is stored so it may be
    * drawn.
    */
-  def spawnBomb(worldPt: Vector2f) {
+  def spawnBomb(worldPt: Vector2) {
     bombSpawnPoint = worldPt
     bombSpawning = true
   }
@@ -452,7 +452,7 @@ abstract class AbstractExample(parent: TestbedMain) {
      * of (M*S/2, N*S/2) and a localScale of S.
      * 
      */
-    def bindImage(p: Image, localOffset: Vector2f, localRotation:Float, localScale:Float, b:Body) {
+    def bindImage(p: Image, localOffset: Vector2, localRotation:Float, localScale:Float, b:Body) {
         boundImages.add(new BoundImage(p, localOffset, localRotation, localScale, b));
     }
     
@@ -483,7 +483,7 @@ abstract class AbstractExample(parent: TestbedMain) {
      * Handle mouseDown events.
      * @param p The screen location that the mouse is down at.
      */
-    def mouseDown(p1: Vector2f) {
+    def mouseDown(p1: Vector2) {
     	
     	if (parent.shiftKey) {
     		spawnBomb(debugDraw.draw.screenToWorld(p1))
@@ -544,7 +544,7 @@ abstract class AbstractExample(parent: TestbedMain) {
      * Handle mouseMove events (TestbedMain also sends mouseDragged events here)
      * @param p The new mouse location (screen coordinates)
      */
-    def mouseMove(p: Vector2f) {
+    def mouseMove(p: Vector2) {
     	mouseScreen = p;
         if (m_mouseJoint != null) {
             m_mouseJoint.target = debugDraw.draw.screenToWorld(p)
@@ -707,7 +707,7 @@ abstract class AbstractExample(parent: TestbedMain) {
      */
     class BoundImage(
       val image: Image,
-      val localOffset: Vector2f,
+      val localOffset: Vector2,
       val localRotation: Float,
       val localScale: Float,
       val body: Body

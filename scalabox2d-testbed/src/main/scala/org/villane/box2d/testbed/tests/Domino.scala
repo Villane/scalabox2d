@@ -26,7 +26,7 @@ class Domino(_parent: TestbedMain) extends AbstractExample(_parent) {
 
     for (i <- 0 to 3) {
       for (j <- 0 until numPerRow) body {
-        var p = Vector2f(-14.75f + j * (29.5f / (numPerRow - 1)),
+        var p = Vector2(-14.75f + j * (29.5f / (numPerRow - 1)),
                          7.3f + 5f * i)
         if (i == 2 && j == 0) {
           angle(-0.1f)

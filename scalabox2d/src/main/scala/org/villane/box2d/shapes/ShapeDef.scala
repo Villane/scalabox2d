@@ -11,14 +11,14 @@ import vecmath.Preamble._
 sealed abstract class ShapeDef
 
 /** A circle definition. */
-final case class CircleDef(var pos: Vector2f, var radius: Float) extends ShapeDef
+final case class CircleDef(var pos: Vector2, var radius: Float) extends ShapeDef
 
 /** Point definition. Like a 0-radius circle, but has mass */
-final case class PointDef(var pos: Vector2f, var mass: Float) extends ShapeDef
+final case class PointDef(var pos: Vector2, var mass: Float) extends ShapeDef
 
 object EdgeChainDef {
-  def apply(vertices: Vector2f*): EdgeChainDef = apply(false, vertices.toArray)
-  def loop(vertices: Vector2f*): EdgeChainDef = apply(true, vertices.toArray)
+  def apply(vertices: Vector2*): EdgeChainDef = apply(false, vertices.toArray)
+  def loop(vertices: Vector2*): EdgeChainDef = apply(true, vertices.toArray)
 }
 
 /** A chain of connected edges */
@@ -26,7 +26,7 @@ final case class EdgeChainDef(
   /** Whether to create an extra edge between the first and last vertices. */
   var loop: Boolean,
   /** The vertices in local coordinates. */
-  var vertices: Array[Vector2f]
+  var vertices: Array[Vector2]
 ) extends ShapeDef
 
 object PolygonDef {
@@ -43,9 +43,9 @@ object PolygonDef {
    * @param hy the half-height.
    * @param center the center of the box in local coordinates.
    */
-  def box(hx: Float, hy: Float, center: Vector2f): PolygonDef = {
+  def box(hx: Float, hy: Float, center: Vector2): PolygonDef = {
     val pd = box(hx, hy)
-    val xf = Transform2f(center, Matrix2f.Identity)
+    val xf = Transform2(center, Matrix22.Identity)
     pd.vertices = pd.vertices.map(v => xf * v)
     pd
   }
@@ -57,9 +57,9 @@ object PolygonDef {
    * @param center the center of the box in local coordinates.
    * @param angle the rotation of the box in local coordinates.
    */
-  def box(hx: Float, hy: Float, center: Vector2f, angle: Float): PolygonDef = {
+  def box(hx: Float, hy: Float, center: Vector2, angle: Float): PolygonDef = {
     val pd = box(hx, hy)
-    val xf = Transform2f(center, angle)
+    val xf = Transform2(center, angle)
     pd.vertices = pd.vertices.map(v => xf * v)
     pd
   }
@@ -74,5 +74,5 @@ object PolygonDef {
  */
 final case class PolygonDef(
   /** The CCW vertices in local coordinates. */
-  var vertices: Array[Vector2f]
+  var vertices: Array[Vector2]
 ) extends ShapeDef

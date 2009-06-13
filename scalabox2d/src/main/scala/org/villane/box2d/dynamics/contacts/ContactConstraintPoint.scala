@@ -1,12 +1,12 @@
 package org.villane.box2d.dynamics.contacts
 
-import vecmath.Vector2f
+import vecmath.Vector2
 
 class ContactConstraintPoint {
-  var localAnchor1 = Vector2f.Zero
-  var localAnchor2 = Vector2f.Zero
-  var r1 = Vector2f.Zero
-  var r2 = Vector2f.Zero
+  var localAnchor1 = Vector2.Zero
+  var localAnchor2 = Vector2.Zero
+  var r1 = Vector2.Zero
+  var r2 = Vector2.Zero
   var normalImpulse = 0f
   var tangentImpulse = 0f
   var positionImpulse = 0f

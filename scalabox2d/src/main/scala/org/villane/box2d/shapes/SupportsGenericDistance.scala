@@ -8,11 +8,11 @@ import vecmath._
  * specialized penetration calculations when CCD is not in effect, however.
  */
 trait SupportsGenericDistance {
-  def support(xf: Transform2f, v: Vector2f): Vector2f
-  def getFirstVertex(xf: Transform2f): Vector2f
+  def support(xf: Transform2, v: Vector2): Vector2
+  def getFirstVertex(xf: Transform2): Vector2
 }
 
 trait SupportsNewDistance extends Shape {
-  def vertex(index: Int) = Vector2f.Zero
-  def support(v: Vector2f) = 0
+  def vertex(index: Int) = Vector2.Zero
+  def support(v: Vector2) = 0
 }

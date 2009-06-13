@@ -14,9 +14,9 @@ import dynamics._
 class PointingDeviceJoint(defn: PointingDeviceJointDef) extends Joint(defn) {
   private[this] var _target = defn.target
   var localAnchor = body2.transform ** _target 
-  var force = Vector2f.Zero
-  var mass = Matrix2f.Zero // effective mass for point-to-point constraint.
-  var C = Vector2f.Zero // position error
+  var force = Vector2.Zero
+  var mass = Matrix22.Zero // effective mass for point-to-point constraint.
+  var C = Vector2.Zero // position error
 
   var maxForce = defn.maxForce
   var beta = 0f // bias factor
@@ -38,7 +38,7 @@ class PointingDeviceJoint(defn: PointingDeviceJointDef) extends Joint(defn) {
 
   def target = _target
   /** Use this to update the target point. */
-  def target_=(target: Vector2f) {
+  def target_=(target: Vector2) {
     if (body2.isSleeping) body2.wakeUp()
     this._target = target
   }
@@ -62,12 +62,12 @@ class PointingDeviceJoint(defn: PointingDeviceJointDef) extends Joint(defn) {
     val invMass = b.invMass
     val invI = b.invI
 
-    val K1 = Matrix2f(invMass, 0.0f, 0.0f, invMass)
-    val K2 = Matrix2f(invI * r.y * r.y, -invI * r.x * r.y,
+    val K1 = Matrix22(invMass, 0.0f, 0.0f, invMass)
+    val K2 = Matrix22(invI * r.y * r.y, -invI * r.x * r.y,
                       -invI * r.x * r.y, invI * r.x * r.x)
 
 	var K = K1 + K2
-    K = Matrix2f(K.a11 + gamma, K.a12,
+    K = Matrix22(K.a11 + gamma, K.a12,
                  K.a21, K.a22 + gamma)
 
     mass = K.invert
@@ -92,7 +92,7 @@ class PointingDeviceJoint(defn: PointingDeviceJointDef) extends Joint(defn) {
     val Cdot = b.linearVelocity + b.angularVelocity × r
 
     //Vec2 force = -step.inv_dt * Mat22.mul(m_mass, Cdot + (m_beta * step.inv_dt) * m_C + m_gamma * step.dt * m_force);
-    var f = Vector2f(Cdot.x + (beta*step.invDt)*C.x + gamma * step.dt * force.x, 
+    var f = Vector2(Cdot.x + (beta*step.invDt)*C.x + gamma * step.dt * force.x, 
                      Cdot.y + (beta*step.invDt)*C.y + gamma * step.dt * force.y)
     f = mass * f * (-step.invDt)
 

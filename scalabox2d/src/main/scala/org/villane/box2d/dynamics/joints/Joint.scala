@@ -34,11 +34,11 @@ abstract class Joint(defn: JointDef) {
   }
 
   /** Get the anchor point on body1 in world coordinates. */
-  def anchor1: Vector2f
+  def anchor1: Vector2
   /** Get the anchor point on body2 in world coordinates. */
-  def anchor2: Vector2f
+  def anchor2: Vector2
   /** Get the reaction force on body2 at the joint anchor. */
-  def reactionForce: Vector2f
+  def reactionForce: Vector2
   /** Get the reaction torque on body2. */
   def reactionTorque: Float
   

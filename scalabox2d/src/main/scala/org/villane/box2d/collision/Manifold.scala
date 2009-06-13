@@ -1,6 +1,6 @@
 package org.villane.box2d.collision
 
-import vecmath.Vector2f
+import vecmath.Vector2
 
 /** A manifold for two touching convex shapes. */
 case class Manifold(
@@ -12,7 +12,7 @@ case class Manifold(
    * But this definitely should not be changed post contact creation.
    * TODO might want to think of something to make this immutable.
    */
-  var normal: Vector2f
+  var normal: Vector2
 ) {
   assert(points.length > 0, "Can't create a manifold without points!")
 }
