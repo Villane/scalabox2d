@@ -28,7 +28,7 @@ object SlickDisplayWorld {
 class SlickDisplayWorld(world: World) extends BasicGame("Slick ScalaBox2D: World") {
   
   val m_debugDraw = new SlickDebugDraw(null,null)
-  val g = new DebugDraw(m_debugDraw)
+  val dd = new DebugDraw(m_debugDraw)
   def width = gameContainer.getWidth
   def height = gameContainer.getHeight
   def mouseX = mousePos.x
@@ -40,7 +40,6 @@ class SlickDisplayWorld(world: World) extends BasicGame("Slick ScalaBox2D: World
   def init(container: GameContainer) {
     m_debugDraw.container = container;
     gameContainer = container
-    world.debugDraw = this.g
   }
 
   def update(container: GameContainer, delta: Int) {
@@ -56,7 +55,7 @@ class SlickDisplayWorld(world: World) extends BasicGame("Slick ScalaBox2D: World
   def render(container: GameContainer, g: Graphics) {
     m_debugDraw.g = g
     handleCanvasDrag
-    world.drawDebugData
+    dd.drawDebugData(world)
   }
 
   var mouseButton = 0

@@ -4,7 +4,7 @@ import draw._
 
 trait TestbedMain {
   /** Drawing handler to use. */
-  def g: DebugDraw
+  def dd: DebugDraw
   def mouseX: Float
   def mouseY: Float
   def shiftKey: Boolean

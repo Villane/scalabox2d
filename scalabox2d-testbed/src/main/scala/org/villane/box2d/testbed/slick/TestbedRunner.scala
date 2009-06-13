@@ -44,7 +44,7 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
   val targetFrameRate = 60
 
   // TestBedMain API
-  val g = new DebugDraw(debugDraw)
+  val dd = new DebugDraw(debugDraw)
   def mouseX = mousePos.x
   def mouseY = mousePos.y
   def pmouseX = mousePosOld.x
@@ -103,19 +103,19 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
       currentTest.frameCount = 0
     }
 
-  }
-
-  def render(container: GameContainer, g: Graphics) {
-
     // Take our time step (drawing is done here, too)
     currentTest.step
 
     // If the user wants to move the canvas, do it
     handleCanvasDrag
 
+  }
+
+  def render(container: GameContainer, g: Graphics) {
+    // Draw the world
+    dd.drawDebugData(currentTest.m_world)
     // Draw the GUI
     drawGUI
-
   }
 
   /**

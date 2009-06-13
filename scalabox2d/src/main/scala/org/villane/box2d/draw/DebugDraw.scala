@@ -7,21 +7,27 @@ import shapes._
 import dynamics._
 import dynamics.joints._
 
-class DebugDraw(val draw: DebugDrawHandler) {
+object Colors {
+  val Static = Color3f.ratio(0.5f, 0.9f, 0.5f)
+  val Sleeping = Color3f.ratio(0.5f, 0.5f, 0.9f)
+  val Dynamic = Color3f.ratio(0.9f, 0.9f, 0.9f)
+  val Joint = Color3f.ratio(0.5f, 0.8f, 0.8f)
+  val Core = Color3f.ratio(0.9f, 0.6f, 0.6f)
+  val Pair = Color3f.ratio(0.9f, 0.9f, 0.3f)
+  val AABB = Color3f(255, 255, 255)
+  val WorldAABB = Color3f.ratio(0.3f, 0.9f, 0.9f)
+}
 
-  val STATIC_COLOR = Color3f(255f*0.5f, 255f*0.9f, 255f*0.5f)
-  val SLEEPING_COLOR = Color3f(255f*0.5f, 255f*0.5f, 255f*0.9f)
-  val DYNAMIC_COLOR = Color3f(255f*0.9f, 255f*0.9f, 255f*0.9f)
-  val PAIR_COLOR = Color3f(255f*0.9f, 255f*0.9f, 255f*0.3f)
-  val WORLD_AABB_COLOR = Color3f(255.0f * 0.3f, 255.0f * 0.9f, 255.0f * 0.9f)
-  val CORE_COLOR = Color3f(255f * 0.9f, 255f * 0.6f, 255f * 0.6f)
-  val AABB_COLOR = Color3f(255f, 255f, 255f)
-  
+/**
+ * Draws the representation of the world, given a concrete DebugDrawHandler
+ */
+final class DebugDraw(val draw: DebugDrawHandler) {
+  def drawDebugData(world: World) {
+    drawDebugData(world.bodyList, world.jointList, world.broadPhase)
+  }
+
   /** For internal use */
-  def drawShape(shape: Shape, xf: Transform2, color: Color3f, core: Boolean) {
-    
-    val coreColor = CORE_COLOR
-
+  private def drawShape(shape: Shape, xf: Transform2, color: Color3f, core: Boolean) {
     shape match {
       case circle: Circle => 
         val center = xf * circle.pos
@@ -31,7 +37,7 @@ class DebugDraw(val draw: DebugDrawHandler) {
         draw.drawSolidCircle(center, radius, axis, color)
         
         if (core) {
-          draw.drawCircle(center, radius - Settings.toiSlop, coreColor)
+          draw.drawCircle(center, radius - Settings.toiSlop, Colors.Core)
         }
       case poly: Polygon =>
         val vertexCount = poly.vertexCount
@@ -44,13 +50,13 @@ class DebugDraw(val draw: DebugDrawHandler) {
         if (core) {
           val localCoreVertices = poly.coreVertices
           vertices = localCoreVertices.map(v => xf * v)
-          draw.drawPolygon(vertices, coreColor)
+          draw.drawPolygon(vertices, Colors.Core)
         }
     }
   }
 
   /** For internal use */
-  def drawJoint(joint: Joint) {
+  private def drawJoint(joint: Joint) {
     val b1 = joint.body1
     val b2 = joint.body2
     val xf1 = b1.transform
@@ -60,12 +66,10 @@ class DebugDraw(val draw: DebugDrawHandler) {
     val p1 = joint.anchor1
     val p2 = joint.anchor2
 
-    val color = new Color3f(255f*0.5f, 255f*0.8f, 255f*0.8f);
-
     joint match {
-      /*if (type == JointType.DISTANCE_JOINT) {
-       m_debugDraw.drawSegment(p1, p2, color);
-       } else if (type == JointType.PULLEY_JOINT) {
+      case _: DistanceJoint =>
+        draw.drawSegment(p1, p2, Colors.Joint)
+      /* if (type == JointType.PULLEY_JOINT) {
        PulleyJoint pulley = (PulleyJoint)joint;
        Vec2 s1 = pulley.getGroundAnchor1();
        Vec2 s2 = pulley.getGroundAnchor2();
@@ -76,14 +80,14 @@ class DebugDraw(val draw: DebugDrawHandler) {
       case _: PointingDeviceJoint =>
         //Don't draw mouse joint
       case _ =>
-        draw.drawSegment(x1, p1, color)
-        draw.drawSegment(p1, p2, color)
-        draw.drawSegment(x2, p2, color)
+        draw.drawSegment(x1, p1, Colors.Joint)
+        draw.drawSegment(p1, p2, Colors.Joint)
+        draw.drawSegment(x2, p2, Colors.Joint)
     }
   }
 
   /** For internal use */
-  def drawDebugData(bodies: Seq[Body], joints: Seq[Joint], bp: BroadPhase) {
+  private def drawDebugData(bodies: Seq[Body], joints: Seq[Joint], bp: BroadPhase) {
     
     val flags = draw.drawFlags
 
@@ -93,12 +97,9 @@ class DebugDraw(val draw: DebugDrawHandler) {
         val xf = b.transform
         for (f <- b.fixtures) {
           if (!f.isSensor) {
-            val color = if (b.isStatic)
-            STATIC_COLOR
-            else if (b.isSleeping)
-            SLEEPING_COLOR
-            else
-            DYNAMIC_COLOR
+            val color = if (b.isStatic) Colors.Static
+              else if (b.isSleeping) Colors.Sleeping
+              else Colors.Dynamic
             drawShape(f.shape, xf, color, core)
           }
         }
@@ -111,8 +112,6 @@ class DebugDraw(val draw: DebugDrawHandler) {
 
     if ((flags & DrawFlags.pair) != 0) {
       val invQ = 1f / bp.quantizationFactor
-
-      val color = PAIR_COLOR
 
       // ERKKI TODO this was done differently with the custom hash table
       for (((proxyId1,proxyId2),pair) <- bp.pairManager.hashTable) {
@@ -134,7 +133,7 @@ class DebugDraw(val draw: DebugDrawHandler) {
         val x1 = 0.5f * (b1.lowerBound + b1.upperBound)
         val x2 = 0.5f * (b2.lowerBound + b2.upperBound)
 
-        draw.drawSegment(x1, x2, color)
+        draw.drawSegment(x1, x2, Colors.Pair)
       }
     }
 
@@ -143,7 +142,6 @@ class DebugDraw(val draw: DebugDrawHandler) {
 
     if ((flags & DrawFlags.aabb) != 0) {
       val invQ = 1f / bp.quantizationFactor
-      val color = AABB_COLOR
       for (i <- 0 until Settings.maxProxies) {
         val p = bp.proxyPool(i)
         if (p.isValid) {
@@ -159,18 +157,18 @@ class DebugDraw(val draw: DebugDrawHandler) {
               b.upperBound,
               (b.lowerBound.x, b.upperBound.y)
           )
-          draw.drawPolygon(vs, color)
+          draw.drawPolygon(vs, Colors.AABB)
         }
       }
     }
 
     val vsw: Array[Vector2] = Array(
       worldLower,
-        (worldUpper.x, worldLower.y),
-        worldUpper,
-        (worldLower.x, worldUpper.y)
+      (worldUpper.x, worldLower.y),
+      worldUpper,
+      (worldLower.x, worldUpper.y)
     )
-    draw.drawPolygon(vsw, WORLD_AABB_COLOR)
+    draw.drawPolygon(vsw, Colors.WorldAABB)
 
     if ((flags & DrawFlags.centerOfMass) != 0) {
       for (b <- bodies) {
@@ -179,4 +177,5 @@ class DebugDraw(val draw: DebugDrawHandler) {
       }
     }
   }
+
 }

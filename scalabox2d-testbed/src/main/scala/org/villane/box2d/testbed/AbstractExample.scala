@@ -36,7 +36,7 @@ object AbstractExample {
 abstract class AbstractExample(parent: TestbedMain) {
   import AbstractExample._
   /** Used for drawing */
-  var debugDraw = parent.g
+  var debugDraw = parent.dd
   //public Body followedBody = null; //camera follows motion of this body
   /** Array of key states, by char value.  Does not include arrows or modifier keys. */
   var keyDown = new Array[Boolean](255)
@@ -196,7 +196,6 @@ abstract class AbstractExample(parent: TestbedMain) {
     m_contactListener.asInstanceOf[ConcreteContactListener].test = this;
     m_world.destructionListener = m_destructionListener
     m_world.boundaryListener = m_boundaryListener
-    m_world.debugDraw = parent.g
 
     if (hasCachedCamera) {
       debugDraw.draw.setCamera(cachedCamX,cachedCamY,cachedCamScale);
@@ -714,7 +713,7 @@ abstract class AbstractExample(parent: TestbedMain) {
     ){
         private var halfImageWidth = image.width / 2f
         private var halfImageHeight = image.height / 2f
-        private var p = debugDraw;
+        private var p = debugDraw
 
         def draw() {
         	//p.drawImage(image, body.pos, body.angle+localRotation, localScale, localOffset, halfImageWidth, halfImageHeight);

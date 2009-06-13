@@ -43,7 +43,6 @@ class World(val aabb: AABB, var gravity: Vector2, doSleep: Boolean) {
   var contactListener: ContactListener = null
   var destructionListener: DestructionListener = null
   var boundaryListener: BoundaryListener = null
-  var debugDraw: draw.DebugDraw = null
 
   private var invDt0 = 0f
   private var postStepList = new ArrayList[Steppable]
@@ -190,9 +189,6 @@ class World(val aabb: AABB, var gravity: Vector2, doSleep: Boolean) {
     if (continuousPhysics && step.dt > 0f) {
       solveTOI(step)
     }
-
-    // Draw debug information.
-    drawDebugData()
 
     invDt0 = step.invDt
     lock = false
@@ -601,12 +597,6 @@ class World(val aabb: AABB, var gravity: Vector2, doSleep: Boolean) {
           broadPhase.commit()
         }
       }
-    }
-  }
-
-  def drawDebugData() {
-    if (debugDraw != null) {
-      debugDraw.drawDebugData(bodyList, jointList, broadPhase)
     }
   }
 
