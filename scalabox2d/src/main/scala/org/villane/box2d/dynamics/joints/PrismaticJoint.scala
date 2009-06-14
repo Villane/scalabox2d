@@ -30,17 +30,17 @@ class PrismaticJoint(defn: PrismaticJointDef) extends Joint(defn) {
   val referenceAngle = defn.referenceAngle
 
   var linearJacobian = Jacobian.Zero
-  var linearMass = 0f
-  var force = 0f
+  var linearMass: Scalar = 0f
+  var force: Scalar = 0f
 
-  var angularMass = 0f // effective mass for angular constraint.
-  var torque = 0f
+  var angularMass: Scalar = 0f // effective mass for angular constraint.
+  var torque: Scalar = 0f
 
   var motorJacobian = Jacobian.Zero
-  var motorMass = 0f // effective mass for motor/limit translational constraint.
-  var motorForce = 0f
-  var limitForce = 0f
-  var limitPositionImpulse = 0f
+  var motorMass: Scalar = 0f // effective mass for motor/limit translational constraint.
+  var motorForce: Scalar = 0f
+  var limitForce: Scalar = 0f
+  var limitPositionImpulse: Scalar = 0f
 
   var lowerTranslation = defn.lowerTranslation
   var upperTranslation = defn.upperTranslation
@@ -278,7 +278,7 @@ class PrismaticJoint(defn: PrismaticJointDef) extends Joint(defn) {
       val ax1 = b1.transform.rot * localXAxis1
 
       val translation = ax1 dot dz
-      var limitImpulse = 0f
+      var limitImpulse: Scalar = 0f
 
       if (limitState == LimitState.EQUAL_LIMITS) {
         // Prevent large angular corrections
@@ -366,7 +366,7 @@ class PrismaticJoint(defn: PrismaticJointDef) extends Joint(defn) {
   def reactionTorque = torque
 
   /** Set the joint limits, usually in meters. */
-  def setLimits(lower: Float, upper: Float) {
+  def setLimits(lower: Scalar, upper: Scalar) {
     assert(lower <= upper)
     lowerTranslation = lower
     upperTranslation = upper

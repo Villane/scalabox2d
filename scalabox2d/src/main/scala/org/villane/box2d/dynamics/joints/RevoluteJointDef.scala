@@ -1,6 +1,7 @@
 package org.villane.box2d.dynamics.joints
 
-import vecmath.Vector2
+import vecmath._
+import vecmath.Preamble._
 
 /**
  * Revolute joint definition. This requires defining an
@@ -23,28 +24,28 @@ class RevoluteJointDef extends JointDef {
   var localAnchor2 = Vector2.Zero
 
   /** The body2 angle minus body1 angle in the reference state (radians). */
-  var referenceAngle = 0f
+  var referenceAngle: Scalar = 0f
 
   /** A flag to enable joint limits. */
   var enableLimit = false
 
   /** The lower angle for the joint limit (radians). */
-  var lowerAngle = 0f
+  var lowerAngle: Scalar = 0f
 
   /** The upper angle for the joint limit (radians). */
-  var upperAngle = 0f
+  var upperAngle: Scalar = 0f
 
   /** A flag to enable the joint motor. */
   var enableMotor = false
 
   /** The desired motor speed. Usually in radians per second. */
-  var motorSpeed = 0f
+  var motorSpeed: Scalar = 0f
 
   /**
    * The maximum motor torque used to achieve the desired motor speed.
    * Usually in N-m.
    */
-  var maxMotorTorque = 0f
+  var maxMotorTorque: Scalar = 0f
 
   /**
    * Initialize the bodies, anchors, and reference angle using the world anchor.

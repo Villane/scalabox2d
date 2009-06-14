@@ -17,8 +17,12 @@ import org.newdawn.slick.tests.AntiAliasTest;
 import box2d.testbed._ 
 
 object SlickDisplayWorld {
-  def run(world: World) {
-    val container = new AppGameContainer(new SlickDisplayWorld(world))
+  def run(world: World): Unit = run(world, true)
+
+  def run(world: World, flipY: Boolean) {
+    val app = new SlickDisplayWorld(world)
+    val container = new AppGameContainer(app)
+    app.m_debugDraw.yFlip = if (flipY) -1 else 1
     container.setTargetFrameRate(60)
     container.setDisplayMode(600,600,false)
     container.start()

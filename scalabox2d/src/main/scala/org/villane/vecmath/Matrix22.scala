@@ -15,7 +15,7 @@ object Matrix22 {
    * 
    * @param angle rotation in radians
    */
-  def rotation(angle: Float) = {
+  def rotation(angle: Scalar) = {
     val c = cos(angle)
     val s = sin(angle)
     Matrix22(c, -s, s, c)
@@ -28,12 +28,12 @@ object Matrix22 {
  * Design note: Matrix22 could conceptually extend Tuple4, but does not for efficiency.
  * See the same note about Vector2 for details.
  */
-case class Matrix22(a11: Float, a12: Float, a21: Float, a22: Float) {
+case class Matrix22(a11: Scalar, a12: Scalar, a21: Scalar, a22: Scalar) {
   def col1 = Vector2(a11, a21)
   def col2 = Vector2(a12, a22)
 
-  // TODO +,-,*,/ Float
-  def +(a: Float) = Matrix22(a11 + a, a12 + a, a21 + a, a22 + a)
+  // TODO +,-,*,/ Scalar
+  def +(a: Scalar) = Matrix22(a11 + a, a12 + a, a21 + a, a22 + a)
 
   def +(m: Matrix22) = Matrix22(a11 + m.a11, a12 + m.a12,
                                 a21 + m.a21, a22 + m.a22)

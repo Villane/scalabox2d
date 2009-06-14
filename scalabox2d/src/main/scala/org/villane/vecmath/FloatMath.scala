@@ -9,6 +9,19 @@ package org.villane.vecmath
  * MathFunctions[@specialized T] to enforce a common interface.
  */
 trait FloatMath {
+  type Scalar = Float
+  object Scalar {
+    val NaN = Float.NaN
+    val MaxValue = Float.MaxValue
+    val MinValue = Float.MinValue
+    val PositiveInfinity = Float.PositiveInfinity
+    val NegativeInfinity = Float.NegativeInfinity
+  }
+  class IntExt(a: Int) {
+    def toScalar = a.toFloat
+  }
+  implicit def int2Ext(a: Int) = new IntExt(a)
+
   final val Pi = Math.Pi.toFloat
   final val π = Math.Pi.toFloat
 

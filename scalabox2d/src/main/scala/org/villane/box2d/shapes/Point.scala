@@ -7,15 +7,15 @@ import Settings.ε
 /**
  * Like a circle shape of zero radius, except that it has a finite mass.
  */
-class Point(val pos: Vector2, val mass: Float) extends Shape {
+class Point(val pos: Vector2, val mass: Scalar) extends Shape {
   // TODO Erkki is this good? Should ask on forums
   val radius = Settings.polygonRadius
 
   def testPoint(t: Transform2, p: Vector2) = false
-  def testSegment(t: Transform2, segment: Segment, maxLambda: Float) =
+  def testSegment(t: Transform2, segment: Segment, maxLambda: Scalar) =
     SegmentCollide.Miss
 
-  def computeSubmergedArea(normal: Vector2, offset: Float, t: Transform2) =
+  def computeSubmergedArea(normal: Vector2, offset: Scalar, t: Transform2) =
     (0f,Vector2.Zero)
 
   def computeAABB(t: Transform2) = {
@@ -25,6 +25,6 @@ class Point(val pos: Vector2, val mass: Float) extends Shape {
 
   def computeSweepRadius(pivot: Vector2) = (pos - pivot).length + Settings.toiSlop
 
-  def computeMass(density: Float) = Mass(mass, pos, 0)
+  def computeMass(density: Scalar) = Mass(mass, pos, 0)
 
 }

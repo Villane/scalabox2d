@@ -6,12 +6,12 @@ import shapes._
 import collision._
 
 /** Holder class used internally in CollidePoly. */
-case class MaxSeparation(bestFaceIndex: Int, bestSeparation: Float)
+case class MaxSeparation(bestFaceIndex: Int, bestSeparation: Scalar)
 case class ClipVertex(v: Vector2, id: ContactID)
 
 object PolygonCollider {
   def clipSegmentToLine(vIn: List[ClipVertex],
-                        normal: Vector2, offset: Float): List[ClipVertex] = (vIn: @unchecked) match {
+                        normal: Vector2, offset: Scalar): List[ClipVertex] = (vIn: @unchecked) match {
   case vIn0 :: vIn1 :: _ =>
     // Calculate the distance of end points to the line
     val distance0 = (normal ∙ vIn0.v) - offset
@@ -38,7 +38,7 @@ object PolygonCollider {
   }
 
   def edgeSeparation(poly1: Polygon, xf1: Transform2, edge1: Int, 
-                     poly2: Polygon, xf2: Transform2): Float = {
+                     poly2: Polygon, xf2: Transform2): Scalar = {
 
     val count1 = poly1.vertexCount
     val vertices1 = poly1.vertices
@@ -55,7 +55,7 @@ object PolygonCollider {
 
     // Find support vertex on poly2 for -normal.
     var index = 0
-    var minDot = Float.MaxValue
+    var minDot = Scalar.MaxValue
     var i = 0
     while (i < count2) {
       val dot = vertices2(i) ∙ normal1
@@ -88,7 +88,7 @@ object PolygonCollider {
 
     // Find edge normal on poly1 that has the largest projection onto d.
     var edge = 0
-    var maxDot = -Float.MaxValue
+    var maxDot = -Scalar.MaxValue
     var i = 0
     while (i < count1) {
       val dot = normals1(i) ∙ dLocal1
@@ -168,7 +168,7 @@ object PolygonCollider {
 
     // Find the incident edge on poly2.
     var index = 0
-    var minDot = Float.MaxValue
+    var minDot = Scalar.MaxValue
     var i = 0
     while (i < count2) {
       val dot = normal1 ∙ normals2(i)

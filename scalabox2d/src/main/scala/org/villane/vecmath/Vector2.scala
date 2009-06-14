@@ -10,7 +10,7 @@ object Vector2 {
   val One = Vector2(1, 1)
   val XUnit = Vector2(1, 0)
   val YUnit = Vector2(0, 1)
-  def polar(r: Float, theta: Float) = Vector2(cos(theta) * r, sin(theta) * r)
+  def polar(r: Scalar, theta: Scalar) = Vector2(cos(theta) * r, sin(theta) * r)
 
   // for debugging only
   var creationCount = 0L
@@ -30,14 +30,14 @@ object Vector2 {
  * 
  * Idea: provide mutable version for big computations
  */
-case class Vector2(x: Float, y: Float) {
-  def +(a: Float) = Vector2(x + a, y + a)
-  def -(a: Float) = Vector2(x - a, y - a)
-  def *(a: Float) = Vector2(x * a, y * a)
-  def /(a: Float) = Vector2(x / a, y / a)
+case class Vector2(x: Scalar, y: Scalar) {
+  def +(a: Scalar) = Vector2(x + a, y + a)
+  def -(a: Scalar) = Vector2(x - a, y - a)
+  def *(a: Scalar) = Vector2(x * a, y * a)
+  def /(a: Scalar) = Vector2(x / a, y / a)
 
-  def cross(a: Float) = Vector2(a * y, -a * x)
-  def ×(a: Float) = Vector2(a * y, -a * x)
+  def cross(a: Scalar) = Vector2(a * y, -a * x)
+  def ×(a: Scalar) = Vector2(a * y, -a * x)
 
   def +(v: Vector2) = Vector2(x + v.x, y + v.y)
   def -(v: Vector2) = Vector2(x - v.x, y - v.y)
@@ -54,8 +54,8 @@ case class Vector2(x: Float, y: Float) {
   def abs = Vector2(x.abs, y.abs)
 
   /** Polar coordinates */
-  def theta = atan2(y, x).toFloat
-  def θ = atan2(y, x).toFloat
+  def theta = atan2(y, x)
+  def θ = atan2(y, x)
 
   def to(v: Vector2) = new Vector2Range(this, v, Vector2.One)
   def times(n: Int) = new Vector2Times(this, n, Vector2.One)
@@ -78,8 +78,8 @@ case class Vector2(x: Float, y: Float) {
   def tuple = (x, y)
 
   // Inlined for performance
-  def isValid = x != Float.NaN && x != Float.NegativeInfinity && x != Float.PositiveInfinity &&
-    y != Float.NaN && y != Float.NegativeInfinity && y != Float.PositiveInfinity
+  def isValid = x != Scalar.NaN && x != Scalar.NegativeInfinity && x != Scalar.PositiveInfinity &&
+    y != Scalar.NaN && y != Scalar.NegativeInfinity && y != Scalar.PositiveInfinity
 
   override def productPrefix = ""
   

@@ -1,6 +1,7 @@
 package org.villane.box2d.dynamics.joints
 
-import vecmath.Vector2
+import vecmath._
+import vecmath.Preamble._
 
 /**
  * Definition for a distance joint.  A distance joint
@@ -15,11 +16,11 @@ class DistanceJointDef extends JointDef {
   var localAnchor2 = Vector2.Zero
 
   /** The equilibrium length between the anchor points. */
-  var length = 1.0f
+  var length: Scalar = 1.0f
 
-  var frequencyHz = 0f
+  var frequencyHz: Scalar = 0f
 
-  var dampingRatio = 0f
+  var dampingRatio: Scalar = 0f
 
   /**
    * Initialize the bodies, anchors, and length using the world

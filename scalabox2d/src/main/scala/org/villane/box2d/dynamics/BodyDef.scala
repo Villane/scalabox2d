@@ -1,27 +1,28 @@
 package org.villane.box2d.dynamics
 
-import vecmath.Vector2
+import vecmath._
+import vecmath.Preamble._
 import shapes.Mass
 
 class BodyDef {
   var userData: AnyRef = null
   var mass = Mass.Zero
   var pos = Vector2.Zero
-  var angle = 0f
+  var angle: Scalar = 0f
 
   /**
    * Linear damping is use to reduce the linear velocity. The damping parameter
    * can be larger than 1.0f but the damping effect becomes sensitive to the
    * time step when the damping parameter is large.
    */
-  var linearDamping = 0f
+  var linearDamping: Scalar = 0f
 
   /**
    * Angular damping is use to reduce the angular velocity. The damping parameter
    * can be larger than 1.0f but the damping effect becomes sensitive to the
    * time step when the damping parameter is large.
    */
-  var angularDamping = 0f
+  var angularDamping: Scalar = 0f
 
   /**
    * Set this flag to false if this body should never fall asleep.  Note that

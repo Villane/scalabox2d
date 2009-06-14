@@ -18,7 +18,7 @@ object Shape {
  */
 abstract class Shape {
   /** Sweep radius relative to the parent body's center of mass. */
-  def radius: Float
+  def radius: Scalar
 
   /**
    * Test a point for containment in this shape. This only works for convex shapes.
@@ -37,10 +37,10 @@ abstract class Shape {
 	/// @param normal returns the normal at the contact point. If there is no intersection, the normal
 	/// is not set.
    */
-  def testSegment(t: Transform2, segment: Segment, maxLambda: Float): SegmentCollide
+  def testSegment(t: Transform2, segment: Segment, maxLambda: Scalar): SegmentCollide
 
   def computeAABB(t: Transform2): AABB
-  def computeMass(density: Float): Mass
+  def computeMass(density: Scalar): Mass
   /**
    * Compute the volume and centroid of this shape intersected with a half plane
    * @param normal the surface normal
@@ -48,8 +48,8 @@ abstract class Shape {
    * @param xf the shape transform
    * @return the total volume less than offset along normal and the centroid
    */
-  def computeSubmergedArea(normal: Vector2, offset: Float, t: Transform2): (Float, Vector2)
+  def computeSubmergedArea(normal: Vector2, offset: Scalar, t: Transform2): (Scalar, Vector2)
 
-  def computeSweepRadius(pivot: Vector2): Float
+  def computeSweepRadius(pivot: Vector2): Scalar
 
 }

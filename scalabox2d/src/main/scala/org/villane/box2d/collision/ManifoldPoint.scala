@@ -1,6 +1,7 @@
 package org.villane.box2d.collision
 
-import vecmath.Vector2
+import vecmath._
+import vecmath.Preamble._
 
 /**
  * A manifold point is a contact point belonging to a contact
@@ -15,12 +16,12 @@ case class ManifoldPoint(
   /** Local position of the contact point in body2 */
   localPoint2: Vector2,
   /** The separation of the shapes along the normal vector */
-  separation: Float,
+  separation: Scalar,
   /** Uniquely identifies a contact point between two shapes */
   id: ContactID
 ) {
   /** The non-penetration force */
-  var normalImpulse = 0f
+  var normalImpulse: Scalar = 0f
   /** The friction force */
-  var tangentImpulse = 0f
+  var tangentImpulse: Scalar = 0f
 }

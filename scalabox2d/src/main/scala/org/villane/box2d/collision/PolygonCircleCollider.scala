@@ -1,6 +1,7 @@
 package org.villane.box2d.collision
 
 import vecmath._
+import vecmath.Preamble._
 import shapes._
 import collision._
 import Settings.ε
@@ -17,7 +18,7 @@ object PolygonCircleCollider {
 
     // Find edge with maximum separation.
     var normalIndex = 0
-    var separation = -Float.MaxValue
+    var separation = -Scalar.MaxValue
 
     val vertexCount = polygon.vertexCount
     val vertices = polygon.vertices

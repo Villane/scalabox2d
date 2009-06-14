@@ -10,9 +10,9 @@ import Settings.ε
 case class TOIInput(
   sweep1: Sweep,
   sweep2: Sweep,
-  sweepRadius1: Float,
-  sweepRadius2: Float,
-  tolerance: Float
+  sweepRadius1: Scalar,
+  sweepRadius2: Scalar,
+  tolerance: Scalar
 )
 
 /** Handles conservative advancement to compute time of impact between shapes. */
@@ -43,11 +43,11 @@ object TOI {
     val ω1 = sweep1.a - sweep1.a0
     val ω2 = sweep2.a - sweep2.a0
 
-    var α = 0f
+    var α: Scalar = 0f
 
     val k_maxIterations = 20 // TODO_ERIN b2Settings
     var iter = 0
-    var targetDistance = 0f
+    var targetDistance: Scalar = 0f
     // use loop = false instead of breaks as 'break' isn't available in Scala
     var loop = true
     while(loop) {

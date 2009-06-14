@@ -1,12 +1,14 @@
 package org.villane.vecmath
 
+import Preamble._
+
 object Transform2 {
   val Identity = Transform2(Vector2.Zero, Matrix22.Identity)
 
   /**
    * Creates a transform from a position and an angle.
    */
-  def apply(pos: Vector2, angle: Float): Transform2 = Transform2(pos, Matrix22.rotation(angle))
+  def apply(pos: Vector2, angle: Scalar): Transform2 = Transform2(pos, Matrix22.rotation(angle))
 }
 
 case class Transform2(

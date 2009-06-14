@@ -11,10 +11,10 @@ import vecmath.Preamble._
 sealed abstract class ShapeDef
 
 /** A circle definition. */
-final case class CircleDef(var pos: Vector2, var radius: Float) extends ShapeDef
+final case class CircleDef(var pos: Vector2, var radius: Scalar) extends ShapeDef
 
 /** Point definition. Like a 0-radius circle, but has mass */
-final case class PointDef(var pos: Vector2, var mass: Float) extends ShapeDef
+final case class PointDef(var pos: Vector2, var mass: Scalar) extends ShapeDef
 
 object EdgeChainDef {
   def apply(vertices: Vector2*): EdgeChainDef = apply(false, vertices.toArray)
@@ -35,7 +35,7 @@ object PolygonDef {
    * @param hx the half-width.
    * @param hy the half-height.
    */
-  def box(hx: Float, hy: Float): PolygonDef = apply(Array((-hx,-hy),(hx,-hy),(hx,hy),(-hx,hy)))
+  def box(hx: Scalar, hy: Scalar): PolygonDef = apply(Array((-hx,-hy),(hx,-hy),(hx,hy),(-hx,hy)))
 
   /**
    * Build vertices to represent an oriented box.
@@ -43,7 +43,7 @@ object PolygonDef {
    * @param hy the half-height.
    * @param center the center of the box in local coordinates.
    */
-  def box(hx: Float, hy: Float, center: Vector2): PolygonDef = {
+  def box(hx: Scalar, hy: Scalar, center: Vector2): PolygonDef = {
     val pd = box(hx, hy)
     val xf = Transform2(center, Matrix22.Identity)
     pd.vertices = pd.vertices.map(v => xf * v)
@@ -57,7 +57,7 @@ object PolygonDef {
    * @param center the center of the box in local coordinates.
    * @param angle the rotation of the box in local coordinates.
    */
-  def box(hx: Float, hy: Float, center: Vector2, angle: Float): PolygonDef = {
+  def box(hx: Scalar, hy: Scalar, center: Vector2, angle: Scalar): PolygonDef = {
     val pd = box(hx, hy)
     val xf = Transform2(center, angle)
     pd.vertices = pd.vertices.map(v => xf * v)

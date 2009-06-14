@@ -15,7 +15,7 @@ class Edge(defn: EdgeChainDef) extends Shape {
 
   def testPoint(t: Transform2, p: Vector2) = false
 
-  def testSegment(t: Transform2, segment: Segment, maxLambda: Float) =
+  def testSegment(t: Transform2, segment: Segment, maxLambda: Scalar) =
     new Segment(t * v1, t * v2).testSegment(segment, maxLambda)
 
   def computeAABB(t: Transform2) = {
@@ -26,10 +26,10 @@ class Edge(defn: EdgeChainDef) extends Shape {
   }
 
   // ERKKI Shouldn't the center be v1 + (v2 - v1) / 2 ? Or is it not important?
-  def computeMass(density: Float) = Mass(0, v1, 0)
+  def computeMass(density: Scalar) = Mass(0, v1, 0)
 
-  def computeSubmergedArea(normal: Vector2, offset: Float, t: Transform2):
-    (Float, Vector2) = {
+  def computeSubmergedArea(normal: Vector2, offset: Scalar, t: Transform2):
+    (Scalar, Vector2) = {
     //Note that v0 is independent of any details of the specific edge
     //We are relying on v0 being consistent between multiple edges of the same body
     val v0 = offset * normal

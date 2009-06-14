@@ -71,9 +71,9 @@ abstract class AbstractExample(parent: TestbedMain) {
   /** The bounding box for the world.  If the defaults do not work for you, overload createWorld() and set the AABB appropriately there. */
   var m_worldAABB: AABB = null
   /** The exponentially smoothed amount of free memory available to the JVM. */ 
-  var memFree = 0f
+  var memFree: Scalar = 0f
    /** FPS that we want to achieve */
-  val targetFPS = 60.0f;
+  val targetFPS: Scalar = 60.0f;
   /** Number of frames to average over when computing real FPS */
   val fpsAverageCount = 100;
   /** Array of timings */
@@ -91,7 +91,7 @@ abstract class AbstractExample(parent: TestbedMain) {
   protected var m_contactListener: ContactListener = null
 
   /** Saved camera variable so that camera stays put between reloads of example. */
-  var cachedCamX, cachedCamY, cachedCamScale = 0f
+  var cachedCamX, cachedCamY, cachedCamScale: Scalar = 0f
   /** Have the cachedCam* variables been set for this example? */
   var hasCachedCamera = false
 
@@ -135,7 +135,7 @@ abstract class AbstractExample(parent: TestbedMain) {
   /** Override this if you need to create a different world AABB or gravity vector */
   def createWorld() {
     m_worldAABB = AABB((-200.0f, -100.0f),(200.0f, 200.0f))
-    val gravity = (0.0f, -10.0f)
+    val gravity = Vector2(0.0f, -10.0f)
     m_world = new World(m_worldAABB, gravity, true);
   }
 

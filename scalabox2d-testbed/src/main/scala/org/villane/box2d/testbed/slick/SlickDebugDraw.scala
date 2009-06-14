@@ -1,6 +1,7 @@
 package org.villane.box2d.testbed.slick
 
 import vecmath._
+import vecmath.Preamble._
 import box2d.draw._
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -16,12 +17,14 @@ import org.newdawn.slick.opengl.TextureImpl;
  */
 class SlickDebugDraw(var g: Graphics, var container: GameContainer) extends DebugDrawHandler {
   // World 0,0 maps to transX, transY on screen
-  var transX = 270.0f
-  var transY = 250.0f
-  var scaleFactor = 10.0f
-  val yFlip = -1.0f
+  var transX: Scalar = 270.0f
+  var transY: Scalar = 250.0f
+  var scaleFactor: Scalar = 10.0f
+  var yFlip: Scalar = -1.0f
 
-  def map(mapMe: Float, fromLow: Float, fromHigh: Float, toLow: Float, toHigh: Float) = {
+  implicit def double2float(a: Double) = a.toFloat
+
+  def map(mapMe: Scalar, fromLow: Scalar, fromHigh: Scalar, toLow: Scalar, toHigh: Scalar) = {
     val interp = (mapMe - fromLow) / (fromHigh - fromLow)
     (interp*toHigh + (1.0f-interp)*toLow)
   }
@@ -41,7 +44,7 @@ class SlickDebugDraw(var g: Graphics, var container: GameContainer) extends Debu
     Vector2(x, y)
   }
 
-  def drawCircle(center: Vector2, radius: Float, color: Color3f) {
+  def drawCircle(center: Vector2, radius: Scalar, color: Color3f) {
     val c = worldToScreen(center)
     val circle = new Circle(c.x, c.y, radius * scaleFactor)
     val slickColor = new Color(color.r.toInt, color.g.toInt, color.b.toInt)
@@ -49,7 +52,7 @@ class SlickDebugDraw(var g: Graphics, var container: GameContainer) extends Debu
     g.draw(circle)
   }
 
-  def drawPoint(position: Vector2, f: Float, color: Color3f) {
+  def drawPoint(position: Vector2, f: Scalar, color: Color3f) {
     val slickColor = new Color(color.r.toInt, color.g.toInt, color.b.toInt)
 		g.setColor(slickColor)
 		val c = worldToScreen(position)
@@ -95,7 +98,7 @@ class SlickDebugDraw(var g: Graphics, var container: GameContainer) extends Debu
     g.drawLine(screen1.x,screen1.y,screen2.x,screen2.y)
   }
 
-  def drawSolidCircle(center: Vector2, radius: Float, axis: Vector2, color: Color3f) {
+  def drawSolidCircle(center: Vector2, radius: Scalar, axis: Vector2, color: Color3f) {
     val c = worldToScreen(center)
     val circle = new Circle(c.x, c.y, radius * scaleFactor)
     val slickColor = new Color(color.r.toInt, color.g.toInt, color.b.toInt)
@@ -107,7 +110,7 @@ class SlickDebugDraw(var g: Graphics, var container: GameContainer) extends Debu
     g.fill(circle)
   }
 
-  def drawString(x: Float, y: Float, s: String, color: Color3f) {
+  def drawString(x: Scalar, y: Scalar, s: String, color: Color3f) {
     val slickColor = new Color(color.r, color.g, color.b)
     g.setColor(slickColor)
     g.drawString(s, x, y)

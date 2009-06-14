@@ -1,6 +1,7 @@
 package org.villane.box2d.dynamics.contacts
 
-import vecmath.Vector2
+import vecmath._
+import vecmath.Preamble._
 import shapes.Shape
 import collision.ContactID
 
@@ -15,9 +16,9 @@ case class ContactResult(
   /** Points from shape1 to shape2 */
   normal: Vector2,
   /** The normal impulse applied to body2 */
-  normalImpulse: Float,
+  normalImpulse: Scalar,
   /** The tangent impulse applied to body2 */
-  tangentImpulse: Float,
+  tangentImpulse: Scalar,
   /** The contact id identifies the features in contact */
   id: ContactID
 )

@@ -23,12 +23,12 @@ class RevoluteJoint(defn: RevoluteJointDef) extends Joint(defn) {
   val localAnchor1 = defn.localAnchor1 // relative
   val localAnchor2 = defn.localAnchor2
   var pivotForce = Vector2.Zero
-  var motorForce = 0f
-  var limitForce = 0f
-  var limitPositionImpulse = 0f
+  var motorForce: Scalar = 0f
+  var limitForce: Scalar = 0f
+  var limitPositionImpulse: Scalar = 0f
 
   var pivotMass = Matrix22.Zero // effective mass for point-to-point constraint.
-  var motorMass = 0f // effective mass for motor/limit angular constraint.
+  var motorMass: Scalar = 0f // effective mass for motor/limit angular constraint.
 
   val enableMotor = defn.enableMotor
   val maxMotorTorque = defn.maxMotorTorque
@@ -204,12 +204,12 @@ class RevoluteJoint(defn: RevoluteJointDef) extends Joint(defn) {
     b2.synchronizeTransform()
 
     // Handle limits.
-    var angularError = 0.0f
+    var angularError: Scalar = 0.0f
 
 
     if (enableLimit && limitState != LimitState.INACTIVE_LIMIT) {
       val angle = jointAngle
-      var limitImpulse = 0.0f
+      var limitImpulse: Scalar = 0.0f
 
       if (limitState == LimitState.EQUAL_LIMITS) {
         // Prevent large angular corrections
@@ -260,7 +260,7 @@ class RevoluteJoint(defn: RevoluteJointDef) extends Joint(defn) {
 
   def jointSpeed = body2.angularVelocity - body1.angularVelocity
 
-  def setLimits(lower: Float, upper: Float) {
+  def setLimits(lower: Scalar, upper: Scalar) {
     assert(lower <= upper)
     lowerAngle = lower
     upperAngle = upper

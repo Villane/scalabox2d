@@ -19,8 +19,8 @@ class PointingDeviceJoint(defn: PointingDeviceJointDef) extends Joint(defn) {
   var C = Vector2.Zero // position error
 
   var maxForce = defn.maxForce
-  var beta = 0f // bias factor
-  var gamma = 0f // softness
+  var beta: Scalar = 0f // bias factor
+  var gamma: Scalar = 0f // softness
 
   initPDJ
   def initPDJ {

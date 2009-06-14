@@ -1,5 +1,7 @@
 package org.villane.box2d.dynamics
 
+import vecmath.Preamble._
+
 /**
  * This interface allows registration within a JBox2d World
  * to be run immediately after the physics step.  This is
@@ -8,5 +10,5 @@ package org.villane.box2d.dynamics
  * differently, instead letting the engine handle the calling.
  */
 trait Steppable {
-  def step(dt: Float, iterations: Int)
+  def step(dt: Scalar, iterations: Int)
 }

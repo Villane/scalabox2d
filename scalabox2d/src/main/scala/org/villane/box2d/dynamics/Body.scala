@@ -26,16 +26,16 @@ class Body(bd: BodyDef, val world: World) {
   var fixtures: List[Fixture] = Nil
   var userData: AnyRef = null
 
-  var sleepTime = 0f
+  var sleepTime: Scalar = 0f
   
- var mass = 0f
- var invMass = 0f
- var I = 0f
+ var mass: Scalar = 0f
+ var invMass: Scalar = 0f
+ var I: Scalar = 0f
  def inertia = I
- var invI = 0f
+ var invI: Scalar = 0f
 
-  var linearDamping = 0f
-  var angularDamping = 0f
+  var linearDamping: Scalar = 0f
+  var angularDamping: Scalar = 0f
 
   var contactList: List[ContactEdge] = Nil
   var jointList: List[JointEdge] = Nil
@@ -45,9 +45,9 @@ class Body(bd: BodyDef, val world: World) {
   /** The swept motion for CCD */
   var sweep = new Sweep  
   var linearVelocity = Vector2.Zero
-  var angularVelocity = 0f
+  var angularVelocity: Scalar = 0f
   var force = Vector2.Zero
-  var torque = 0f
+  var torque: Scalar = 0f
 
   def transform = _transform
   /**
@@ -59,7 +59,7 @@ class Body(bd: BodyDef, val world: World) {
    * @return false if the movement put a shape outside the world. In this case the
    * body is automatically frozen.
    */
-  def setTransform(pos: Vector2, angle: Float): Boolean = {
+  def setTransform(pos: Vector2, angle: Scalar): Boolean = {
     assert(!world.lock)
     if (world.lock) return true
     if (isFrozen) return false
@@ -139,7 +139,7 @@ class Body(bd: BodyDef, val world: World) {
   
   /** The current world rotation angle in radians. */
   def angle = sweep.a
-  def angle_=(a: Float) {
+  def angle_=(a: Scalar) {
     sweep.a = a
     synchronizeTransform()
   }
@@ -189,7 +189,7 @@ class Body(bd: BodyDef, val world: World) {
    * This wakes up the body.
    * @param torque about the z-axis (out of the screen), usually in N-m.
    */
-  def applyTorque(torque: Float) {
+  def applyTorque(torque: Scalar) {
     if (isSleeping) wakeUp()
     this.torque += torque
   }
@@ -360,7 +360,7 @@ class Body(bd: BodyDef, val world: World) {
   }
 
   /** For internal use only. */
-  def advance(t: Float) {
+  def advance(t: Scalar) {
     // Advance to the new safe time
     sweep.advance(t)
     sweep.c = sweep.c0

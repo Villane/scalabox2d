@@ -10,7 +10,7 @@ object Point {
 }
 
 // This is used for polygon-vs-circle distance.
-case class Point(override val x: Float, override val y: Float) extends Vector2(x,y) with SupportsGenericDistance {
+case class Point(override val x: Scalar, override val y: Scalar) extends Vector2(x,y) with SupportsGenericDistance {
   def support(xf: Transform2, v: Vector2) = this
   def getFirstVertex(xf: Transform2) = this
 }
@@ -147,7 +147,7 @@ object Distance {
    * @return
    */
   def distanceGeneric(shape1: SupportsGenericDistance, xf1: Transform2,
-                      shape2: SupportsGenericDistance, xf2: Transform2): (Float,Vector2,Vector2) = {
+                      shape2: SupportsGenericDistance, xf2: Transform2): (Scalar,Vector2,Vector2) = {
     val p1s, p2s, points = new Array[Vector2](3)
     var pointCount = 0
 
@@ -207,7 +207,7 @@ object Distance {
         return (0.0f, x1, x2)
       }
 
-      var maxSqr = -Float.MaxValue
+      var maxSqr = -Scalar.MaxValue
       var i = 0
       while (i < pointCount) {
         maxSqr = max(maxSqr, points(i) ∙ points(i))
@@ -229,7 +229,7 @@ object Distance {
   }
 
   def distanceCC(circle1: Circle, xf1: Transform2,
-                 circle2: Circle, xf2: Transform2): (Float,Vector2,Vector2) = {
+                 circle2: Circle, xf2: Transform2): (Scalar,Vector2,Vector2) = {
     val p1 = (xf1 * circle1.pos)
     val p2 = (xf2 * circle2.pos)
 
@@ -255,7 +255,7 @@ object Distance {
   // GJK is more robust with polygon-vs-point than polygon-vs-circle.
   // So we convert polygon-vs-circle to polygon-vs-point.
   def distancePC(polygon: Polygon, xf1: Transform2,
-                 circle: Circle, xf2: Transform2): (Float,Vector2,Vector2) = {
+                 circle: Circle, xf2: Transform2): (Scalar,Vector2,Vector2) = {
     val point = Point(xf2 * circle.pos)
 
     var (distance, x1, x2) = distanceGeneric(polygon, xf1, point, Transform2.Identity)
@@ -287,7 +287,7 @@ object Distance {
    * @param xf2 Transform of second shape
    */
   def distance(shape1: Shape, xf1: Transform2,
-               shape2: Shape, xf2: Transform2): (Float, Vector2, Vector2) = (shape1, shape2) match {
+               shape2: Shape, xf2: Transform2): (Scalar, Vector2, Vector2) = (shape1, shape2) match {
     case (c1: Circle, c2: Circle) => distanceCC(c1, xf1, c2, xf2)
     case (p: Polygon, c: Circle) => distancePC(p, xf1, c, xf2)
     case (c: Circle, p: Polygon) =>

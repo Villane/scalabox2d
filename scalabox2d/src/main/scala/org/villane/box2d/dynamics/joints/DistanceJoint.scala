@@ -1,6 +1,6 @@
 package org.villane.box2d.dynamics.joints
 
-import vecmath.Vector2
+import vecmath._
 import vecmath.Preamble._
 import Settings.ε
 
@@ -20,19 +20,19 @@ class DistanceJoint(defn: DistanceJointDef) extends Joint(defn) {
   val localAnchor1 = defn.localAnchor1
   val localAnchor2 = defn.localAnchor2
   val length = defn.length
-  var impulse = 0.0f
+  var impulse: Scalar = 0.0f
   var u = Vector2.Zero
   // effective mass for the constraint.
-  var mass = 0.0f
+  var mass: Scalar = 0.0f
   val frequencyHz = defn.frequencyHz
   val dampingRatio = defn.dampingRatio
-  var gamma = 0.0f
-  var bias = 0.0f
+  var gamma: Scalar = 0.0f
+  var bias: Scalar = 0.0f
 
   def anchor1 = body1.toWorldPoint(localAnchor1)
   def anchor2 = body2.toWorldPoint(localAnchor2)
   def reactionForce = (impulse * u.x, impulse * u.y)
-  def reactionTorque = 0.0f
+  def reactionTorque: Scalar = 0.0f
 
   def initVelocityConstraints(step: TimeStep) {
 	invDt = step.invDt

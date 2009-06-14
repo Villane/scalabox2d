@@ -16,14 +16,14 @@ case class DistanceOutput(
   var pA: Vector2,
   /** closest point on shape2 */
   var pB: Vector2,
-  var distance: Float,
+  var distance: Scalar,
   /** number of GJK iterations used */
-  iterations: Float
+  iterations: Scalar
 )
 
 class SimplexCache {
   /** length or area */
-  var metric = 0f
+  var metric: Scalar = 0f
   var count = 0
   /** vertices on shape A */
   var indexA = new Array[Int](3)
@@ -41,7 +41,7 @@ class SimplexVertex {
   /** wB - wA */
   var w: Vector2 = null
   /** barycentric coordinate for closest point */
-  var a = 0f
+  var a: Scalar = 0f
   /** wA index */
   var indexA = 0
   /** wB index */
@@ -128,7 +128,7 @@ class Simplex {
     case _ => throw new IllegalStateException("call to computeWitnessPoints when count=" + count)
   }
 
-  def computeMetric = count match {
+  def computeMetric: Scalar = count match {
     case 1 => 0.0f
     case 2 => distance(v1.w, v2.w)
     case 3 => (v2.w - v1.w) cross (v3.w - v1.w)
@@ -415,7 +415,7 @@ object NewDistance {
       } else {
     	// Shapes are overlapped when radii are considered.
     	// Move the witness points to the middle.
-    	val p = 0.5f * (out.pA + out.pB)
+    	val p = (out.pA + out.pB) * 0.5f
     	out.pA = p
     	out.pB = p
     	out.distance = 0f

@@ -7,7 +7,7 @@ import Settings.ε
 object Polygon {
   def computeCentroid(vertices: Array[Vector2]) = {
     var c = Vector2.Zero
-    var area = 0f
+    var area: Scalar = 0f
     forTriangles(vertices) { t =>
       area += t.area
       // Area weighted centroid
@@ -19,7 +19,7 @@ object Polygon {
   }
 
   object Triangle {
-    val inv3 = 1f / 3
+    val inv3: Scalar = 1f / 3
     def apply(pRef: Vector2, vertices: Array[Vector2], p2index: Int): Triangle = apply(
       pRef,
       vertices(p2index),
@@ -88,8 +88,8 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
    	true
   }
 
-  def testSegment(t: Transform2, segment: Segment, maxLambda: Float): SegmentCollide = {
-    var lower = 0f
+  def testSegment(t: Transform2, segment: Segment, maxLambda: Scalar): SegmentCollide = {
+    var lower: Scalar = 0f
     var upper = maxLambda
 
     val p1 = t ** segment.p1
@@ -154,10 +154,10 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
     //AABB(lower-radius, upper+radius)
   }
 
-  def computeMass(density: Float) = {
-    var area = 0f
+  def computeMass(density: Scalar) = {
+    var area: Scalar = 0f
     var center = Vector2.Zero
-    var I = 0f
+    var I: Scalar = 0f
 
     import Polygon.Triangle._
     Polygon.forTriangles(vertices) { t =>
@@ -186,13 +186,13 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
     Mass(mass, center, I * density)
   }
 
-  def computeSubmergedArea(normal: Vector2, offset: Float, t: Transform2):
-    (Float, Vector2) = {
+  def computeSubmergedArea(normal: Vector2, offset: Scalar, t: Transform2):
+    (Scalar, Vector2) = {
     //Transform plane into shape co-ordinates
     val normalL = t.rot ** normal
     val offsetL = offset - (normal dot t.pos)
 
-    val depths = new Array[Float](vertexCount)
+    val depths = new Array[Scalar](vertexCount)
     var diveCount = 0
     var intoIndex = -1
     var outoIndex = -1
@@ -251,7 +251,7 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
     )
 
     // Initialize accumulator
-    var area = 0f
+    var area: Scalar = 0f
     var center = Vector2.Zero
     var p2 = vertices(intoIndex2)
     var p3: Vector2 = null
@@ -279,7 +279,7 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
 
   def computeSweepRadius(pivot: Vector2) = {
     assert(vertices.length > 0)
-    var sr = 0f
+    var sr: Scalar = 0f
     // TODO NO CORE VERTICES!!!
     coreVertices foreach { v =>
       sr = max(sr, distanceSquared(v, pivot))

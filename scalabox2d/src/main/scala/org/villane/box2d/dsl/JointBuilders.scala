@@ -19,16 +19,16 @@ class DistanceJointBuilder(j: DistanceJointDef, bodies: (Body, Body))
   extends JointBuilder(j, bodies) {
   def localAnchor1(v: Vector2) = { j.localAnchor1 = v; this }
   def localAnchor2(v: Vector2) = { j.localAnchor2 = v; this }
-  def length(v: Float) = { j.length = v; this }
-  def frequencyHz(v: Float) = { j.frequencyHz = v; this }
-  def dampingRatio(v: Float) = { j.dampingRatio = v; this }
+  def length(v: Scalar) = { j.length = v; this }
+  def frequencyHz(v: Scalar) = { j.frequencyHz = v; this }
+  def dampingRatio(v: Scalar) = { j.dampingRatio = v; this }
 }
 
 class RevoluteJointBuilder(j: RevoluteJointDef, bodies: (Body, Body))
   extends JointBuilder(j, bodies) {
   def localAnchor1(v: Vector2) = { j.localAnchor1 = v; this }
   def localAnchor2(v: Vector2) = { j.localAnchor2 = v; this }
-  def referenceAngle(v: Float) = { j.referenceAngle = v; this }
+  def referenceAngle(v: Scalar) = { j.referenceAngle = v; this }
   def anchor(v: Vector2) = {
     j.localAnchor1 = j.body1.toLocalPoint(v)
     j.localAnchor2 = j.body2.toLocalPoint(v)
@@ -36,9 +36,9 @@ class RevoluteJointBuilder(j: RevoluteJointDef, bodies: (Body, Body))
     this
   }
   def enableLimit(v: Boolean) = { j.enableLimit = v; this }
-  def lowerAngle(v: Float) = { j.lowerAngle = v; this }
-  def upperAngle(v: Float) = { j.upperAngle = v; this }
+  def lowerAngle(v: Scalar) = { j.lowerAngle = v; this }
+  def upperAngle(v: Scalar) = { j.upperAngle = v; this }
   def enableMotor(v: Boolean) = { j.enableMotor = v; this }
-  def motorSpeed(v: Float) = { j.motorSpeed = v; this }
-  def maxMotorTorque(v: Float) = { j.maxMotorTorque = v; this }
+  def motorSpeed(v: Scalar) = { j.motorSpeed = v; this }
+  def maxMotorTorque(v: Scalar) = { j.maxMotorTorque = v; this }
 }

@@ -10,7 +10,7 @@ import Settings.ε
  * pos - position
  * radius - radius of the circle
  */
-class Circle(val pos: Vector2, val radius: Float) extends Shape {
+class Circle(val pos: Vector2, val radius: Scalar) extends Shape {
 
   def testPoint(t: Transform2, p: Vector2) = {
    	val center = t * pos
@@ -24,7 +24,7 @@ class Circle(val pos: Vector2, val radius: Float) extends Shape {
    * x = s + a * r
    * norm(x) = radius
    */
-  def testSegment(t: Transform2, segment: Segment, maxLambda: Float): SegmentCollide = {
+  def testSegment(t: Transform2, segment: Segment, maxLambda: Scalar): SegmentCollide = {
     val p = t * pos
     val s = segment.p1 - p
     val b = (s dot s) - radius * radius
@@ -60,15 +60,15 @@ class Circle(val pos: Vector2, val radius: Float) extends Shape {
     AABB(p - radius, p + radius)
   }
 
-  def computeMass(density: Float) = {
+  def computeMass(density: Scalar) = {
     val mass = density * π * radius * radius
     // inertia about the local origin
     val i = mass * (0.5f * radius * radius + (pos ∙ pos))
     Mass(mass, pos, i)
   }
 
-  def computeSubmergedArea(normal: Vector2, offset: Float, t: Transform2):
-    (Float, Vector2) = {
+  def computeSubmergedArea(normal: Vector2, offset: Scalar, t: Transform2):
+    (Scalar, Vector2) = {
     val p = t * pos
     val l = -((normal dot p) - offset)
     if (l < -radius + ε) {

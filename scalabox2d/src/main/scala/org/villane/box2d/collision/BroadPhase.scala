@@ -75,7 +75,7 @@ class BroadPhase(val worldAABB: AABB, callback: PairListener) {
   val queryResults = new Array[Int](Settings.maxProxies)
   var queryResultCount = 0
   
-  val quantizationFactor = Int.MaxValue.toFloat / (worldAABB.upperBound - worldAABB.lowerBound)
+  val quantizationFactor = Int.MaxValue.toScalar / (worldAABB.upperBound - worldAABB.lowerBound)
   var timeStamp = 1
 
   init

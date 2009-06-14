@@ -1,18 +1,19 @@
 package org.villane.box2d.shapes
 
 import vecmath._
+import vecmath.Preamble._
 
 object SegmentCollide {
   val Miss = SegmentCollide(SegmentCollideResult.Miss, 0, Vector2.Zero)
-  def hit(lambda: Float, normal: Vector2) =
+  def hit(lambda: Scalar, normal: Vector2) =
     SegmentCollide(SegmentCollideResult.Hit, lambda, normal)
-  def startsInside(lambda: Float, normal: Vector2) =
+  def startsInside(lambda: Scalar, normal: Vector2) =
     SegmentCollide(SegmentCollideResult.StartsInside, lambda, normal)
 }
 
 case class SegmentCollide(
   result: SegmentCollideResult,
-  lambda: Float,
+  lambda: Scalar,
   normal: Vector2
 )
 
@@ -27,7 +28,7 @@ object SegmentCollideResult {
 /** A line segment */
 class Segment(val p1: Vector2, val p2: Vector2) {
   /** Ray cast against this segment with another segment. */
-  def testSegment(segment: Segment, maxLambda: Float): SegmentCollide = {
+  def testSegment(segment: Segment, maxLambda: Scalar): SegmentCollide = {
     val s = segment.p1
     val r = segment.p2 - s
     val d = p2 - p1

@@ -16,13 +16,13 @@ trait DebugDrawHandler {
   def drawSolidPolygon(vertices: Array[Vector2], color: Color3f)
 
   /// Draw a circle.
-  def drawCircle(center: Vector2, radius: Float, color: Color3f)
+  def drawCircle(center: Vector2, radius: Scalar, color: Color3f)
 
   /// Draw a solid circle.
-  def drawSolidCircle(center: Vector2, radius: Float, axis: Vector2, color: Color3f)
+  def drawSolidCircle(center: Vector2, radius: Scalar, axis: Vector2, color: Color3f)
 
   /// Draw a point.
-  def drawPoint(position: Vector2, f: Float, color: Color3f)
+  def drawPoint(position: Vector2, f: Scalar, color: Color3f)
 
   /// Draw a line segment.
   def drawSegment(p1: Vector2, p2: Vector2, color: Color3f)
@@ -31,7 +31,7 @@ trait DebugDrawHandler {
   /// @param xf a transform.
   def drawTransform(xf: Transform2)
 
-  def drawString(x: Float, y: Float, s: String, color: Color3f)
+  def drawString(x: Scalar, y: Scalar, s: String, color: Color3f)
 
   //All the following should be overridden if the concrete drawing
   //class does any sort of camera movement
@@ -42,7 +42,7 @@ trait DebugDrawHandler {
    * @param y - y coordinate of camera
    * @param scale - zoom factor
    */
-  def setCamera(x: Float, y: Float, scale: Float) {}
+  def setCamera(x: Scalar, y: Scalar, scale: Scalar) {}
 
   /**
    * @param screenV Screen position
@@ -55,7 +55,7 @@ trait DebugDrawHandler {
    * @param screeny Screey y position
    * @return World position
    */
-  final def screenToWorld(screenX: Float, screenY: Float): Vector2 = screenToWorld(Vector2(screenX, screenY))
+  final def screenToWorld(screenX: Scalar, screenY: Scalar): Vector2 = screenToWorld(Vector2(screenX, screenY))
 
   /**
    * @param worldV World position
@@ -68,6 +68,6 @@ trait DebugDrawHandler {
    * @param worldy World y position
    * @return Screen position
    */
-  final def worldToScreen(worldX: Float, worldY: Float): Vector2 = worldToScreen(Vector2(worldX, worldY))
+  final def worldToScreen(worldX: Scalar, worldY: Scalar): Vector2 = worldToScreen(Vector2(worldX, worldY))
 
 }

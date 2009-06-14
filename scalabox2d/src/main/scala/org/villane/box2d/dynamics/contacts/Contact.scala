@@ -57,12 +57,12 @@ abstract class Contact(val fixture1: Fixture, val fixture2: Fixture) {
   val node2 = if (fixture1 != null) ContactEdge(fixture1.body, this) else null
 
   /** Combined friction */
-  var friction = if (fixture1 == null || fixture2 == null) 0f else sqrt(fixture1.friction * fixture2.friction)
+  var friction: Scalar = if (fixture1 == null || fixture2 == null) 0f else sqrt(fixture1.friction * fixture2.friction)
   /** Combined restitution */
-  var restitution = if (fixture1 == null || fixture2 == null) 0f else max(fixture1.restitution, fixture2.restitution)
+  var restitution: Scalar = if (fixture1 == null || fixture2 == null) 0f else max(fixture1.restitution, fixture2.restitution)
 
   var flags = 0
-  var toi = 0f
+  var toi: Scalar = 0f
 	
   def evaluate(listener: ContactListener)
 

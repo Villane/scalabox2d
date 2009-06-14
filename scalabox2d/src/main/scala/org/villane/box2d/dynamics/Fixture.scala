@@ -1,7 +1,7 @@
 package org.villane.box2d.dynamics
 
 import vecmath._
-import vecmath.Preamble
+import vecmath.Preamble._
 import shapes._
 import collision._
 
@@ -19,7 +19,7 @@ class Fixture(defn: FixtureDef, val body: Body) {
   var restitution = defn.restitution
 
   /** Sweep radius relative to the parent body's center of mass. */
-  var sweepRadius = 0f
+  var sweepRadius: Scalar = 0f
 
   /** The shape's density, usually in kg/m^2. */
   var density = defn.density

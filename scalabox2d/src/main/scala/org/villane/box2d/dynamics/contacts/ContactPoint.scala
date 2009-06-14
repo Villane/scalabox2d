@@ -1,6 +1,7 @@
 package org.villane.box2d.dynamics.contacts
 
-import vecmath.Vector2
+import vecmath._
+import vecmath.Preamble._
 import shapes.Shape
 import collision.ContactID
 
@@ -16,11 +17,11 @@ case class ContactPoint(
   /** Points from shape1 to shape2 */
   normal: Vector2,
   /** The separation is negative when shapes are touching */
-  separation: Float,
+  separation: Scalar,
   /** The combined friction coefficient */
-  friction: Float,
+  friction: Scalar,
   /** The combined restitution coefficient */
-  restitution: Float,
+  restitution: Scalar,
   /** The contact id identifies the features in contact */
   id: ContactID
 )

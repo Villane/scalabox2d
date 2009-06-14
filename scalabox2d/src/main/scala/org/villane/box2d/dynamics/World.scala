@@ -44,7 +44,7 @@ class World(val aabb: AABB, var gravity: Vector2, doSleep: Boolean) {
   var destructionListener: DestructionListener = null
   var boundaryListener: BoundaryListener = null
 
-  private var invDt0 = 0f
+  private var invDt0: Scalar = 0f
   private var postStepList = new ArrayList[Steppable]
 
   /** 
@@ -169,7 +169,7 @@ class World(val aabb: AABB, var gravity: Vector2, doSleep: Boolean) {
    * @param dt the amount of time to simulate, this should not vary.
    * @param iterations the number of iterations to be used by the constraint solver.
    */
-  def step(dt: Float, iterations: Int) {
+  def step(dt: Scalar, iterations: Int) {
     lock = true
     val step = new TimeStep(dt)
     step.maxIterations = iterations
@@ -197,7 +197,7 @@ class World(val aabb: AABB, var gravity: Vector2, doSleep: Boolean) {
   }
     
   /** Goes through the registered postStep functions and calls them. */
-  private def postStep(dt: Float, iterations: Int) {
+  private def postStep(dt: Scalar, iterations: Int) {
     for (s <- postStepList) {
       s.step(dt, iterations)
     }
@@ -418,7 +418,7 @@ class World(val aabb: AABB, var gravity: Vector2, doSleep: Boolean) {
     while (loop) {
       // Find the first TOI.
       var minContact: Contact = null
-      var minTOI = 1f
+      var minTOI: Scalar = 1f
 
       var iCo = 0
       while (iCo < contactList.length) {
@@ -429,7 +429,7 @@ class World(val aabb: AABB, var gravity: Vector2, doSleep: Boolean) {
         // simulate continue
         var skip = false
         // TODO_ERIN keep a counter on the contact, only respond to M TOIs per contact.
-        var toi = 1f
+        var toi: Scalar = 1f
         if ((c.flags & ContactFlags.toi) != 0) {
           // This contact has a valid cached TOI.
           toi = c.toi

@@ -311,8 +311,8 @@ class ContactSolver(contacts: Seq[Contact]) {
     }
   }
   
-  @inline def solvePositionConstraints(baumgarte: Float): Boolean = {
-    var minSeparation = 0f
+  @inline def solvePositionConstraints(baumgarte: Scalar): Boolean = {
+    var minSeparation: Scalar = 0f
     var iConstraints = 0
     while (iConstraints < constraints.length) {
       val c = constraints(iConstraints)

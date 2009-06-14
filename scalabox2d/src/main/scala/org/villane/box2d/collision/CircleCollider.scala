@@ -25,7 +25,7 @@ object CircleCollider {
       return None
     }
 
-    var separation = 0f
+    var separation: Scalar = 0f
     var normal: Vector2 = null
     if (distSqr < ε) {
       separation = -radiusSum

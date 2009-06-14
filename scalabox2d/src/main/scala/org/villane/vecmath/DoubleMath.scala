@@ -4,6 +4,21 @@ package org.villane.vecmath
  * Mirrors FloatMath, use when replacing Float with Double
  */
 trait DoubleMath {
+  type Scalar = Double
+  object Scalar {
+    val NaN = Double.NaN
+    val MaxValue = Double.MaxValue
+    val MinValue = Double.MinValue
+    val PositiveInfinity = Double.PositiveInfinity
+    val NegativeInfinity = Double.NegativeInfinity
+  }
+  class IntExt(a: Int) {
+    def toScalar = a.toDouble
+  }
+  implicit def int2Ext(a: Int) = new IntExt(a)
+  implicit def floatExtensions(a: Float) = new ScalarExtensions(a)
+  // This screws things up implicit def tuple2fToVector2(xy: (Float, Float)) = Vector2(xy._1, xy._2)
+
   final val Pi = Math.Pi
   final val π = Math.Pi
 

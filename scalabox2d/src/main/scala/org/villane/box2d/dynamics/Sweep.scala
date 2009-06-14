@@ -2,6 +2,7 @@ package org.villane.box2d.dynamics
 
 import Settings.ε
 import vecmath._
+import vecmath.Preamble._
 
 /**
  * Primarily for internal use.
@@ -19,9 +20,9 @@ class Sweep {
   /** Center world positions */
   var c0, c = Vector2.Zero
   /** World angles */
-  var a0, a = 0f 
+  var a0, a: Scalar = 0f 
   /** Time interval = [t0,1], where t0 is in [0,1] */
-  var t0 = 0f
+  var t0: Scalar = 0f
 	
   override def toString() = {
 	var s = "Sweep:\nlocalCenter: "+localCenter+"\n";
@@ -35,7 +36,7 @@ class Sweep {
    * Get the interpolated transform at a specific time.
    * @param t the normalized time in [0,1].
    */
-  def getTransform(t: Float) = {
+  def getTransform(t: Scalar) = {
     // center = p + R * localCenter
     val xf = if (1f - t0 > ε) {
       val α = (t - t0) / (1f - t0)
@@ -54,7 +55,7 @@ class Sweep {
    * Advance the sweep forward, yielding a new initial state.
    * @param t the new initial time.
    */
-  def advance(t: Float) {
+  def advance(t: Scalar) {
     if (t0 < t && 1.0f - t0 > ε) {
       val α = (t - t0) / (1.0f - t0)
       c0 = c0 * (1.0f - α) + c * α 

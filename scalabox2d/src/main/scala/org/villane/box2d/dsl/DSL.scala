@@ -48,13 +48,13 @@ object DSL {
   }
 
   def shape(shapeDef: ShapeDef) = fbuilder(shapeDef)
-  def circle(radius: Float) = fbuilder(CircleDef(Vector2.Zero, radius))
-  def circle(pos: Vector2, radius: Float) = fbuilder(CircleDef(pos, radius))
+  def circle(radius: Scalar) = fbuilder(CircleDef(Vector2.Zero, radius))
+  def circle(pos: Vector2, radius: Scalar) = fbuilder(CircleDef(pos, radius))
   def polygon(vertices: Vector2*) = fbuilder(PolygonDef(vertices.toArray))
-  def box(halfW: Float, halfH: Float) = fbuilder(PolygonDef.box(halfW, halfH))
-  def box(halfW: Float, halfH: Float, center: Vector2) =
+  def box(halfW: Scalar, halfH: Scalar) = fbuilder(PolygonDef.box(halfW, halfH))
+  def box(halfW: Scalar, halfH: Scalar, center: Vector2) =
     fbuilder(PolygonDef.box(halfW, halfH, center))
-  def box(halfW: Float, halfH: Float, center: Vector2, angle: Float) =
+  def box(halfW: Scalar, halfH: Scalar, center: Vector2, angle: Scalar) =
     fbuilder(PolygonDef.box(halfW, halfH, center, angle))
 
   private def bbuilder = BodyCtx.get.bodyBuilder
@@ -87,9 +87,9 @@ class BodyBuilder(b: BodyDef) {
   def userData(userData: AnyRef) = { b.userData = userData; this }
   def mass(mass: Mass) = { b.mass = mass; this }
   def pos(pos: Vector2) = { b.pos = pos; this } 
-  def angle(angle: Float) = { b.angle = angle; this } 
-  def linearDamping(linearDamping: Float) = { b.linearDamping = linearDamping; this }
-  def angularDamping(angularDamping: Float) = { b.angularDamping = angularDamping; this }
+  def angle(angle: Scalar) = { b.angle = angle; this } 
+  def linearDamping(linearDamping: Scalar) = { b.linearDamping = linearDamping; this }
+  def angularDamping(angularDamping: Scalar) = { b.angularDamping = angularDamping; this }
   def sleepingAllowed(allowSleep: Boolean) = { b.allowSleep = allowSleep; this }
   def initiallySleeping(isSleeping: Boolean) = { b.isSleeping = isSleeping; this }
   def fixedRotation(fixedRotation: Boolean) = { b.fixedRotation = fixedRotation; this }
@@ -99,9 +99,9 @@ class BodyBuilder(b: BodyDef) {
 
 class FixtureBuilder(s: FixtureDef) {
   def userData(userData: AnyRef) = { s.userData = userData; this }
-  def friction(friction: Float) = { s.friction = friction; this }
-  def restitution(restitution: Float) = { s.restitution = restitution; this }
-  def density(density: Float) = { s.density = density; this }
+  def friction(friction: Scalar) = { s.friction = friction; this }
+  def restitution(restitution: Scalar) = { s.restitution = restitution; this }
+  def density(density: Scalar) = { s.density = density; this }
   def filter(filter: FilterData) = { s.filter = filter; this }
   def sensor(isSensor: Boolean) = { s.isSensor = isSensor; this }
   def define = s

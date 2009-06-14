@@ -1,6 +1,7 @@
 package org.villane.box2d.dynamics.joints
 
 import vecmath._
+import vecmath.Preamble._
 import dynamics._
 
 object Joint {
@@ -25,7 +26,7 @@ abstract class Joint(defn: JointDef) {
   val node2 = if (body1 != null) JointEdge(body1, this) else null
 
   var islandFlag = false
-  var invDt = 0f
+  var invDt: Scalar = 0f
 
   init
   def init {
@@ -40,7 +41,7 @@ abstract class Joint(defn: JointDef) {
   /** Get the reaction force on body2 at the joint anchor. */
   def reactionForce: Vector2
   /** Get the reaction torque on body2. */
-  def reactionTorque: Float
+  def reactionTorque: Scalar
   
   def initVelocityConstraints(step: TimeStep)
   def solveVelocityConstraints(step: TimeStep)

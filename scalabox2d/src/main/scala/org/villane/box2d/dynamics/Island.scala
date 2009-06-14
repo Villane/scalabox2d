@@ -151,7 +151,7 @@ class Island(val bodyCapacity: Int,
     report(contactSolver.constraints)
 
     if (allowSleep) {
-      var minSleepTime = Float.MaxValue
+      var minSleepTime = Scalar.MaxValue
 
       val linTolSqr = Settings.linearSleepTolerance * Settings.linearSleepTolerance
       val angTolSqr = Settings.angularSleepTolerance * Settings.angularSleepTolerance

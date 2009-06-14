@@ -1,6 +1,7 @@
 package org.villane.box2d.dynamics.joints
 
-import vecmath.Vector2
+import vecmath._
+import vecmath.Preamble._
 
 class PointingDeviceJointDef extends JointDef {
   /**
@@ -14,14 +15,14 @@ class PointingDeviceJointDef extends JointDef {
    * to move the candidate body. Usually you will express
    * as some multiple of the weight (multiplier * mass * gravity).
    */
-  var maxForce = 0f
+  var maxForce: Scalar = 0f
 
   /** The response speed. */
-  var frequencyHz = 5f
+  var frequencyHz: Scalar = 5f
 
   /** The damping ratio. 0 = no damping, 1 = critical damping. */
-  var dampingRatio = 0.7f
+  var dampingRatio: Scalar = 0.7f
 
   /** The time step used in the simulation. */
-  var timeStep = 1f / 60f
+  var timeStep: Scalar = 1f / 60f
 }

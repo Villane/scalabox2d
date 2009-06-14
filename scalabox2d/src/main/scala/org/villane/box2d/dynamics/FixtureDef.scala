@@ -1,5 +1,6 @@
 package org.villane.box2d.dynamics
 
+import vecmath.Preamble._
 import shapes.ShapeDef
 
 /**
@@ -8,13 +9,13 @@ import shapes.ShapeDef
  */
 class FixtureDef(val shapeDef: ShapeDef) {
   /** The friction coefficient, usually in the range [0,1]. */
-  var friction = 0.2f
+  var friction: Scalar = 0.2f
 
   /** The restitution (elasticity) usually in the range [0,1]. */
-  var restitution = 0f
+  var restitution: Scalar = 0f
 
   /** The density, usually in kg/m^2. */
-  var density = 0f
+  var density: Scalar = 0f
 
   /** A sensor collects contact information but never generates a collision response. */
   var isSensor = false

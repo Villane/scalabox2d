@@ -24,10 +24,10 @@ class Pyramid(_parent: TestbedMain) extends AbstractExample(_parent) {
 
     val box1 = box(0.5f, 0.5f) density 5 restitution 0 friction 0.9f
 
-    val sx = (-10.0f, 0.75f)
-    val Δx = (0.5625f, 2.0f)
+    val sx = Vector2(-10.0f, 0.75f)
+    val Δx = Vector2(0.5625f, 2.0f)
     val ex = sx + Δx * 25
-    val Δy = (1.125f, 0.0f)
+    val Δy = Vector2(1.125f, 0.0f)
 
     for {
       x <- sx to ex by Δx
