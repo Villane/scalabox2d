@@ -54,8 +54,8 @@ case class Vector2(x: Float, y: Float) {
   def abs = Vector2(x.abs, y.abs)
 
   /** Polar coordinates */
-  def theta = atan2(y, x).toFloat
-  def θ = atan2(y, x).toFloat
+  def theta = atan2(y, x)
+  def θ = atan2(y, x)
 
   def to(v: Vector2) = new Vector2Range(this, v, Vector2.One)
   def times(n: Int) = new Vector2Times(this, n, Vector2.One)
