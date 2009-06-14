@@ -8,8 +8,11 @@ import dynamics._
 object Shape {
   def create(defn: ShapeDef) = defn match {
     case d: CircleDef => new Circle(d.pos, d.radius)
-    case d: PointDef => new Point(d.pos, d.mass)
     case d: PolygonDef => new Polygon(d)
+    case d: EdgeDef => new Edge(d.v1, d.v2)
+    case d: EdgeChainDef =>
+      throw new IllegalArgumentException("Turn edge chain into separate edges when creating shapes!")
+    case d: PointDef => new Point(d.pos, d.mass)
   }
 }
 

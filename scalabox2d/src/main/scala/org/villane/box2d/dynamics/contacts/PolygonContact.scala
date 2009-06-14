@@ -5,16 +5,14 @@ import shapes._
 import collision._
 
 /**
- * ERKKI Contact between two (Convex?) polygons 
+ * Contact between two convex polygons.
  */
-case class PolygonContact(f1: Fixture, f2: Fixture) extends Contact(f1, f2) with MultiPointSingleManifoldContact {
-  def p1 = fixture1.shape.asInstanceOf[Polygon]
-  def p2 = fixture2.shape.asInstanceOf[Polygon]
+case class PolygonContact(f1: Fixture, f2: Fixture) extends Contact(f1, f2)
+  with MultiPointSingleManifoldContact {
 
-  def evaluate(listener: ContactListener) {
-    val b1 = fixture1.body
-    val b2 = fixture2.body
+  def collide = PolygonCollider.collidePolygons(
+    f1.shape.asInstanceOf[Polygon], f1.body.transform,
+    f2.shape.asInstanceOf[Polygon], f2.body.transform
+  )
 
-    evaluate(listener, () => PolygonCollider.collidePolygons(p1, b1.transform, p2, b2.transform))
-  }
 }

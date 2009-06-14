@@ -18,9 +18,13 @@ object Contact {
     case (s1: Circle, s2: Circle) => CircleContact(fixture1, fixture2)
     case (s1: Polygon, s2: Circle) => PolygonCircleContact(fixture1, fixture2)
     case (s1: Circle, s2: Polygon) => reverse(PolygonCircleContact(fixture2, fixture1))
-    case (s1: Polygon, s2: Polygon) => PolygonContact(fixture1, fixture2) 
+    case (s1: Polygon, s2: Polygon) => PolygonContact(fixture1, fixture2)
+    case (s1: Edge, s2: Circle) => EdgeCircleContact(fixture1, fixture2)
+    case (s1: Circle, s2: Edge) => reverse(EdgeCircleContact(fixture2, fixture1))
     // XXX ERKKI this was return null; and probably should be NullContact? 
-    case _ => throw new IllegalArgumentException("No contact creator for given types")
+    case (s1, s2) =>
+      throw new IllegalArgumentException("Contact(" + s1.getClass.getSimpleName +
+        ", " + s2.getClass.getSimpleName + ") not supported!")
   }
 
   private def reverse(c: Contact) = {
@@ -63,7 +67,7 @@ abstract class Contact(val fixture1: Fixture, val fixture2: Fixture) {
 
   var flags = 0
   var toi = 0f
-	
+
   def evaluate(listener: ContactListener)
 
   /**

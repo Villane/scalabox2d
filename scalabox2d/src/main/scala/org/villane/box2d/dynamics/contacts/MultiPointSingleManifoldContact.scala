@@ -4,10 +4,10 @@ import collision._
 
 trait MultiPointSingleManifoldContact extends SingleManifoldContact {
 
-  def evaluate(listener: ContactListener, collider: () => Option[Manifold]) {
+  override def evaluate(listener: ContactListener, manifold: Option[Manifold]) {
     val persisted = Array(false,false)
     val oldMH = manifoldHolder
-    manifoldHolder = collider()
+    manifoldHolder = manifold
     if (manifoldHolder.isDefined) {
       val manifold = manifoldHolder.get
       // Match old contact ids to new contact ids and copy the

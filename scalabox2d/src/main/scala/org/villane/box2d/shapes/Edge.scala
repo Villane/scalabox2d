@@ -7,11 +7,16 @@ import Settings.ε
 /**
  * A single edge from v1 to v2
  */
-class Edge(defn: EdgeChainDef) extends Shape {
+class Edge(val v1: Vector2, val v2: Vector2) extends Shape {
   // Erkki: is this correct?
   val radius = Settings.polygonRadius
-  val v1: Vector2 = defn.vertices(0)
-  val v2: Vector2 = defn.vertices(1)
+
+  val direction = (v2 - v1).normalize
+  val length = (v2 - v1).length
+  val normal = direction.tangent
+
+  val corner1Dir = normal
+  val corner2Dir = normal * -1.0f
 
   def testPoint(t: Transform2, p: Vector2) = false
 

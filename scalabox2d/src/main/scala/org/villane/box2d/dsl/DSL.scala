@@ -22,8 +22,15 @@ object DSL {
     block
     val body = world.createBody(ctx.bodyBuilder.define)
     for (builder <- ctx.fixBuilders) {
-      val fixDef = builder.define
-      body.createFixture(fixDef)
+      builder.define match {
+        case fixDef @ FixtureDef(ec: EdgeChainDef) =>
+          for (edge <- ec.edges) {
+            fixDef.shapeDef = edge
+            body.createFixture(fixDef)
+          }
+          fixDef.shapeDef = ec
+        case fixDef => body.createFixture(fixDef)
+      }
     }
     if (ctx.massFromShapes) body.computeMassFromShapes
     BodyCtx.remove
@@ -42,7 +49,7 @@ object DSL {
   }
 
   private def fbuilder(sd: ShapeDef) = {
-    val builder = new FixtureBuilder(new FixtureDef(sd))
+    val builder = new FixtureBuilder(FixtureDef(sd))
     if (BodyCtx.get != null) BodyCtx.get.fixBuilders += builder
     builder
   }
@@ -56,6 +63,8 @@ object DSL {
     fbuilder(PolygonDef.box(halfW, halfH, center))
   def box(halfW: Float, halfH: Float, center: Vector2, angle: Float) =
     fbuilder(PolygonDef.box(halfW, halfH, center, angle))
+  def edge(vertices: Vector2*) = fbuilder(EdgeChainDef(vertices:_*))
+  def loop(vertices: Vector2*) = fbuilder(EdgeChainDef.loop(vertices:_*))
 
   private def bbuilder = BodyCtx.get.bodyBuilder
 

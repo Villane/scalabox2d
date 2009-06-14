@@ -27,6 +27,20 @@ final case class EdgeChainDef(
   var loop: Boolean,
   /** The vertices in local coordinates. */
   var vertices: Array[Vector2]
+) extends ShapeDef {
+  def edges: Array[EdgeDef] = {
+    val len = if (loop) vertices.length else vertices.length - 1
+    val edges = new Array[EdgeDef](len)
+    for (i <- 0 until len) {
+      edges(i) = EdgeDef(vertices(i), vertices((i + 1) % vertices.length))
+    }
+    edges
+  }
+}
+
+final case class EdgeDef(
+  var v1: Vector2,
+  var v2: Vector2
 ) extends ShapeDef
 
 object PolygonDef {

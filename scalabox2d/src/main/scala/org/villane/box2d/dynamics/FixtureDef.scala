@@ -6,7 +6,7 @@ import shapes.ShapeDef
  * A fixture definition is used to create a fixture. This class defines an
  * abstract fixture definition. You can reuse fixture definitions safely.
  */
-class FixtureDef(val shapeDef: ShapeDef) {
+case class FixtureDef(var shapeDef: ShapeDef) {
   /** The friction coefficient, usually in the range [0,1]. */
   var friction = 0.2f
 

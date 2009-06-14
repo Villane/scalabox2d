@@ -19,7 +19,7 @@ class SlickDebugDraw(var g: Graphics, var container: GameContainer) extends Debu
   var transX = 270.0f
   var transY = 250.0f
   var scaleFactor = 10.0f
-  val yFlip = -1.0f
+  var yFlip = -1.0f
 
   def map(mapMe: Float, fromLow: Float, fromHigh: Float, toLow: Float, toHigh: Float) = {
     val interp = (mapMe - fromLow) / (fromHigh - fromLow)

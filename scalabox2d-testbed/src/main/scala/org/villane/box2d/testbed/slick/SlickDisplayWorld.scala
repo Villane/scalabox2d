@@ -17,16 +17,26 @@ import org.newdawn.slick.tests.AntiAliasTest;
 import box2d.testbed._ 
 
 object SlickDisplayWorld {
-  def run(world: World) {
-    val container = new AppGameContainer(new SlickDisplayWorld(world))
+  import DrawFlags._
+  def runWithSimulation(world: World, flipY: Boolean, flags: Int): Unit =
+    run(world, flipY, true, flags)
+
+  def run(world: World): Unit = run(world, true, false, Shapes)
+
+  def run(world: World, flipY: Boolean, runSimulation: Boolean, flags: Int) {
+    val app = new SlickDisplayWorld(world)
+    app.simulate = runSimulation
+    app.dd.flags = flags
+    val container = new AppGameContainer(app)
+    app.m_debugDraw.yFlip = if (flipY) -1 else 1
     container.setTargetFrameRate(60)
-    container.setDisplayMode(600,600,false)
+    container.setDisplayMode(800,800,false)
     container.start()
   }
 }
 
 class SlickDisplayWorld(world: World) extends BasicGame("Slick ScalaBox2D: World") {
-  
+  var simulate = false
   val m_debugDraw = new SlickDebugDraw(null,null)
   val dd = new DebugDraw(m_debugDraw)
   def width = gameContainer.getWidth
@@ -40,16 +50,15 @@ class SlickDisplayWorld(world: World) extends BasicGame("Slick ScalaBox2D: World
   def init(container: GameContainer) {
     m_debugDraw.container = container;
     gameContainer = container
+    m_debugDraw.transX = world.aabb.center.x
+    m_debugDraw.transY = world.aabb.center.y
   }
 
   def update(container: GameContainer, delta: Int) {
-    dd.flags = 0
-    dd.appendFlags(DrawFlags.Shapes)
-    dd.appendFlags(DrawFlags.Joints)
-    dd.appendFlags(DrawFlags.CoreShapes)
-    dd.appendFlags(DrawFlags.AABBs)
-    dd.appendFlags(DrawFlags.Pairs)
-    dd.appendFlags(DrawFlags.CenterOfMass)
+    if (simulate) {
+      var timeStep = 1.0f / 60
+      world.step(timeStep, 10)
+    }
   }
 
   def render(container: GameContainer, g: Graphics) {

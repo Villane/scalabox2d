@@ -160,6 +160,10 @@ final class DebugDraw(val handler: DebugDrawHandler) {
           vertices = localCoreVertices.map(v => xf * v)
           handler.drawPolygon(vertices, Colors.Core)
         }
+      case edge: Edge =>
+        val v1 = xf * edge.v1
+        val v2 = xf * edge.v2
+        handler.drawSegment(v1, v2, color)
     }
   }
 
