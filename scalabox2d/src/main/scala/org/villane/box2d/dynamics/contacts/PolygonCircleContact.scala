@@ -9,7 +9,7 @@ import collision._
 case class PolygonCircleContact(f1: Fixture, f2: Fixture) extends Contact(f1, f2)
   with MultiPointSingleManifoldContact {
 
-  def collide = PolygonCircleCollider.collidePolygonAndCircle(
+  def collide = PolygonCircleCollider.collide(
     f1.shape.asInstanceOf[Polygon], f1.body.transform,
     f2.shape.asInstanceOf[Circle], f2.body.transform
   )

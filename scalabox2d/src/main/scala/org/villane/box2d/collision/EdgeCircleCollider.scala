@@ -6,9 +6,10 @@ import shapes._
 import collision._
 import Settings.Epsilon
 
-object EdgeCircleCollider {
-  def collideEdgeAndCircle(edge: Edge, xf1: Transform2,
-                           circle: Circle, xf2: Transform2): Option[Manifold] = {
+object EdgeCircleCollider extends Collider[Edge, Circle] {
+
+  def collide(edge: Edge, xf1: Transform2,
+              circle: Circle, xf2: Transform2): Option[Manifold] = {
     val c = xf2 * circle.pos
     val cLocal = xf1 ** c
 
