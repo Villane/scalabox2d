@@ -14,27 +14,23 @@ object ContactFlags {
 }
 
 object Contact {
-  def apply(fixture1: Fixture, fixture2: Fixture) = (fixture1.shape, fixture2.shape) match {
-    case (s1: Circle, s2: Circle) => CircleContact(fixture1, fixture2)
-    case (s1: Polygon, s2: Circle) => PolygonCircleContact(fixture1, fixture2)
-    case (s1: Circle, s2: Polygon) => reverse(PolygonCircleContact(fixture2, fixture1))
-    case (s1: Polygon, s2: Polygon) => PolygonContact(fixture1, fixture2)
-    case (s1: Edge, s2: Circle) => EdgeCircleContact(fixture1, fixture2)
-    case (s1: Circle, s2: Edge) => reverse(EdgeCircleContact(fixture2, fixture1))
-    // XXX ERKKI this was return null; and probably should be NullContact? 
+  def apply(f1: Fixture, f2: Fixture) = (f1.shape, f2.shape) match {
+    case (s1: Circle, s2: Circle) =>
+      new SingleManifoldContact(f1, f2, CircleCollider)
+    case (s1: Polygon, s2: Circle) =>
+      new MultiPointSingleManifoldContact(f1, f2, PolygonCircleCollider)
+    case (s1: Circle, s2: Polygon) => 
+      new MultiPointSingleManifoldContact(f2, f1, PolygonCircleCollider)
+    case (s1: Polygon, s2: Polygon) =>
+      new MultiPointSingleManifoldContact(f1, f2, PolygonCollider)
+    case (s1: Edge, s2: Circle) =>
+      new SingleManifoldContact(f1, f2, EdgeCircleCollider)
+    case (s1: Circle, s2: Edge) =>
+      new SingleManifoldContact(f2, f1, EdgeCircleCollider)
     case (s1, s2) =>
+      // XXX ERKKI this was return null; and probably should be NullContact? 
       throw new IllegalArgumentException("Contact(" + s1.getClass.getSimpleName +
         ", " + s2.getClass.getSimpleName + ") not supported!")
-  }
-
-  private def reverse(c: Contact) = {
-    // If the parameters order is swapped, the manifold normals need to be negated
-    for (i <- 0 until c.manifolds.length) {
-      // TODO make manifold immutable again
-      val m = c.manifolds(i)
-      m.normal = -m.normal
-    }
-    c
   }
 
   def destroy(contact: Contact) {
@@ -51,19 +47,22 @@ object Contact {
  * @author ewjordan
  */
 abstract class Contact(val fixture1: Fixture, val fixture2: Fixture) {
-  /** The parent world. */
-  //var world: World = null // TODO getCurrentWOlrd?
-
   /** Node for connecting bodies. */
   val node1 = if (fixture2 != null) ContactEdge(fixture2.body, this) else null
 
   /** Node for connecting bodies. */
   val node2 = if (fixture1 != null) ContactEdge(fixture1.body, this) else null
 
+  // TODO ERKKI: mixing friction/restitution has been moved to the solver
   /** Combined friction */
-  var friction = if (fixture1 == null || fixture2 == null) 0f else sqrt(fixture1.friction * fixture2.friction)
+  var friction =
+    if (fixture1 == null || fixture2 == null) 0f
+    else Settings.mixFriction(fixture1.friction, fixture2.friction)
+
   /** Combined restitution */
-  var restitution = if (fixture1 == null || fixture2 == null) 0f else max(fixture1.restitution, fixture2.restitution)
+  var restitution =
+    if (fixture1 == null || fixture2 == null) 0f
+    else Settings.mixRestitution(fixture1.restitution, fixture2.restitution)
 
   var flags = 0
   var toi = 0f

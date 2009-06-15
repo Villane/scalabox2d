@@ -1,21 +1,27 @@
 package org.villane.box2d.dynamics.contacts
 
-import vecmath.Vector2
-import collision.Manifold
-import collision.ManifoldPoint
+import vecmath._
+import collision._
+import shapes._
 
 /**
  * Reusable implementation for contacts between convex shapes i.e. contacts with single manifolds. 
  */
-trait SingleManifoldContact extends Contact {
-  var manifoldHolder: Option[Manifold] = None
+class SingleManifoldContact[S1 <: Shape, S2 <: Shape](
+  f1: Fixture,
+  f2: Fixture,
+  collider: Collider[S1, S2]
+) extends Contact(f1, f2) {
+  protected var manifoldHolder: Option[Manifold] = None
   def manifolds = if (manifoldHolder.isEmpty) Nil else manifoldHolder.get :: Nil
 
-  def evaluate(listener: ContactListener) = evaluate(listener, collide)
+  def evaluate(listener: ContactListener) = evaluate(
+    listener,
+    collider.collide(f1.shape.asInstanceOf[S1], f1.body.transform,
+                     f2.shape.asInstanceOf[S2], f2.body.transform)
+  )
 
-  def collide: Option[Manifold]
-
-  def evaluate(listener: ContactListener, manifold: Option[Manifold]) {
+  protected def evaluate(listener: ContactListener, manifold: Option[Manifold]) {
     val oldMH = manifoldHolder
     manifoldHolder = manifold
     (oldMH, manifoldHolder) match {
@@ -36,7 +42,7 @@ trait SingleManifoldContact extends Contact {
     }
   }
 
-  final def notifyListener(listener: ContactListener, mp: ManifoldPoint, normal: Vector2, event: EventType) {
+  protected final def notifyListener(listener: ContactListener, mp: ManifoldPoint, normal: Vector2, event: EventType) {
     if (listener != null) {
       val b1 = fixture1.body
       val b2 = fixture2.body

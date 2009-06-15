@@ -1,10 +1,15 @@
 package org.villane.box2d.dynamics.contacts
 
 import collision._
+import shapes._
 
-trait MultiPointSingleManifoldContact extends SingleManifoldContact {
+class MultiPointSingleManifoldContact[S1 <: Shape, S2 <: Shape](
+  f1: Fixture,
+  f2: Fixture,
+  collider: Collider[S1, S2]
+) extends SingleManifoldContact(f1, f2, collider) {
 
-  override def evaluate(listener: ContactListener, manifold: Option[Manifold]) {
+  override protected def evaluate(listener: ContactListener, manifold: Option[Manifold]) {
     val persisted = Array(false,false)
     val oldMH = manifoldHolder
     manifoldHolder = manifold

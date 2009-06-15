@@ -1,6 +1,6 @@
 package org.villane.box2d
 
-import vecmath.Preamble.π
+import vecmath.Preamble._
 
 /** Global tuning constants based on MKS units and various integer maximums (vertices per shape, pairs, etc.). */
 object Settings {
@@ -112,6 +112,9 @@ object Settings {
 
   /** Maximum number of contacts to be handled to solve a TOI island. */
   val maxTOIContactsPerIsland = 32
+
+  var mixFriction = { (a: Float, b: Float) => sqrt(a * b) }
+  var mixRestitution = { (a: Float, b: Float) => max(a, b) }
 
   var threadedIslandSolving = false
   var numThreads = Runtime.getRuntime.availableProcessors + 1
