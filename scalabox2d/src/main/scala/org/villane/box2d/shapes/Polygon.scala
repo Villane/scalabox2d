@@ -55,6 +55,46 @@ object Polygon {
       block(triangle)
     }
   }
+
+  def computeOBB(vertices: Array[Vector2]) = {
+    val count = vertices.length
+    val p = new Array[Vector2](count + 1)
+    for (i <- 0 until count) {
+      p(i) = vertices(i)
+    }
+    p(count) = p(0)
+
+    var minArea = Float.MaxValue
+    var obb: OBB = null
+
+    for (i <- 1 to count) {
+      val root = p(i-1)
+      var ux = p(i) - root
+      val length = ux.length
+      ux /= length // normalize
+      assert(length > ε)
+      val uy = Vector2(-ux.y, ux.x)
+      var lower = Vector2(Float.MaxValue, Float.MaxValue)
+      var upper = Vector2(-Float.MaxValue, -Float.MaxValue)
+
+      for (j <- 0 until count) {
+        val d = p(j) - root
+        val r = Vector2(ux ∙ d, uy ∙ d)
+        lower = min(lower, r)
+        upper = max(upper, r)
+      }
+
+      val area = (upper.x - lower.x) * (upper.y - lower.y)
+      if (area < 0.95f * minArea) {
+        minArea = area
+        val rot = Matrix22(ux, uy) 
+        val center = (lower + upper) * 0.5f
+        obb = OBB(rot, root + (rot * center), (upper - lower) * 0.5f)
+      }
+    }
+    assert(minArea < Float.MaxValue)
+    obb
+  }
 }
 
 class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
@@ -134,7 +174,13 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
       SegmentCollide.startsInside(0, Vector2.Zero)
   }
 
+  val obb = Polygon.computeOBB(vertices)
   def computeAABB(t: Transform2) = {
+	val rot = t.rot * obb.rot
+	val h = rot.abs * obb.extents
+	val p = t.pos + (t.rot * obb.center)
+    AABB(p - h, p + h)
+    /* THIS IS THE NEW AABB, WITHOUT OBB
     var lower = t * vertices(0)
     var upper = lower
     var i = 1
@@ -146,6 +192,7 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
     }
     AABB(Vector2(lower.x - radius, lower.y - radius),
          Vector2(upper.x + radius, upper.y + radius))
+    */
     // INLINED FROM
     //val vTrans = vertices map (t * _)
     //val lower = vTrans reduceLeft min
