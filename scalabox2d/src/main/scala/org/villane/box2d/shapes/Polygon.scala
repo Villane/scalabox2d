@@ -113,7 +113,7 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
     // TODO forEdges?
     Polygon.forTriangles(vertices) { t =>
       assert(t.e3.lengthSquared > ε * ε)
-      ns(i) = t.e3.tangent.normalize
+      ns(i) = t.e3.unit.normal
       i += 1
     }
     ns

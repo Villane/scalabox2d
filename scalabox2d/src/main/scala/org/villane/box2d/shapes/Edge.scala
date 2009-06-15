@@ -13,10 +13,12 @@ class Edge(val v1: Vector2, val v2: Vector2) extends Shape {
 
   val direction = (v2 - v1).normalize
   val length = (v2 - v1).length
-  val normal = direction.tangent
+  val normal = direction.normal
 
   val corner1Dir = normal
   val corner2Dir = normal * -1.0f
+  val corner1Convex = true // TODO!!!
+  val corner2Convex = true // TODO!!!
 
   def testPoint(t: Transform2, p: Vector2) = false
 

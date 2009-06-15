@@ -50,7 +50,7 @@ object PolygonCollider extends Collider[Polygon, Polygon] {
     val v12 = if (edge1 + 1 < count1) vertices1(edge1 + 1) else vertices1(0)
 
     val sideNormal = (xf1.rot * (v12 - v11)).normalize
-    val frontNormal = sideNormal.tangent
+    val frontNormal = sideNormal.normal
 
     //v11 = XForm.mul(xf1, v11);
     //v12 = XForm.mul(xf1, v12);

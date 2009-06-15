@@ -48,7 +48,7 @@ case class Vector2(x: Float, y: Float) {
   def cross(v: Vector2) = x * v.y - y * v.x
   def ×(v: Vector2) = x * v.y - y * v.x
 
-  def tangent = Vector2(y, -x) // = ×(1)
+  def normal = Vector2(y, -x) // = ×(1)
   def unary_- = Vector2(-x, -y)
   def swap = Vector2(y, x)
   def abs = Vector2(x.abs, y.abs)
@@ -67,6 +67,7 @@ case class Vector2(x: Float, y: Float) {
    * v /= l
    */
   def normalize = this / length
+  def unit = this / length
 
   def length = sqrt(x * x + y * y)
   def lengthSquared = x * x + y * y

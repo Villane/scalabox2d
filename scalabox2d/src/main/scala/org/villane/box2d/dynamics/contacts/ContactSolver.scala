@@ -79,7 +79,7 @@ class ContactSolver(contacts: Seq[Contact]) {
           assert(kEqualized > ε)
           ccp.equalizedMass = 1 / kEqualized
 
-          //val tangent = normal.tangent
+          //val tangent = normal.normal
           val tangentx = normal.y
           val tangenty = -normal.x
 
@@ -134,7 +134,7 @@ class ContactSolver(contacts: Seq[Contact]) {
       val invMass2 = b2.invMass
       val invI2 = b2.invI
       val normal = c.normal
-      //val tangent = normal.tangent
+      //val tangent = normal.normal
       val tangentx = normal.y
       val tangenty = -normal.x
 
@@ -190,7 +190,7 @@ class ContactSolver(contacts: Seq[Contact]) {
       val invMass2 = b2.invMass
       val invI2 = b2.invI
       val normal = c.normal
-      //val tangent = normal.tangent
+      //val tangent = normal.normal
       val tangentx = normal.y
       val tangenty = -normal.x
       val friction = c.friction

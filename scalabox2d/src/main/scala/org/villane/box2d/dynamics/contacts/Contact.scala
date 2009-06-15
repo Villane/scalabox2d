@@ -27,6 +27,10 @@ object Contact {
       new SingleManifoldContact(f1, f2, EdgeCircleCollider)
     case (s1: Circle, s2: Edge) =>
       new SingleManifoldContact(f2, f1, EdgeCircleCollider)
+    case (s1: Polygon, s2: Edge) =>
+      new MultiPointSingleManifoldContact(f1, f2, PolygonEdgeCollider)
+    case (s1: Edge, s2: Polygon) =>
+      new MultiPointSingleManifoldContact(f2, f1, PolygonEdgeCollider)
     case (s1, s2) =>
       // XXX ERKKI this was return null; and probably should be NullContact? 
       throw new IllegalArgumentException("Contact(" + s1.getClass.getSimpleName +
