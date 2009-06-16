@@ -1,6 +1,4 @@
-package org.villane.box2d
-
-import testbed._
+package org.villane.box2d.testbed
 
 object PyramidPerfTest {
 

@@ -1,8 +1,7 @@
-package org.villane.box2d
+package org.villane.box2d.testbed
 
 import vecmath._
 import vecmath.Preamble._
-import testbed._
 import dsl.DSL._
 
 object Pyramid4PerfTest extends scenes.TestbedScene {

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.villane.box2d</groupId>
+		<artifactId>scalabox2d-parent</artifactId>
+		<version>2.0.1-SNAPSHOT</version>
+	</parent>
+	<groupId>org.villane.box2d</groupId>
+	<artifactId>scalabox2d-svg</artifactId>
+	<name>ScalaBox2D - 2D Physics Engine for Games (SVG Module)</name>
+	<version>2.0.1-SNAPSHOT</version>
+
+	<repositories>
+		<repository>
+			<id>slick-repo</id>
+			<url>http://slick.cokeandcode.com/mavenrepo/</url>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.villane.box2d</groupId>
+			<artifactId>scalabox2d</artifactId>
+			<version>2.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>slick</groupId>
+			<artifactId>slick</artifactId>
+			<version>264</version>
+		</dependency>
+	</dependencies>
+</project>
