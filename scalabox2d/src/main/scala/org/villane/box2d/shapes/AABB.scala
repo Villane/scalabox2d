@@ -3,6 +3,12 @@ package org.villane.box2d.shapes
 import vecmath._
 import vecmath.Preamble._
 
+object AABB {
+  def centered(center: Vector2, size: Vector2) = AABB(
+    center - size / 2, center + size / 2
+  )
+}
+
 /**
  * An axis-aligned bounding box
  */
