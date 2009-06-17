@@ -492,7 +492,11 @@ abstract class AbstractExample(parent: TestbedMain) {
     	
     	val p = drawHandler.screenToWorld(p1);
     	
-    	assert (m_mouseJoint == null)
+    	//assert (m_mouseJoint == null)
+        if (m_mouseJoint != null) {
+            m_world.destroyJoint(m_mouseJoint);
+            m_mouseJoint = null;
+        }
 
         // Make a small box.
 

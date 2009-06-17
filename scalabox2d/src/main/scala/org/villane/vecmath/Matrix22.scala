@@ -65,7 +65,7 @@ case class Matrix22(a11: Float, a12: Float, a21: Float, a22: Float) {
   def solve(b: Vector2) = {
     var det = determinant
     assert (det != 0.0f)
-    det /= 1.0f
+    det = 1 / det
     Vector2(det * (a22 * b.x - a12 * b.y),
             det * (a11 * b.y - a21 * b.x))
   }
@@ -98,7 +98,7 @@ case class Matrix22(a11: Float, a12: Float, a21: Float, a22: Float) {
   def invert = {
     var det = determinant
     assert (det != 0.0f)
-    det /= 1f
+    det = 1 / det
     Matrix22(det * a22, -det * a12,
              -det * a21, det * a11)
   }
