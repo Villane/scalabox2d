@@ -40,6 +40,9 @@ class Fixture(defn: FixtureDef, val body: Body) {
 
   def computeMass() = shape.computeMass(density)
 
+  def computeSubmergedArea(normal: Vector2, offset: Float): (Float, Vector2) =
+    shape.computeSubmergedArea(normal, offset, body.transform)
+
   def computeSweepRadius(pivot: Vector2) = shape.computeSweepRadius(pivot)
 
   /** Internal */

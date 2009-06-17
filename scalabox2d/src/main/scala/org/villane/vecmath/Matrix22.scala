@@ -27,6 +27,8 @@ object Matrix22 {
  * 
  * Design note: Matrix22 could conceptually extend Tuple4, but does not for efficiency.
  * See the same note about Vector2 for details.
+ * 
+ * TODO compute eigenvalues / max eigenvalue
  */
 case class Matrix22(a11: Float, a12: Float, a21: Float, a22: Float) {
   def col1 = Vector2(a11, a21)
