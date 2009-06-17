@@ -5,7 +5,10 @@ package org.villane.vecmath
  */
 trait DoubleMath {
   final val Pi = Math.Pi
-  final val π = Math.Pi
+  final val π = Pi
+
+  final val Infinity = Double.PositiveInfinity
+  final val ∞ = Infinity
 
   // Max/min rewritten here because for some reason Math.max/min
   // can run absurdly slow for such simple functions...
@@ -17,6 +20,7 @@ trait DoubleMath {
   final def clamp(a: Double, low: Double, high: Double) = max(low, min(a, high))
 
   final def sqrt(a: Double) = Math.sqrt(a)
+  final def √(a: Double) = sqrt(a)
 
   final def sin(a: Double) = Math.sin(a)
   final def cos(a: Double) = Math.cos(a)
@@ -27,11 +31,4 @@ trait DoubleMath {
   final def atan2(a: Double, b: Double) = Math.atan2(a, b)
 
   final def pow(a: Double, b: Double) = Math.pow(a, b)
-
-  final def distance(a: Vector2, b: Vector2) = (a - b).length
-
-  final def distanceSquared(a: Vector2, b: Vector2) = {
-    val d = a - b
-    d dot d
-  }
 }

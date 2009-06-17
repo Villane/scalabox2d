@@ -10,7 +10,10 @@ package org.villane.vecmath
  */
 trait FloatMath {
   final val Pi = Math.Pi.toFloat
-  final val π = Math.Pi.toFloat
+  final val π = Pi
+
+  final val Infinity = Float.PositiveInfinity
+  final val ∞ = Infinity
 
   // Max/min rewritten here because for some reason Math.max/min
   // can run absurdly slow for such simple functions...
@@ -22,6 +25,7 @@ trait FloatMath {
   final def clamp(a: Float, low: Float, high: Float) = max(low, min(a, high))
 
   final def sqrt(a: Float) = Math.sqrt(a).toFloat
+  final def √(a: Float) = sqrt(a)
 
   final def sin(a: Float) = Math.sin(a).toFloat
   final def cos(a: Float) = Math.cos(a).toFloat
@@ -32,11 +36,4 @@ trait FloatMath {
   final def atan2(a: Float, b: Float) = Math.atan2(a, b).toFloat
 
   final def pow(a: Float, b: Float) = Math.pow(a, b).toFloat
-
-  final def distance(a: Vector2, b: Vector2) = (a - b).length
-
-  final def distanceSquared(a: Vector2, b: Vector2) = {
-    val d = a - b
-    d dot d
-  }
 }

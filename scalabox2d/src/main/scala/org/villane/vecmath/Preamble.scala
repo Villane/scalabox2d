@@ -13,7 +13,7 @@ package org.villane.vecmath
  * MathUtil contains useful math with floats.
  * FloatExtensions allows some operations to be used with the float on the left side.
  */
-object Preamble extends FloatMath {
+object Preamble extends FloatMath with CommonMath {
   //type Float = Double
   implicit def tuple2fToVector2(xy: (Float, Float)) = Vector2(xy._1, xy._2)
   implicit def tuple2vector2fToMatrix22(m: (Vector2, Vector2)) = Matrix22(m._1, m._2)

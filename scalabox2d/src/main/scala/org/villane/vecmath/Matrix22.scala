@@ -54,16 +54,18 @@ case class Matrix22(a11: Float, a12: Float, a21: Float, a22: Float) {
   def **(v: Vector2) = Vector2(a11 * v.x + a21 * v.y,
                                  a12 * v.x + a22 * v.y)
 
+  def determinant = a11 * a22 - a12 * a21
+
   /**
    * Solve A * x = b where A = this matrix.
    * @return The vector x that solves the above equation.
    */
   def solve(b: Vector2) = {
-    var det = a11 * a22 - a12 * a21
+    var det = determinant
     assert (det != 0.0f)
-    det = 1.0f / det
+    det /= 1.0f
     Vector2(det * (a22 * b.x - a12 * b.y),
-             det * (a11 * b.y - a21 * b.x))
+            det * (a11 * b.y - a21 * b.x))
   }
 
   /**
@@ -92,8 +94,9 @@ case class Matrix22(a11: Float, a12: Float, a21: Float, a22: Float) {
   def abs = Matrix22(a11.abs, a12.abs, a21.abs, a22.abs)
 
   def invert = {
-    // assert((a*d-b*c) != 0.0f) before dividing with possible zero
-    val det = 1 / (a11 * a22 - a12 * a21)
+    var det = determinant
+    assert (det != 0.0f)
+    det /= 1f
     Matrix22(det * a22, -det * a12,
              -det * a21, det * a11)
   }
