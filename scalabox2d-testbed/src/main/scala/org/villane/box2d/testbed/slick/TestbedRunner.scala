@@ -2,19 +2,19 @@ package org.villane.box2d.testbed.slick
 
 import vecmath._
 import vecmath.Preamble._
-import box2d.draw._
-import box2d.shapes._
-import box2d.collision._
-import box2d.dynamics._
-import box2d.dynamics.joints._
-import box2d.dynamics.contacts.ContactListener
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.tests.AntiAliasTest;
-import box2d.testbed._
+import draw._
+import shapes._
+import collision._
+import dynamics._
+import dynamics.joints._
+import dynamics.contacts.ContactListener
+import org.newdawn.slick.AppGameContainer
+import org.newdawn.slick.BasicGame
+import org.newdawn.slick.GameContainer
+import org.newdawn.slick.Graphics
+import org.newdawn.slick.SlickException
+import org.newdawn.slick.tests.AntiAliasTest
+import tests._
 
 import fenggui.FengWrapper
 import org.fenggui.event.mouse.MouseButton
@@ -74,16 +74,26 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
     container.setTargetFrameRate(targetFrameRate)
     container.setShowFPS(false)
 
-    tests += new testbed.tests.Bridge(this)
-    tests += new testbed.tests.CCDTest(this)
-    tests += new testbed.tests.Chain(this)
-    tests += new testbed.tests.Circles(this)
-    tests += new testbed.tests.Domino(this)
-    tests += new testbed.tests.Overhang(this)
-    tests += new testbed.tests.Pyramid(this)
-    tests += new testbed.tests.VaryingFriction(this)
-    tests += new testbed.tests.VaryingRestitution(this)
-    tests += new testbed.tests.VerticalStack(this)
+    tests += SimpleTest(this, "Bridge", scenes.Bridge,
+                        (0, 10), 20)
+    tests += SimpleTest(this, "Continuous Collision Test", scenes.CCDTest,
+                        (0, 20), 20)
+    tests += SimpleTest(this, "Chain", scenes.Chain,
+                        (0, 10), 10)
+    tests += SimpleTest(this, "Circle Stress Test", scenes.Circles,
+                        5)
+    tests += SimpleTest(this, "Domino Test", scenes.Domino,
+                        (0, 10), 15)
+    tests += SimpleTest(this, "Overhang", scenes.Overhang,
+                        (0, 10), 15)
+    tests += SimpleTest(this, "Pyramid Stress Test", scenes.Pyramid,
+                        (0, 10), 15)
+    tests += SimpleTest(this, "Varying Friction", scenes.VaryingFriction,
+                        (0, 10), 15)
+    tests += SimpleTest(this, "Varying Restitution", scenes.VaryingRestitution,
+                        (0, 10), 15)
+    tests += SimpleTest(this, "Vertical Stack", scenes.VerticalStack,
+                        (0, 10), 15)
 
     currentTest = tests(currentTestIndex)
     currentTest.initialize

@@ -15,11 +15,19 @@ import org.newdawn.slick.opengl.TextureImpl;
  *
  */
 class SlickDebugDraw(var g: Graphics, var container: GameContainer) extends DebugDrawHandler {
+  def hw = container.getWidth / 2
+  def hh = container.getHeight / 2
   // World 0,0 maps to transX, transY on screen
-  var transX = 270.0f
-  var transY = 250.0f
+  var transX = 0f
+  var transY = 0f 
   var scaleFactor = 10.0f
   var yFlip = -1.0f
+
+  override def setCamera(x: Float, y: Float, scale: Float) {
+    transX = hw + x * scale - 50 // -50 for control panel
+    transY = hh + yFlip * y * scale
+    scaleFactor = scale
+  }
 
   def map(mapMe: Float, fromLow: Float, fromHigh: Float, toLow: Float, toHigh: Float) = {
     val interp = (mapMe - fromLow) / (fromHigh - fromLow)

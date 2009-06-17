@@ -189,7 +189,7 @@ final class DebugDraw(val handler: DebugDrawHandler) {
        m_debughandler.drawSegment(s1, s2, color);
        }*/
       case _: PointingDeviceJoint =>
-        //Don't draw mouse joint
+        handler.drawSegment(p1, p2, Colors.Joint)
       case _ =>
         handler.drawSegment(x1, p1, Colors.Joint)
         handler.drawSegment(p1, p2, Colors.Joint)
