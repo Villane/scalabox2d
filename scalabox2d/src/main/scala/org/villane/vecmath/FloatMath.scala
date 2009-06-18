@@ -36,7 +36,7 @@ trait FloatMath {
   final def asin(a: Float) = Math.asin(a).toFloat
   final def acos(a: Float) = Math.acos(a).toFloat
   final def atan(a: Float) = Math.atan(a).toFloat
-  final def atan2(a: Float, b: Float) = Math.atan2(a, b).toFloat
+  final def atan2(y: Float, x: Float) = Math.atan2(y, x).toFloat
 
   final def pow(a: Float, b: Float) = Math.pow(a, b).toFloat
 }
