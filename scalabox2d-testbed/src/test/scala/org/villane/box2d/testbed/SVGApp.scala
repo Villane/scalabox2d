@@ -7,7 +7,7 @@ object SVGApp {
   val scale = 15
 
   def main(args: Array[String]) {
-    val loader = new SlickSVGSceneLoader("C:/drawing.svg", scale)
+    val loader = new SlickSVGSceneLoader("C:/drawing-1.svg", scale)
     val world = loader.create
     println("Done!")
     val flags = Shapes

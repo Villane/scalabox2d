@@ -61,12 +61,15 @@ case class Vector2(x: Float, y: Float) {
   def times(n: Int) = new Vector2Times(this, n, Vector2.One)
 
   /**
-   * Since normalization is a simple operation, in cases where speed is desired, but the length before normalization is also needed,
-   * use this instead:
-   * val l = v.length
-   * v /= l
+   * Since normalization is a simple operation, in cases where speed is desired,
+   * but the length before normalization is also needed, use this instead:
+   * 
+   * val len = v.length
+   * v /= len
+   * 
    */
   def normalize = this / length
+  /** @see normalize */
   def unit = this / length
 
   def length = sqrt(x * x + y * y)

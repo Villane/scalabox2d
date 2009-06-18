@@ -4,6 +4,9 @@ package org.villane.vecmath
  * Mirrors FloatMath, use when replacing Float with Double
  */
 trait DoubleMath {
+  type Float = Double
+  implicit def double2float(d: Double) = d.toFloat
+
   final val Pi = Math.Pi
   final val π = Pi
 
