@@ -20,7 +20,10 @@ trait DoubleMath {
   final def max(as: Double*): Double = as reduceLeft max
   final def min(a: Double, b: Double) = if (a < b) a else b
   final def min(as: Double*): Double = as reduceLeft min
-  final def clamp(a: Double, low: Double, high: Double) = max(low, min(a, high))
+  final def clamp(a: Double, low: Double, high: Double) =
+    if (a < low) low
+    else if (a > high) high
+    else a
 
   final def sqrt(a: Double) = Math.sqrt(a)
   final def √(a: Double) = sqrt(a)

@@ -22,7 +22,10 @@ trait FloatMath {
   final def max(as: Float*): Float = as reduceLeft max
   final def min(a: Float, b: Float) = if (a < b) a else b
   final def min(as: Float*): Float = as reduceLeft min
-  final def clamp(a: Float, low: Float, high: Float) = max(low, min(a, high))
+  final def clamp(a: Float, low: Float, high: Float) =
+    if (a < low) low
+    else if (a > high) high
+    else a
 
   final def sqrt(a: Float) = Math.sqrt(a).toFloat
   final def √(a: Float) = sqrt(a)
