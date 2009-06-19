@@ -72,7 +72,7 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
 
     gameContainer = container
     container.setTargetFrameRate(targetFrameRate)
-    container.setShowFPS(false)
+    container.setShowFPS(true)
 
     tests += SimpleTest(this, "Bridge", scenes.Bridge,
                         (0, 10), 20)
@@ -84,6 +84,8 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
                         5)
     tests += SimpleTest(this, "Domino Test", scenes.Domino,
                         (0, 10), 15)
+    tests += SimpleTest(this, "Domino Tower Stress Test", scenes.DominoTower,
+                        (0, 12), 10)
     tests += SimpleTest(this, "Overhang", scenes.Overhang,
                         (0, 10), 15)
     tests += SimpleTest(this, "Pyramid Stress Test", scenes.Pyramid,
@@ -98,6 +100,19 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
     currentTest = tests(currentTestIndex)
     currentTest.initialize
     initWrapper(container, currentTest.settings)
+    var i = 0
+    for (t <- tests) {
+      val name = t.name match {
+        case "Continuous Collision Test" => "CCDTest"
+        case "Circle Stress Test" => "Circles"
+        case "Domino Test" => "Domino"
+        case "Pyramid Stress Test" => "Pyramid"
+        case "Domino Tower Stress Test" => "Domino Tower"
+        case x => x
+      }
+      add(i, name)
+      i += 1
+    }
   }
 
   def update(container: GameContainer, delta: Int) {

@@ -19,15 +19,20 @@ import org.fenggui.event.{ITextChangedListener, TextChangedEvent}
 import org.newdawn.slick.{GameContainer,Graphics,Input,InputListener,Color}
 import org.newdawn.slick.opengl.SlickCallable
 
-import testbed.TestSettings
-import slick.SlickTestGame
-
 trait FengWrapper extends InputListener {
   
   var container: GameContainer = null
   var desk : Display = null
   var input: Input = null
   var settings : TestSettings = null
+
+  private val name2int = collection.mutable.Map[String, Int]()
+  protected def add(index: Int, name: String) {
+    name2int(name) = index
+    testList.addItem(name)
+  }
+
+  private var testList: ComboBox = null
 
   def initWrapper(container: GameContainer, settings: TestSettings) {
     this.container = container
@@ -84,20 +89,10 @@ trait FengWrapper extends InputListener {
     val spacer2 = FengGUI.createWidget(classOf[Container])
     spacer2.getAppearance.add(new TitledBorder("Tests"))
 
-    val testList = FengGUI.createWidget(classOf[ComboBox])
+    testList = FengGUI.createWidget(classOf[ComboBox])
     spacer2.addWidget(testList)
     
     testList.getAppearance.setMargin(new Spacing(5, 2))
-    testList.addItem("Bridge")
-    testList.addItem("CCDTest")
-    testList.addItem("Chain")
-    testList.addItem("Circles")
-    testList.addItem("Domino")
-    testList.addItem("Overhang")
-    testList.addItem("Pyramid")
-    testList.addItem("Varying Friction")
-    testList.addItem("Varying Restitution")
-    testList.addItem("Vertical Stack")
 
     testList.addSelectionChangedListener(new ISelectionChangedListener() {
         def selectionChanged(e:SelectionChangedEvent) {
@@ -105,20 +100,7 @@ trait FengWrapper extends InputListener {
           if (!e.isSelected) return
           // TODO: bug the FengGUI guys about this nasty hack....
           val test = e.getSource.asInstanceOf[List].getSelectedItem.getText
-          settings.testIndex = test match {
-            case "Bridge" => 0
-            case "CCDTest" => 1
-            case "Chain" => 2
-            case "Circles" => 3
-            case "Domino" => 4
-            case "Overhang" => 5
-            case "Pyramid" => 6
-            case "Varying Friction" => 7
-            case "Varying Restitution" => 8
-            case "Vertical Stack" => 9
-            case _ => 0
-          }
-
+          settings.testIndex = name2int(test)
         }
       })
 
