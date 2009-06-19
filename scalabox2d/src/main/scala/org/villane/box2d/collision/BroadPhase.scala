@@ -59,7 +59,7 @@ class BoundValues {
  */
 class BroadPhase(val worldAABB: AABB, callback: PairListener) {
   val pairManager = new PairManager(this, callback)
-  
+
   val proxyPool = Array.fromFunction(i => {
                                        val p = new Proxy
                                        p.next = i + 1
@@ -67,9 +67,6 @@ class BroadPhase(val worldAABB: AABB, callback: PairListener) {
                                      })(Settings.maxProxies)
   var proxyCount = 0
   var freeProxy = 0
-  
-  val pairBuffer = new Array[(Int,Int)](Settings.maxPairs)
-  var pairBufferCount = 0
 
   val m_bounds = Array.fromFunction((i,j) => Bound(0,0))(2, 2 * Settings.maxProxies)
   val queryResults = new Array[Int](Settings.maxProxies)
