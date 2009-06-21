@@ -5,6 +5,8 @@ import vecmath.Preamble._
 import Settings.ε
 import shapes._
 
+/** Implements the GJK algorithm for computing distance between shapes. */
+object Distance {
 object Point {
   def apply(v: Vector2): Point = Point(v.x, v.y)
 }
@@ -15,8 +17,6 @@ case class Point(override val x: Float, override val y: Float) extends Vector2(x
   def getFirstVertex(xf: Transform2) = this
 }
 
-/** Implements the GJK algorithm for computing distance between shapes. */
-object Distance {
   var g_GJK_Iterations = 0
 
   // GJK using Voronoi regions (Christer Ericson) and region selection

@@ -3,7 +3,6 @@ package org.villane.box2d.collision
 import vecmath._
 import vecmath.Preamble._
 import shapes.Circle
-import Settings.ε
 
 /**
  * Circle/circle overlap solver - for internal use only.
@@ -16,19 +15,17 @@ object CircleCollider extends Collider[Circle, Circle] {
     var p2 = xf2 * circle2.pos
     val d = p2 - p1
 
-    val distSqr = d ∙ d
+    val distSqr = d dot d
 
     val r1 = circle1.radius
     val r2 = circle2.radius
     val radiusSum = r1 + r2
-     
-    if (distSqr > radiusSum * radiusSum) {
-      return None
-    }
+
+    if (distSqr > radiusSum * radiusSum) return None
 
     var separation = 0f
     var normal: Vector2 = null
-    if (distSqr < ε) {
+    if (distSqr < Settings.Epsilon) {
       separation = -radiusSum
       normal = Vector2.YUnit
     } else {
@@ -43,7 +40,7 @@ object CircleCollider extends Collider[Circle, Circle] {
     val p = (p1 + p2) * 0.5f
 
     val points = new Array[ManifoldPoint](1)
-    val id = ContactID.Zero //use this instead of zeroing through key
+    val id = ContactID.Zero
     points(0) = ManifoldPoint(xf1 ** p, xf2 ** p, separation, id)
     Some(Manifold(points, normal))
   }
