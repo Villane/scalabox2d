@@ -230,24 +230,15 @@ abstract class AbstractExample(parent: TestbedMain) {
       } else {
         timeStep = 0.0f;
       }
-
-      drawHandler.drawString(2, 1, "**** PAUSED ****", white);
     }
 
-    debugDraw.flags = 0
-    if (settings.drawShapes) debugDraw.appendFlags(DrawFlags.Shapes)
-    if (settings.drawJoints) debugDraw.appendFlags(DrawFlags.Joints)
-    if (settings.drawCoreShapes) debugDraw.appendFlags(DrawFlags.CoreShapes)
-    if (settings.drawAABBs) debugDraw.appendFlags(DrawFlags.AABBs)
-    if (settings.drawPairs) debugDraw.appendFlags(DrawFlags.Pairs)
-    if (settings.drawCOMs) debugDraw.appendFlags(DrawFlags.CenterOfMass)
     m_world.contactListener = if(settings.drawContactPoints) m_contactListener else null
     m_world.warmStarting = settings.enableWarmStarting
     m_world.positionCorrection = settings.enablePositionCorrection
     m_world.continuousPhysics = settings.enableTOI
     m_world.gravity = settings.gravity
 
-    if(m_world.allowSleep != settings.enableSleeping && !settings.enableSleeping) {
+    if (m_world.allowSleep != settings.enableSleeping && !settings.enableSleeping) {
       for(b <- m_world.bodyList) b.wakeUp
     }
     m_world.allowSleep = settings.enableSleeping
@@ -262,6 +253,41 @@ abstract class AbstractExample(parent: TestbedMain) {
       m_world.destroyBody(m_bomb)
       m_bomb = null
     }
+
+    if (bombSpawning) {
+      drawHandler.drawSolidCircle(bombSpawnPoint, 0.3f, Vector2(1.0f,0.0f),Color3f(255f*0.5f,255f*0.5f,255f*0.5f));
+      drawHandler.drawSegment(bombSpawnPoint, mouseWorld, Color3f(55f*0.5f,55f*0.5f,255f*0.5f));
+    }
+
+    pmouseScreen = (mouseScreen);
+    postStep();
+
+    //Should reset newKeyDown after postStep in case it needs to be used there
+    for (i <- 0 until newKeyDown.length) {
+      newKeyDown(i) = false;
+    }
+  }
+
+  /** Stub for overloading in examples - called before physics step. */
+  def preStep() {}
+
+  /** Stub for overloading in examples - called after physics step. */
+  def postStep() {}
+
+  def render {
+    mouseWorld = drawHandler.screenToWorld(mouseScreen)
+
+    if (settings.pause) {
+      drawHandler.drawString(2, 1, "**** PAUSED ****", white);
+    }
+
+    debugDraw.flags = 0
+    if (settings.drawShapes) debugDraw.appendFlags(DrawFlags.Shapes)
+    if (settings.drawJoints) debugDraw.appendFlags(DrawFlags.Joints)
+    if (settings.drawCoreShapes) debugDraw.appendFlags(DrawFlags.CoreShapes)
+    if (settings.drawAABBs) debugDraw.appendFlags(DrawFlags.AABBs)
+    if (settings.drawPairs) debugDraw.appendFlags(DrawFlags.Pairs)
+    if (settings.drawCOMs) debugDraw.appendFlags(DrawFlags.CenterOfMass)
 
     for (i <- 0 until fpsAverageCount-1) {
       nanos(i) = nanos(i+1)
@@ -295,14 +321,6 @@ abstract class AbstractExample(parent: TestbedMain) {
       drawHandler.drawString(2, textLine, "Average FPS (" + fpsAverageCount + " frames): " + averagedFPS, white)
       textLine += textLineHeight
       drawHandler.drawString(2, textLine, "Average FPS (entire test): "+ totalFPS, white)
-    }
-
-    if (m_mouseJoint != null) {
-      val body = m_mouseJoint.body2;
-      val p1 = body.toWorldPoint(m_mouseJoint.localAnchor);
-      val p2 = m_mouseJoint.target;
-
-      drawHandler.drawSegment(p1, p2, new Color3f(255.0f,255.0f,255.0f));
     }
 
     if (bombSpawning) {
@@ -360,21 +378,7 @@ abstract class AbstractExample(parent: TestbedMain) {
     }
 
     printInstructions();
-
-    pmouseScreen = (mouseScreen);
-    postStep();
-
-    //Should reset newKeyDown after postStep in case it needs to be used there
-    for (i <- 0 until newKeyDown.length) {
-      newKeyDown(i) = false;
-    }
   }
-
-  /** Stub for overloading in examples - called before physics step. */
-  def preStep() {}
-
-  /** Stub for overloading in examples - called after physics step. */
-  def postStep() {}
 
   /** Space launches a bomb from a random default position. */
   def launchBomb() {

@@ -72,7 +72,7 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
 
     gameContainer = container
     container.setTargetFrameRate(targetFrameRate)
-    container.setShowFPS(true)
+    container.setShowFPS(false)
 
     tests += SimpleTest(this, "Bridge", scenes.Bridge,
                         (0, 10), 20)
@@ -141,6 +141,7 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
   def render(container: GameContainer, g: Graphics) {
     // Draw the world
     dd.drawDebugData(currentTest.m_world)
+    currentTest.render
     // Draw the GUI
     drawGUI
   }
