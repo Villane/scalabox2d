@@ -24,7 +24,7 @@ class HeadlessPerformanceTest(sceneFactory: SceneFactory) {
     //var x = 0
     //m_world.bodyList foreach { b => if (!b.isStatic) x += 1 }
     //println("bodycount: " + x)
-    if (waitForKeypress) {
+    if (waitForKeypress && split == 0) {
       println("Attach profiler and press Enter to start test: ")
       Console.readLine
     }
@@ -32,7 +32,13 @@ class HeadlessPerformanceTest(sceneFactory: SceneFactory) {
     var i = 0
     var splitTime = 0L
     while (i < steps) {
-      if (i == split) splitTime = System.currentTimeMillis
+      if (i == split && split > 0) {
+        if (waitForKeypress) {
+          println("Attach profiler and press Enter to start test: ")
+          Console.readLine
+        }
+        splitTime = System.currentTimeMillis
+      }
       step(world)
       i += 1
     }
@@ -49,7 +55,7 @@ class HeadlessPerformanceTest(sceneFactory: SceneFactory) {
     }
     println("vectors created:" + Vector2.creationCount)
     IslandSolverWorker.stopWorkers
-    
+    util.Timing.printCollectedTimes
   }
 
   def step(world: World) {

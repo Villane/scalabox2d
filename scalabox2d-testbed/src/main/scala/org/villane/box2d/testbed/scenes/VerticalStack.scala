@@ -4,6 +4,8 @@ import vecmath._
 import vecmath.Preamble._
 import dsl.DSL._
 
+import scala.util.Random
+
 object VerticalStack extends TestbedScene {
 
   def createScene(implicit world: dynamics.World) {
@@ -23,7 +25,7 @@ object VerticalStack extends TestbedScene {
       //float32 x = b2Random(-0.1f, 0.1f);
       //float32 x = i % 2 == 0 ? -0.025f : 0.025f;
       //bd.position.Set(xs[j], 2.51f + 4.02f * i);
-      pos(xs(j) + (new util.Random().nextFloat * 0.1f - 0.05f),
+      pos(xs(j) + (new Random().nextFloat * 0.1f - 0.05f),
           0.752f + 1.54f * i)
       fixture(sd)
       // For this test we are using continuous physics for all boxes.

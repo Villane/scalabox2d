@@ -4,6 +4,8 @@ import vecmath._
 import vecmath.Preamble._
 import dsl.DSL._
 
+import scala.util.Random
+
 object CCDTest extends TestbedScene {
 
   def createScene(implicit world: dynamics.World) {
@@ -34,7 +36,7 @@ object CCDTest extends TestbedScene {
       circle(0.25f) density 1.0f restitution 0.0f friction 0.05f
       bullet(true)
       massFromShapes
-    } angularVelocity = new util.Random().nextFloat * 100 - 50
+    } angularVelocity = new Random().nextFloat * 100 - 50
   }
 
 }

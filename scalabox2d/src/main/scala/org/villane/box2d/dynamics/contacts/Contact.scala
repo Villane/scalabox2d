@@ -61,12 +61,14 @@ abstract class Contact(val fixture1: Fixture, val fixture2: Fixture) {
   /** Combined friction */
   var friction =
     if (fixture1 == null || fixture2 == null) 0f
-    else Settings.mixFriction(fixture1.friction, fixture2.friction)
+    else sqrt(fixture1.friction * fixture2.friction)
+    // TODO Settings.mixFriction(fixture1.friction, fixture2.friction)
 
   /** Combined restitution */
   var restitution =
     if (fixture1 == null || fixture2 == null) 0f
-    else Settings.mixRestitution(fixture1.restitution, fixture2.restitution)
+    else max(fixture1.restitution, fixture2.restitution)
+    // TODO Settings.mixRestitution(fixture1.restitution, fixture2.restitution)
 
   var flags = 0
   var toi = 0f

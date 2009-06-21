@@ -1,7 +1,8 @@
 package org.villane.box2d.dynamics
 
-import Settings.ε
 import vecmath._
+import vecmath.Preamble._
+import Settings.Epsilon
 
 /**
  * Primarily for internal use.
@@ -37,11 +38,14 @@ class Sweep {
    */
   def getTransform(t: Float) = {
     // center = p + R * localCenter
-    val xf = if (1f - t0 > ε) {
-      val α = (t - t0) / (1f - t0)
-      val pos = c0 * (1f - α) + c * α
-      val angle = (1f - α) * a0 + α * a
-      Transform2(pos, angle)
+    val xf = if (1f - t0 > Settings.Epsilon) {
+      val alpha = (t - t0) / (1f - t0)
+      val oneLessAlpha = 1f - alpha
+      //val pos = c0 * (1f - alpha) + c * alpha
+      val posx = c0.x * oneLessAlpha + c.x * alpha
+      val posy = c0.y * oneLessAlpha + c.y * alpha
+      val angle = oneLessAlpha * a0 + alpha * a
+      Transform2(Vector2(posx, posy), angle)
     } else {
       Transform2(c, a)
     }
@@ -55,10 +59,10 @@ class Sweep {
    * @param t the new initial time.
    */
   def advance(t: Float) {
-    if (t0 < t && 1.0f - t0 > ε) {
-      val α = (t - t0) / (1.0f - t0)
-      c0 = c0 * (1.0f - α) + c * α 
-      a0 = (1.0f - α) * a0 + α * a
+    if (t0 < t && 1.0f - t0 > Epsilon) {
+      val alpha = (t - t0) / (1.0f - t0)
+      c0 = c0 * (1.0f - alpha) + c * alpha 
+      a0 = (1.0f - alpha) * a0 + alpha * a
       t0 = t
 	}
   }

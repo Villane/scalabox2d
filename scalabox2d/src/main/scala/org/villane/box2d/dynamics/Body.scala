@@ -15,7 +15,7 @@ object BodyFlags {
   val fixedRotation = 0x0040
 }
 
-class Body(bd: BodyDef, val world: World) {
+final class Body(bd: BodyDef, val world: World) {
   var flags = 0
 
   private[this] var static = false
