@@ -45,6 +45,8 @@ class PointingDeviceJoint(defn: PointingDeviceJointDef) extends Joint(defn) {
 
   def anchor1 = target
   def anchor2 = body2.toWorldPoint(localAnchor)
+  def localAnchor1 = Vector2.Zero
+  def localAnchor2 = localAnchor
   def reactionForce = force
   def reactionTorque = 0f
 

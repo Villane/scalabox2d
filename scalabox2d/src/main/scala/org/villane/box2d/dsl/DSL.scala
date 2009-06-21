@@ -88,8 +88,12 @@ object DSL {
 
   def revolute(bodies: (Body, Body)) = new RevoluteJointBuilder(
     new RevoluteJointDef, bodies)
+  def prismatic(bodies: (Body, Body)) = new PrismaticJointBuilder(
+    new PrismaticJointDef, bodies)
   def distance(bodies: (Body, Body)) = new DistanceJointBuilder(
     new DistanceJointDef, bodies)
+  def gear(joints: (Joint, Joint)) = new GearJointBuilder(
+    new GearJointDef, joints)
 }
 
 class BodyBuilder(b: BodyDef) {

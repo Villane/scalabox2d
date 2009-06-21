@@ -86,6 +86,8 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
                         (0, 10), 15)
     tests += SimpleTest(this, "Domino Tower Stress Test", scenes.DominoTower,
                         (0, 12), 10)
+    tests += SimpleTest(this, "Gears", scenes.Gears,
+                        (0, 10), 15)
     tests += SimpleTest(this, "Overhang", scenes.Overhang,
                         (0, 10), 15)
     tests += SimpleTest(this, "Pyramid Stress Test", scenes.Pyramid,

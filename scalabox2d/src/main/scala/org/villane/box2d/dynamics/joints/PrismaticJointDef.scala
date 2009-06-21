@@ -45,8 +45,8 @@ class PrismaticJointDef extends JointDef {
     body2 = b2;
     localAnchor1 = body1.toLocalPoint(anchor)
     localAnchor2 = body2.toLocalPoint(anchor)
-    localAxis1 = body1.toLocalVector(axis) 
     referenceAngle = body2.angle - body1.angle
+    localAxis1 = body1.toLocalVector(axis) 
   }
 
 }

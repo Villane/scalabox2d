@@ -12,6 +12,11 @@ object Vector2 {
   val YUnit = Vector2(0, 1)
   def polar(r: Float, theta: Float) = Vector2(cos(theta) * r, sin(theta) * r)
 
+  def lerp(begin: Vector2, end: Vector2, scalar: Float) = Vector2(
+    begin.x + scalar * (end.x - begin.x),
+    begin.y + scalar * (end.y - begin.y)
+  )
+
   // for debugging only
   var creationCount = 0L
 }

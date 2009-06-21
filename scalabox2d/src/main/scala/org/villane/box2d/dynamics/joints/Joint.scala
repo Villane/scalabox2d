@@ -8,6 +8,7 @@ object Joint {
     case d: DistanceJointDef => new DistanceJoint(d)
     case d: RevoluteJointDef => new RevoluteJoint(d)
     case d: PrismaticJointDef => new PrismaticJoint(d)
+    case d: GearJointDef => new GearJoint(d)
     case d: PointingDeviceJointDef => new PointingDeviceJoint(d)
   }
 }
@@ -37,6 +38,10 @@ abstract class Joint(defn: JointDef) {
   def anchor1: Vector2
   /** Get the anchor point on body2 in world coordinates. */
   def anchor2: Vector2
+  /** Get the anchor point on body1 in local coordinates. */
+  def localAnchor1: Vector2
+  /** Get the anchor point on body2 in local coordinates. */
+  def localAnchor2: Vector2
   /** Get the reaction force on body2 at the joint anchor. */
   def reactionForce: Vector2
   /** Get the reaction torque on body2. */
