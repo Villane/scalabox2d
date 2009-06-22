@@ -7,14 +7,11 @@ import shapes._
 
 /** Implements the GJK algorithm for computing distance between shapes. */
 object Distance {
-object Point {
-  def apply(v: Vector2): Point = Point(v.x, v.y)
-}
 
 // This is used for polygon-vs-circle distance.
-case class Point(override val x: Float, override val y: Float) extends Vector2(x,y) with SupportsGenericDistance {
-  def support(xf: Transform2, v: Vector2) = this
-  def getFirstVertex(xf: Transform2) = this
+case class Point(v: Vector2) extends SupportsGenericDistance {
+  def support(xf: Transform2, v: Vector2) = v
+  def getFirstVertex(xf: Transform2) = v
 }
 
   var g_GJK_Iterations = 0
