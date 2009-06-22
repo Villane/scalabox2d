@@ -6,9 +6,7 @@ import vecmath._
 import vecmath.Preamble._
 
 class ContactSolver(contacts: Seq[Contact]) {
-  val constraints = initConstraints(contacts)
-  
-  @inline def initConstraints(contacts: Seq[Contact]) = {
+  val constraints = {
     val tmpConstraints = new Array[ContactConstraint](contacts.length)
 
     var iContact = 0
@@ -117,7 +115,19 @@ class ContactSolver(contacts: Seq[Contact]) {
 
     tmpConstraints
   }
-  
+
+  // Unused, seems to have noticeable performance impact
+  private[this] def applyImpulse(
+    c: ContactConstraint, ccp: ContactConstraintPoint,
+    px: Float, py: Float) = {
+    val b1 = c.body1
+    val b2 = c.body2
+    b1.angularVelocity -= b1.invI * (ccp.r1.x * py - ccp.r1.y * px)
+    b1.linearVelocity -= Vector2(px * b1.invMass, py * b1.invMass)
+    b2.angularVelocity += b2.invI * (ccp.r2.x * py - ccp.r2.y * px)
+    b2.linearVelocity += Vector2(px * b2.invMass, py * b2.invMass)
+  }
+
   @inline def initVelocityConstraints(step: TimeStep) {
     // Zero temp objects created - ewjordan
 
@@ -152,10 +162,10 @@ class ContactSolver(contacts: Seq[Contact]) {
           val px = ccp.normalImpulse * normal.x + ccp.tangentImpulse * tangentx
           val py = ccp.normalImpulse * normal.y + ccp.tangentImpulse * tangenty
 
-          b1.angularVelocity -= invI1 * (ccp.r1.x * py - ccp.r1.y * px)
-          b1.linearVelocity -= Vector2(px * invMass1, py * invMass1)
-          b2.angularVelocity += invI2 * (ccp.r2.x * py - ccp.r2.y * px)
-          b2.linearVelocity += Vector2(px * invMass2, py * invMass2)
+          b1.angularVelocity -= b1.invI * (ccp.r1.x * py - ccp.r1.y * px)
+          b1.linearVelocity -= Vector2(px * b1.invMass, py * b1.invMass)
+          b2.angularVelocity += b2.invI * (ccp.r2.x * py - ccp.r2.y * px)
+          b2.linearVelocity += Vector2(px * b2.invMass, py * b2.invMass)
         }
       } else {
         var iCCP = 0
