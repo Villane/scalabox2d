@@ -302,9 +302,14 @@ final class Body(bd: BodyDef, val world: World) {
   }
 
   /** For internal use only. */
-  def synchronizeFixtures(): Boolean = {
+  def synchronizeFixtures() = {
     val rot = Matrix22.rotation(sweep.a0)
-    val xf1 = new Transform2(sweep.c0 - (rot * sweep.localCenter), rot)
+    // sweep.c0 - (rot * sweep.localCenter)
+    val pos = Vector2(
+      sweep.c0.x - rot.a11 * sweep.localCenter.x - rot.a12 * sweep.localCenter.y,
+      sweep.c0.y - rot.a21 * sweep.localCenter.x - rot.a22 * sweep.localCenter.y
+    )
+    val xf1 = new Transform2(pos, rot)
 
     var inRange = true
     val iter = fixtures.elements
@@ -321,11 +326,11 @@ final class Body(bd: BodyDef, val world: World) {
         f.destroyProxy(world.broadPhase)
       }
       // Failure
-      return false
+      false
+    } else {
+      // Success
+      true
     }
-
-    // Success
-    return true
   }
 
   /** For internal use only. */

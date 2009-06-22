@@ -14,9 +14,11 @@ class HeadlessPerformanceTest(sceneFactory: SceneFactory) {
     //Settings.threadedIslandSolving = true
     //Settings.numThreads = 3
     if (warmUp) {
-      val world = sceneFactory.create
-      var i = 0
-      while (i < steps) { step(world); i += 1 }
+      for (j <- 1 to 1) {
+        val world = sceneFactory.create
+        var i = 0
+        while (i < steps) { step(world); i += 1 }
+      }
     }
 
     val world = sceneFactory.create

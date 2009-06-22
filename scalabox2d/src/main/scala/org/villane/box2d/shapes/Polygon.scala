@@ -176,10 +176,18 @@ class Polygon(defn: PolygonDef) extends Shape with SupportsGenericDistance {
 
   val obb = Polygon.computeOBB(vertices)
   def computeAABB(t: Transform2) = {
-	val rot = t.rot * obb.rot
-	val h = rot.abs * obb.extents
-	val p = t.pos + (t.rot * obb.center)
-    AABB(p - h, p + h)
+	//val rot = t.rot * obb.rot
+	//val h = rot.abs * obb.extents
+	//val p = t * obb.center
+    val a11 = Math.abs(t.rot.a11 * obb.rot.a11 + t.rot.a12 * obb.rot.a21)
+    val a12 = Math.abs(t.rot.a11 * obb.rot.a12 + t.rot.a12 * obb.rot.a22)
+    val a21 = Math.abs(t.rot.a21 * obb.rot.a11 + t.rot.a22 * obb.rot.a21)
+    val a22 = Math.abs(t.rot.a21 * obb.rot.a12 + t.rot.a22 * obb.rot.a22)
+    val hx = a11 * obb.extents.x + a12 * obb.extents.y
+    val hy = a21 * obb.extents.x + a22 * obb.extents.y
+    val px = t.pos.x + t.rot.a11 * obb.center.x + t.rot.a12 * obb.center.y
+    val py = t.pos.y + t.rot.a21 * obb.center.x + t.rot.a22 * obb.center.y
+    AABB(Vector2(px - hx, py - hy), Vector2(px + hx, py + hy))
     /* THIS IS THE NEW AABB, WITHOUT OBB
     var lower = t * vertices(0)
     var upper = lower

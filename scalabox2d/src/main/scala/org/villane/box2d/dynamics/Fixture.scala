@@ -71,11 +71,11 @@ class Fixture(defn: FixtureDef, val body: Body) {
   }
 
   /** Internal */
-  def synchronize(broadPhase: BroadPhase, transform1: Transform2, transform2: Transform2): Boolean = {
+  def synchronize(broadPhase: BroadPhase, t1: Transform2, t2: Transform2): Boolean = {
     if (proxyId == PairManager.NullProxy) return false
 
     // Compute an AABB that covers the swept shape (may miss some rotation effect).
-    val aabb = shape.computeAABB(transform1) combineWith shape.computeAABB(transform2)
+    val aabb = shape.computeAABB(t1) combineWith shape.computeAABB(t2)
     if (broadPhase.inRange(aabb)) {
       broadPhase.moveProxy(proxyId, aabb)
       true

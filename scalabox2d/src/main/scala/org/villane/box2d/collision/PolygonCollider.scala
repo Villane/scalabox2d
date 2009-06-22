@@ -23,14 +23,10 @@ object PolygonCollider extends Collider[Polygon, Polygon] {
     //testbed.PTest.debugCount++;
     
     val sepA = findMaxSeparation(polyA, xfA, polyB, xfB)
-    if (sepA.bestSeparation > 0.0f) {
-      return None
-    }
+    if (sepA.bestSeparation > 0.0f) return None
 
     val sepB = findMaxSeparation(polyB, xfB, polyA, xfA)
-    if (sepB.bestSeparation > 0.0f) {
-      return None
-    }
+    if (sepB.bestSeparation > 0.0f) return None
 
     val k_relativeTol = 0.98f
     val k_absoluteTol = 0.001f
@@ -49,8 +45,17 @@ object PolygonCollider extends Collider[Polygon, Polygon] {
     val v11 = vertices1(edge1)
     val v12 = if (edge1 + 1 < count1) vertices1(edge1 + 1) else vertices1(0)
 
-    val sideNormal = (xf1.rot * (v12 - v11)).normalize
-    val frontNormal = sideNormal.normal
+    //val sideNormal = (xf1.rot * (v12 - v11)).normalize
+    //val frontNormal = sideNormal.normal
+    val dvx = v12.x - v11.x
+    val dvy = v12.y - v11.y
+    val tdvx = xf1.rot.a11 * dvx + xf1.rot.a12 * dvy  
+    val tdvy = xf1.rot.a21 * dvx + xf1.rot.a22 * dvy  
+    val dvl = sqrt(tdvx * tdvx + tdvy * tdvy)
+    val snx = tdvx / dvl
+    val sny = tdvy / dvl
+    val fnx = sny
+    val fny = -snx
 
     //v11 = XForm.mul(xf1, v11);
     //v12 = XForm.mul(xf1, v12);
@@ -61,32 +66,29 @@ object PolygonCollider extends Collider[Polygon, Polygon] {
     val v12x = xf1.pos.x + xf1.rot.a11 * v12.x + xf1.rot.a12 * v12.y 
     val v12y = xf1.pos.y + xf1.rot.a21 * v12.x + xf1.rot.a22 * v12.y
 
-    val frontOffset = frontNormal.x * v11x + frontNormal.y * v11y
-    val sideOffset1 = -(sideNormal.x * v11x + sideNormal.y * v11y)
-    val sideOffset2 = sideNormal.x * v12x + sideNormal.y * v12y
+    val frontOffset = fnx * v11x + fny * v11y
+    val sideOffset1 = -(snx * v11x + sny * v11y)
+    val sideOffset2 = snx * v12x + sny * v12y
 
     // Clip incident edge against extruded edge1 side edges.
 
     // Clip to box side 1
-    val clipPoints1 = clipSegmentToLine(incidentEdge, -sideNormal, sideOffset1)
-    if (clipPoints1.length < 2) {
-      return None
-    }
+    val clipPoints1 = clipSegmentToLine(incidentEdge, -snx, -sny, sideOffset1)
+    if (clipPoints1.length < 2) return None
 
     // Clip to negative box side 1
-    val clipPoints2 = clipSegmentToLine(clipPoints1, sideNormal, sideOffset2)
-    val cp2len = clipPoints2.length 
-    if (cp2len < 2) {
-      return None
-    }
+    val clipPoints2 = clipSegmentToLine(clipPoints1, snx, sny, sideOffset2)
+    val cp2len = clipPoints2.length
+    if (cp2len < 2) return None
 
     // Now clipPoints2 contains the clipped points.
 
     val points = new collection.mutable.ListBuffer[ManifoldPoint]
     for (cp2 <- clipPoints2) {
-      val separation = (frontNormal ∙ cp2.v) - frontOffset
+      val separation = (fnx * cp2.v.x + fny * cp2.v.y) - frontOffset
 
       if (separation <= 0.0f) {
+        // should not inline this xf ** v creates just one vector anyway
         points += ManifoldPoint(
           xfA ** cp2.v,
           xfB ** cp2.v,
@@ -98,16 +100,16 @@ object PolygonCollider extends Collider[Polygon, Polygon] {
     if (points.length == 0)
       None
     else
-      Some(Manifold(points.toList, if (flip) -frontNormal else frontNormal))
+      Some(Manifold(points.toList, if (flip) -Vector2(fnx,fny) else Vector2(fnx,fny)))
   }
 
   private def clipSegmentToLine(vIn: List[ClipVertex],
-                                normal: Vector2,
+                                normalx: Float, normaly: Float,
                                 offset: Float): List[ClipVertex] = (vIn: @unchecked) match {
   case vIn0 :: vIn1 :: _ =>
     // Calculate the distance of end points to the line
-    val distance0 = (normal ∙ vIn0.v) - offset
-    val distance1 = (normal ∙ vIn1.v) - offset
+    val distance0 = (normalx * vIn0.v.x + normaly * vIn0.v.y) - offset
+    val distance1 = (normalx * vIn1.v.x + normaly * vIn1.v.y) - offset
 
     val vOut = new collection.mutable.ListBuffer[ClipVertex]
     // If the points are behind the plane
@@ -142,15 +144,21 @@ object PolygonCollider extends Collider[Polygon, Polygon] {
     assert(0 <= edge1 && edge1 < count1)
 
     // Convert normal from poly1's frame into poly2's frame.
-    val normal1World = xf1.rot * normals1(edge1)
-    val normal1 = xf2.rot ** normal1World
+    //val normal1World = xf1.rot * normals1(edge1)
+    //val normal1 = xf2.rot ** normal1World
+    val n1e = normals1(edge1)
+    val n1wx = xf1.rot.a11 * n1e.x + xf1.rot.a12 * n1e.y
+    val n1wy = xf1.rot.a21 * n1e.x + xf1.rot.a22 * n1e.y
+    val n1x = xf2.rot.a11 * n1wx + xf2.rot.a21 * n1wy
+    val n1y = xf2.rot.a12 * n1wx + xf2.rot.a22 * n1wy
 
     // Find support vertex on poly2 for -normal.
     var index = 0
     var minDot = Float.MaxValue
     var i = 0
     while (i < count2) {
-      val dot = vertices2(i) ∙ normal1
+      //val dot = vertices2(i) ∙ normal1
+      val dot = vertices2(i).x * n1x + vertices2(i).y * n1y
       if (dot < minDot) {
         minDot = dot
         index = i
@@ -158,10 +166,18 @@ object PolygonCollider extends Collider[Polygon, Polygon] {
       i += 1
     }
 
-    val v1 = xf1 * vertices1(edge1)
-    val v2 = xf2 * vertices2(index)
-    val separation = (v2 - v1) ∙ normal1World
-    separation
+    //val v1 = xf1 * vertices1(edge1)
+    //val v2 = xf2 * vertices2(index)
+    val v1e = vertices1(edge1)
+    val v2e = vertices2(index)
+    val v1x = xf1.pos.x + xf1.rot.a11 * v1e.x + xf1.rot.a12 * v1e.y
+    val v1y = xf1.pos.y + xf1.rot.a21 * v1e.x + xf1.rot.a22 * v1e.y
+    val v2x = xf2.pos.x + xf2.rot.a11 * v2e.x + xf2.rot.a12 * v2e.y
+    val v2y = xf2.pos.y + xf2.rot.a21 * v2e.x + xf2.rot.a22 * v2e.y
+    val dvx = v2x - v1x
+    val dvy = v2y - v1y
+    //(v2 - v1) ∙ normal1World
+    dvx * n1wx + dvy * n1wy
   }
 
   // Find the max separation between poly1 and poly2 using face normals
@@ -175,15 +191,22 @@ object PolygonCollider extends Collider[Polygon, Polygon] {
     val v1 = poly2.centroid
 
     // Vector pointing from the centroid of poly1 to the centroid of poly2.
-    val d = (xf2 * v1) - (xf1 * v)
-    val dLocal1 = xf1.rot ** d
+    //val d = (xf2 * v1) - (xf1 * v)
+    //val dLocal1 = xf1.rot ** d
+    val dx = (xf2.pos.x + xf2.rot.a11 * v1.x + xf2.rot.a12 * v1.y) -
+             (xf1.pos.x + xf1.rot.a11 * v.x + xf1.rot.a12 * v.y)
+    val dy = (xf2.pos.y + xf2.rot.a21 * v1.x + xf2.rot.a22 * v1.y) -
+             (xf1.pos.y + xf1.rot.a21 * v.x + xf1.rot.a22 * v.y)
+    val dlx = xf1.rot.a11 * dx + xf1.rot.a21 * dy
+    val dly = xf1.rot.a12 * dx + xf1.rot.a22 * dy
 
     // Find edge normal on poly1 that has the largest projection onto d.
     var edge = 0
     var maxDot = -Float.MaxValue
     var i = 0
     while (i < count1) {
-      val dot = normals1(i) ∙ dLocal1
+      //val dot = normals1(i) ∙ dLocal1
+      val dot = normals1(i).x * dlx + normals1(i).y * dly
       if (dot > maxDot) {
         maxDot = dot
         edge = i
@@ -241,7 +264,7 @@ object PolygonCollider extends Collider[Polygon, Polygon] {
       }
     }
 
-    return MaxSeparation(bestEdge, bestSeparation)
+    MaxSeparation(bestEdge, bestSeparation)
   }
 
   private def findIncidentEdge(poly1: Polygon, xf1: Transform2, edge1: Int,

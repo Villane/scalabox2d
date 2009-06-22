@@ -46,7 +46,7 @@ case class Matrix22(a11: Float, a12: Float, a21: Float, a22: Float) {
    * @return Resulting vector
    */
   def *(v: Vector2) = Vector2(a11 * v.x + a12 * v.y,
-                                a21 * v.x + a22 * v.y)
+                              a21 * v.x + a22 * v.y)
 
   /**
    * Multiply a vector by the transpose of this matrix. (mulT)
@@ -54,7 +54,7 @@ case class Matrix22(a11: Float, a12: Float, a21: Float, a22: Float) {
    * @return
    */
   def **(v: Vector2) = Vector2(a11 * v.x + a21 * v.y,
-                                 a12 * v.x + a22 * v.y)
+                               a12 * v.x + a22 * v.y)
 
   def determinant = a11 * a22 - a12 * a21
 
@@ -93,7 +93,8 @@ case class Matrix22(a11: Float, a12: Float, a21: Float, a22: Float) {
 
   def transpose = Matrix22(a11, a21, a12, a22)
 
-  def abs = Matrix22(a11.abs, a12.abs, a21.abs, a22.abs)
+  def abs = Matrix22(Math.abs(a11), Math.abs(a12),
+                     Math.abs(a21), Math.abs(a22))
 
   def invert = {
     var det = determinant
