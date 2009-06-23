@@ -4,6 +4,8 @@ import vecmath._
 import vecmath.Preamble
 import shapes._
 import collision._
+import broadphase.BroadPhase
+import broadphase.PairManager
 
 object Fixture {
   def apply(body: Body, defn: FixtureDef) = new Fixture(defn, body)

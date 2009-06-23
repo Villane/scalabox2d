@@ -7,6 +7,7 @@ import contacts._
 import collision._
 import joints._
 import Settings.ε
+import broadphase._
 
 import java.util.concurrent._
 import collection.jcl.ArrayList
@@ -190,7 +191,7 @@ class World(val aabb: AABB, var gravity: Vector2, doSleep: Boolean) {
       solveTOI(step)
     }
 
-    invDt0 = step.invDt
+    if (step.dt > 0f) invDt0 = step.invDt
     lock = false
 
     postStep(dt, iterations)

@@ -1,4 +1,4 @@
-package org.villane.box2d.collision
+package org.villane.box2d.collision.broadphase
 
 class Proxy {
   val lowerBounds = Array(0,0)

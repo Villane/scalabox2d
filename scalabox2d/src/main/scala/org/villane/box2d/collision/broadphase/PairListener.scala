@@ -1,4 +1,4 @@
-package org.villane.box2d.collision
+package org.villane.box2d.collision.broadphase
 
 trait PairListener {
   // This should return the new pair user data. It is okay if the

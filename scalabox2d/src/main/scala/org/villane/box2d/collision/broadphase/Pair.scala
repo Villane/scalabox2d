@@ -1,4 +1,4 @@
-package org.villane.box2d.collision
+package org.villane.box2d.collision.broadphase
 
 object Pair {
   val Buffered = 0x0001

@@ -1,8 +1,7 @@
-package org.villane.box2d.collision
+package org.villane.box2d.collision.broadphase
 
-import vecmath._
 import vecmath.Preamble._
-import shapes._
+import shapes.AABB
 
 object BroadPhase {
   val Invalid = Int.MaxValue

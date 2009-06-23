@@ -3,6 +3,7 @@ package org.villane.box2d.dynamics
 import contacts._
 import shapes._
 import collision._
+import broadphase.PairListener
 
 /** Delegate of World - for internal use. */
 class ContactManager extends PairListener {

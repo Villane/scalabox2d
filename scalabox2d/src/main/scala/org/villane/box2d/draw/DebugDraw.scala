@@ -6,6 +6,7 @@ import vecmath.Preamble._
 import shapes._
 import dynamics._
 import dynamics.joints._
+import broadphase._
 
 object Colors {
   val Static = Color3f.ratio(0.5f, 0.9f, 0.5f)

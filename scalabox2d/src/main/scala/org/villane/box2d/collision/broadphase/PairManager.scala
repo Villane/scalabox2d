@@ -1,4 +1,6 @@
-package org.villane.box2d.collision
+package org.villane.box2d.collision.broadphase
+
+import collection.jcl.HashMap
 
 object PairManager {
   val NullPair = Int.MaxValue
@@ -6,8 +8,6 @@ object PairManager {
   val TableCapacity = Settings.maxPairs // must be a power of 2
   val TableMask = TableCapacity - 1
 }
-
-import collection.jcl.HashMap
 
 /**
  * ERKKI: This had a custom HashTable impl, but I removed it for a standard one
