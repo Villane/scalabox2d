@@ -74,6 +74,8 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
     container.setTargetFrameRate(targetFrameRate)
     container.setShowFPS(false)
 
+    tests += SimpleTest(this, "Planet Gravity", scenes.PlanetGravity,
+                        (0, 0), 15)
     tests += SimpleTest(this, "Bridge", scenes.Bridge,
                         (0, 10), 20)
     tests += SimpleTest(this, "Continuous Collision Test", scenes.CCDTest,
