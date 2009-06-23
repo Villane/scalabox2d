@@ -10,6 +10,7 @@ import broadphase._
 
 object Colors {
   val Static = Color3f.ratio(0.5f, 0.9f, 0.5f)
+  val Sensor = Color3f.ratio(1f, 1f, 0.4f, 0.3f)
   val Sleeping = Color3f.ratio(0.5f, 0.5f, 0.9f)
   val Dynamic = Color3f.ratio(0.9f, 0.9f, 0.9f)
   val Joint = Color3f.ratio(0.5f, 0.8f, 0.8f)
@@ -32,6 +33,8 @@ object DrawFlags {
   val Pairs = 0x0020
   /** draw center of mass frame */
   val CenterOfMass = 0x0040
+  /** draw sensor shapes */
+  val Sensors = 0x0080
 }
 
 /**
@@ -127,8 +130,9 @@ final class DebugDraw(val handler: DebugDrawHandler) {
   def drawBody(body: Body) {
     val xf = body.transform
     for (f <- body.fixtures) {
-      if (!f.isSensor) {
-        val color = if (body.isStatic) Colors.Static
+      if (!f.isSensor || flag(Sensors)) { 
+        val color = if (f.isSensor) Colors.Sensor
+          else if (body.isStatic) Colors.Static
           else if (body.isSleeping) Colors.Sleeping
           else Colors.Dynamic
         drawShape(f.shape, xf, color, flag(CoreShapes))

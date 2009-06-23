@@ -178,7 +178,7 @@ trait FengWrapper extends InputListener {
 
     val sleeping = FengGUI.createCheckBox
     sleeping.setText("Sleeping")
-    sleeping.setSelected(true)
+    sleeping.setSelected(settings.enableSleeping)
     sleeping.addSelectionChangedListener(new ISelectionChangedListener() {
         def selectionChanged(selectionChangedEvent:SelectionChangedEvent) {
           settings.enableSleeping = !settings.enableSleeping
@@ -187,7 +187,7 @@ trait FengWrapper extends InputListener {
 
     val warmStarting = FengGUI.createCheckBox
     warmStarting.setText("Warm Starting")
-    warmStarting.setSelected(true)
+    warmStarting.setSelected(settings.enableWarmStarting)
     warmStarting.addSelectionChangedListener(new ISelectionChangedListener() {
         def selectionChanged(e:SelectionChangedEvent) {
           settings.enableWarmStarting = !settings.enableWarmStarting
@@ -196,7 +196,7 @@ trait FengWrapper extends InputListener {
 
     val timeOfImpact = FengGUI.createCheckBox
     timeOfImpact.setText("Time of Impact")
-    timeOfImpact.setSelected(true)
+    timeOfImpact.setSelected(settings.enableTOI)
     timeOfImpact.addSelectionChangedListener(new ISelectionChangedListener() {
         def selectionChanged(e:SelectionChangedEvent) {
           settings.enableTOI = !settings.enableTOI
@@ -211,16 +211,25 @@ trait FengWrapper extends InputListener {
 
     val shapes = FengGUI.createCheckBox
     shapes.setText("Shapes")
-    shapes.setSelected(true)
+    shapes.setSelected(settings.drawShapes)
     shapes.addSelectionChangedListener(new ISelectionChangedListener() {
         def selectionChanged(e:SelectionChangedEvent) {
           settings.drawShapes = !settings.drawShapes
         }
     })
 
+    val sensors = FengGUI.createCheckBox
+    sensors.setText("Sensors")
+    sensors.setSelected(settings.drawSensors)
+    sensors.addSelectionChangedListener(new ISelectionChangedListener() {
+        def selectionChanged(e:SelectionChangedEvent) {
+          settings.drawSensors = !settings.drawSensors
+        }
+    })
+
     val joints = FengGUI.createCheckBox
     joints.setText("Joints")
-    joints.setSelected(true)
+    joints.setSelected(settings.drawJoints)
     joints.addSelectionChangedListener(new ISelectionChangedListener() {
         def selectionChanged(e:SelectionChangedEvent) {
           settings.drawJoints = !settings.drawJoints
@@ -229,7 +238,7 @@ trait FengWrapper extends InputListener {
 
     val coreShapes = FengGUI.createCheckBox
     coreShapes.setText("Core Shapes")
-    coreShapes.setSelected(false)
+    coreShapes.setSelected(settings.drawCoreShapes)
     coreShapes.addSelectionChangedListener(new ISelectionChangedListener() {
         def selectionChanged(e:SelectionChangedEvent) {
           settings.drawCoreShapes = !settings.drawCoreShapes
@@ -238,7 +247,7 @@ trait FengWrapper extends InputListener {
 
     val aabb = FengGUI.createCheckBox
     aabb.setText("AABBs")
-    aabb.setSelected(false)
+    aabb.setSelected(settings.drawAABBs)
     aabb.addSelectionChangedListener(new ISelectionChangedListener() {
         def selectionChanged(e:SelectionChangedEvent) {
           settings.drawAABBs = !settings.drawAABBs
@@ -247,7 +256,7 @@ trait FengWrapper extends InputListener {
 
     val pairs = FengGUI.createCheckBox
     pairs.setText("Pairs")
-    pairs.setSelected(false)
+    pairs.setSelected(settings.drawPairs)
     pairs.addSelectionChangedListener(new ISelectionChangedListener() {
         def selectionChanged(e:SelectionChangedEvent) {
           settings.drawPairs = !settings.drawPairs
@@ -256,7 +265,7 @@ trait FengWrapper extends InputListener {
 
     val cPoints = FengGUI.createCheckBox
     cPoints.setText("Contact Points")
-    cPoints.setSelected(false)
+    cPoints.setSelected(settings.drawPairs)
     cPoints.addSelectionChangedListener(new ISelectionChangedListener() {
         def selectionChanged(e:SelectionChangedEvent) {
           settings.drawContactPoints = !settings.drawContactPoints
@@ -265,7 +274,7 @@ trait FengWrapper extends InputListener {
 
     val cNormals = FengGUI.createCheckBox
     cNormals.setText("Contact Normals")
-    cNormals.setSelected(false)
+    cNormals.setSelected(settings.drawContactNormals)
     cNormals.addSelectionChangedListener(new ISelectionChangedListener() {
         def selectionChanged(e:SelectionChangedEvent) {
           settings.drawContactNormals = !settings.drawContactNormals
@@ -274,7 +283,7 @@ trait FengWrapper extends InputListener {
 
     val com = FengGUI.createCheckBox
     com.setText("Center of Masses")
-    com.setSelected(false)
+    com.setSelected(settings.drawCOMs)
     com.addSelectionChangedListener(new ISelectionChangedListener() {
         def selectionChanged(e:SelectionChangedEvent) {
           settings.drawCOMs = !settings.drawCOMs
@@ -283,16 +292,16 @@ trait FengWrapper extends InputListener {
 
     val stastics = FengGUI.createCheckBox
     stastics.setText("Stastics")
-    stastics.setSelected(false)
+    stastics.setSelected(settings.drawStats)
     stastics.addSelectionChangedListener(new ISelectionChangedListener() {
         def selectionChanged(selectionChangedEvent:SelectionChangedEvent) {
           settings.drawStats = !settings.drawStats
         }
     })
 
-    draw.addWidget(shapes, joints, coreShapes, aabb, pairs)
+    draw.addWidget(shapes, sensors, joints, coreShapes, aabb, pairs)
     draw.addWidget(cPoints, cNormals, com, stastics)
-    
+
     w.getContentContainer.addWidget(buttons, spacer2, tuning, draw)
     w.setWidth(200)
     w.pack

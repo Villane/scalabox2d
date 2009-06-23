@@ -288,6 +288,7 @@ abstract class AbstractExample(parent: TestbedMain) {
     if (settings.drawAABBs) debugDraw.appendFlags(DrawFlags.AABBs)
     if (settings.drawPairs) debugDraw.appendFlags(DrawFlags.Pairs)
     if (settings.drawCOMs) debugDraw.appendFlags(DrawFlags.CenterOfMass)
+    if (settings.drawSensors) debugDraw.appendFlags(DrawFlags.Sensors)
 
     for (i <- 0 until fpsAverageCount-1) {
       nanos(i) = nanos(i+1)
@@ -353,8 +354,8 @@ abstract class AbstractExample(parent: TestbedMain) {
           val p1 = point.position;
           val p2 = Vector2( p1.x + k_axisScale * point.normal.x,
                              p1.y + k_axisScale * point.normal.y);
-          drawHandler.drawSegment(p1, p2, new Color3f(0.4f*255f, 0.9f*255f, 0.4f*255f));
-        } 
+          drawHandler.drawSegment(p1, p2, Color3f(0.4f*255f, 0.9f*255f, 0.4f*255f));
+        }
 				//TODO
 				/*else if (settings.drawContactForces) {
 					Vec2 p1 = point.position;

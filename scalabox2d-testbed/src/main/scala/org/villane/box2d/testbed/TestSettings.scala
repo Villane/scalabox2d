@@ -26,6 +26,7 @@ class TestSettings {
   var reset = false
 
   var drawShapes = true
+  var drawSensors = true
   var drawJoints = true
   var drawCoreShapes = false
   var drawCOMs = false
