@@ -97,10 +97,10 @@ class ContactManager extends PairListener {
     val body2 = f2.body
 
     // Remove from body 1
-    body1.contactList = body1.contactList.remove(c==)
+    body1.contactList = body1.contactList.remove(_.contact == c)
 
     // Remove from body 2
-    body2.contactList = body2.contactList.remove(c==)
+    body2.contactList = body2.contactList.remove(_.contact == c)
 
     Contact.destroy(c)
     // world.contactCount -= 1
