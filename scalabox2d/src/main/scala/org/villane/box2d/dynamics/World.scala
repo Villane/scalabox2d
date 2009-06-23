@@ -8,6 +8,7 @@ import collision._
 import joints._
 import Settings.ε
 import broadphase._
+import controllers._
 
 import java.util.concurrent._
 import collection.jcl.ArrayList
@@ -28,6 +29,7 @@ class World(val aabb: AABB, var gravity: Vector2, doSleep: Boolean) {
   /** Do not access, won't be useful! */
   val contactList = new ArrayList[Contact] 
   val jointList = new ArrayList[Joint]
+  val controllers = new ArrayList[Controller]
 
   var allowSleep = doSleep
   val groundBody = createBody(new BodyDef)
@@ -163,7 +165,10 @@ class World(val aabb: AABB, var gravity: Vector2, doSleep: Boolean) {
       for (f <- b.fixtures) refilter(f)
     }
   }
-	
+
+  def addController(c: Controller) = controllers += c
+  def removeController(c: Controller) = controllers -= c
+
   /**
    * Take a time step. This performs collision detection, integration,
    * and constraint solution.
@@ -245,6 +250,8 @@ class World(val aabb: AABB, var gravity: Vector2, doSleep: Boolean) {
   }
 
   private def solve(step: TimeStep) = {
+    controllers foreach (_.step(step))
+
     positionIterationCount = 0
 
     // Size the island for the worst case.
