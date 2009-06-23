@@ -8,6 +8,8 @@ import dsl.DSL._
 import shapes._
 import dynamics._
 
+import ConvexHull._
+
 import java.io.FileInputStream
 import org.newdawn.slick.Color
 import org.newdawn.slick.svg._
@@ -80,7 +82,7 @@ class SlickSVGSceneLoader(fileName: String, scale: Float)
           ps(i) = (p(0) - poly.getCenterX, p(1) - poly.getCenterY) / scale
         }
         if (ps.length <= 8 && poly.closed) {
-          polygon(ps:_*) density 1
+          polygon(convexHull(ps):_*) density 1
           if (isDynamic(fig)) massFromShapes
         } else {
           edge(ps:_*)
