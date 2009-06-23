@@ -4,7 +4,7 @@ import vecmath._
 import vecmath.Preamble._
 
 /** Calculates buoyancy forces for fluids in the form of a half plane. */
-class BuoyancyController extends Controller {
+abstract class BuoyancyController extends Controller {
   /** The outer surface normal */
   var normal = Vector2.Zero
   /** The height of the fluid surface along the normal */

@@ -9,6 +9,9 @@ import dynamics.joints._
 import collection.mutable.ListBuffer
 
 object DSL {
+
+  implicit def fixtureBuilder2FixtureDef(b: FixtureBuilder) = b.define
+
   object BodyCtx extends ThreadLocal[BodyCtx]
   class BodyCtx {
     var massFromShapes = false

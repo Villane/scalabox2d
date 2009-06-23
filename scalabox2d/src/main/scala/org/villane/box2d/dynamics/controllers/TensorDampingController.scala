@@ -18,7 +18,7 @@ import vecmath.Preamble._
  * | 0 -b|
  * 
  */
-class TensorDampingController extends Controller {
+abstract class TensorDampingController extends Controller {
   /** Tensor to use in damping model. Tensor means Matrix here. */
   var T = Matrix22.Zero
 

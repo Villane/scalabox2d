@@ -4,7 +4,7 @@ import vecmath._
 import vecmath.Preamble._
 
 /** Applies simplified gravity between every pair of bodies */
-class GravityController extends Controller {
+abstract class GravityController extends Controller {
   /** Specifies the strength of the gravitiation force */
   var G = 0f
 

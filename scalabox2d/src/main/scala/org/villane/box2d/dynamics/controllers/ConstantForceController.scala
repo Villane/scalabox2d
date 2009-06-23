@@ -4,7 +4,7 @@ import vecmath._
 import vecmath.Preamble._
 
 /** Applies a force every frame */
-class ConstantForceController extends Controller {
+abstract class ConstantForceController extends Controller {
   /* The force to apply */
   var F = Vector2.Zero
 

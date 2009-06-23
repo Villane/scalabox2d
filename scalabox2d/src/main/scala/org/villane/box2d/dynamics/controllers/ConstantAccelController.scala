@@ -4,7 +4,7 @@ import vecmath._
 import vecmath.Preamble._
 
 /** Applies acceleration every frame */
-class ConstantAccelController extends Controller {
+abstract class ConstantAccelController extends Controller {
   /* The acceleration to apply */
   var A = Vector2.Zero
 
