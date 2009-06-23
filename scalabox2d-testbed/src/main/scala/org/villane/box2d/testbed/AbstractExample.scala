@@ -68,8 +68,6 @@ abstract class AbstractExample(parent: TestbedMain) {
   var m_mouseJoint: PointingDeviceJoint = null
   /** Settings for this example.  This is stored and reloaded when the example restarts or we come back from another example. */ 
   var settings = new TestSettings 
-  /** The bounding box for the world.  If the defaults do not work for you, overload createWorld() and set the AABB appropriately there. */
-  var m_worldAABB: AABB = null
   /** The exponentially smoothed amount of free memory available to the JVM. */ 
   var memFree = 0f
    /** FPS that we want to achieve */
@@ -130,14 +128,7 @@ abstract class AbstractExample(parent: TestbedMain) {
    * Called immediately after initialize(), which handles
    * generic test initialization and should usually not be overloaded.
    */
-  def create()
-
-  /** Override this if you need to create a different world AABB or gravity vector */
-  def createWorld() {
-    m_worldAABB = AABB((-200.0f, -100.0f),(200.0f, 200.0f))
-    val gravity = (0.0f, -10.0f)
-    m_world = new World(m_worldAABB, gravity, true);
-  }
+  def create: World
 
   /**
    * Should not usually be overloaded.
@@ -177,8 +168,6 @@ abstract class AbstractExample(parent: TestbedMain) {
     pmouseScreen = Vector2(mouseScreen.x,mouseScreen.y)
     pmousePressed = false
 
-    createWorld
-
     m_bomb = null;
     m_mouseJoint = null;
     bombSpawnPoint = null;
@@ -188,6 +177,9 @@ abstract class AbstractExample(parent: TestbedMain) {
     for (i <- 0 until m_points.length) {
       m_points(i) = new ExampleContactPoint();
     }
+
+    m_world = create
+    settings.gravity = m_world.gravity
 
     m_destructionListener = new ConcreteDestructionListener();
     m_boundaryListener = new ConcreteBoundaryListener();
@@ -209,7 +201,6 @@ abstract class AbstractExample(parent: TestbedMain) {
     }
 
     boundImages.clear
-    create
   }
 
   /**
@@ -403,8 +394,8 @@ abstract class AbstractExample(parent: TestbedMain) {
     val minV = position - (0.3f,0.3f)
     val maxV = position + (0.3f,0.3f)
     //AABB aabb = new AABB(minV, maxV);
-    val inRange = (minV.x > m_worldAABB.lowerBound.x && minV.y > m_worldAABB.lowerBound.y &&
-                   maxV.x < m_worldAABB.upperBound.x && maxV.y < m_worldAABB.upperBound.y)
+    val inRange = (minV.x > m_world.aabb.lowerBound.x && minV.y > m_world.aabb.lowerBound.y &&
+                   maxV.x < m_world.aabb.upperBound.x && maxV.y < m_world.aabb.upperBound.y)
 
     if (inRange) {
       m_bomb = body {

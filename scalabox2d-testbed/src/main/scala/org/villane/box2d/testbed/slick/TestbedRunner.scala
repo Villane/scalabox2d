@@ -127,12 +127,15 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
       currentTestIndex = settings.testIndex
       currentTest = tests(currentTestIndex)
       currentTest.initialize()
+      // override gravity with the one from the newly created scene
+      settings.gravity = currentTest.m_world.gravity
+      gCell.setText(settings.gravity.y.toString)
       currentTest.settings = settings
       currentTest.nanoStart = System.nanoTime()
       currentTest.frameCount = 0
     }
 
-    // Take our time step (drawing is done here, too)
+    // Take our time step
     currentTest.step
 
     // If the user wants to move the canvas, do it

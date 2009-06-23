@@ -30,7 +30,7 @@ object PlanetGravity extends TestbedScene {
 
   override protected def createWorld = new World(
     AABB((-200, -100), (200, 200)),
-    (0, 10),
+    (0, 0),
     true
   )
 

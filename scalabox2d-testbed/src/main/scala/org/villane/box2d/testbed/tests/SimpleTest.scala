@@ -27,13 +27,13 @@ class SimpleTest(
 ) extends AbstractExample(_parent) {
   var firstTime = true
 
-  def create() {
+  def create = {
     if (firstTime) {
       setCamera(offset.x, offset.y, scale)
       firstTime = false
     }
 
-    scene.createScene
+    scene.create
   }
 
 }

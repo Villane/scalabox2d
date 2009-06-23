@@ -33,6 +33,7 @@ trait FengWrapper extends InputListener {
   }
 
   private var testList: ComboBox = null
+  var gCell: TextEditor = null
 
   def initWrapper(container: GameContainer, settings: TestSettings) {
     this.container = container
@@ -112,7 +113,7 @@ trait FengWrapper extends InputListener {
 
     val gravity = FengGUI.createWidget(classOf[Label])
     gravity.setText("Gravity    ")
-    val gCell = FengGUI.createWidget(classOf[TextEditor])
+    gCell = FengGUI.createWidget(classOf[TextEditor])
     gCell.setRestrict(TextEditor.RESTRICT_NUMBERSONLYDECIMAL)
     gCell.setMaxCharacters(6)
     gCell.updateMinSize()
@@ -171,10 +172,10 @@ trait FengWrapper extends InputListener {
     t3.addWidget(velIters, vCell)
     t3.setExpandable(false)
     
-    gCell.setText("-10")
-    hCell.setText("60")
-    vCell.setText("10")
-    pCell.setText("10")
+    gCell.setText(settings.gravity.y.toString)
+    hCell.setText(settings.hz.toString)
+    vCell.setText(settings.iterationCount.toString)
+    pCell.setText(settings.iterationCount.toString)
 
     val sleeping = FengGUI.createCheckBox
     sleeping.setText("Sleeping")
