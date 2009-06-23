@@ -23,7 +23,7 @@ class MultiPointSingleManifoldContact[S1 <: Shape, S2 <: Shape](
         mp.normalImpulse = 0.0f
         mp.tangentImpulse = 0.0f
         var found = false
-        val id = new ContactID(mp.id.features)
+        val id = mp.id
 
         if (oldMH.isDefined) {
           val m0 = oldMH.get

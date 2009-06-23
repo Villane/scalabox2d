@@ -35,7 +35,7 @@ object PolygonCircleCollider extends Collider[Polygon, Circle] {
 
     // If the center is inside the polygon ...
     if (separation < ε) {
-      val id = ContactID(Features(0, normalIndex, Features.NullFeature, false))
+      val id = ContactID(0, normalIndex, ContactID.NullFeature, false)
       val normal = xf1.rot * normals(normalIndex)
       val p = c - (normal * circle.radius)
       val points = new Array[ManifoldPoint](1)
@@ -55,8 +55,8 @@ object PolygonCircleCollider extends Collider[Polygon, Circle] {
     val u = (cLocal - vertices(vertIndex1)) ∙ e
 
     val (p, incidentEdge, incidentVertex) = u match {
-      case _ if u <= 0f => (vertices(vertIndex1), Features.NullFeature, vertIndex1)
-      case _ if u >= length => (vertices(vertIndex2), Features.NullFeature, vertIndex2)
+      case _ if u <= 0f => (vertices(vertIndex1), ContactID.NullFeature, vertIndex1)
+      case _ if u >= length => (vertices(vertIndex2), ContactID.NullFeature, vertIndex2)
       case _ => (vertices(vertIndex1) + (e * u), normalIndex, 0)
     }
 
@@ -68,7 +68,7 @@ object PolygonCircleCollider extends Collider[Polygon, Circle] {
       return None
     }
 
-    val id = ContactID(Features(0, incidentEdge, incidentVertex, false))
+    val id = ContactID(0, incidentEdge, incidentVertex, false)
     val normal = xf1.rot * d
     val pos = c - (normal * circle.radius)
     val points = new Array[ManifoldPoint](1)

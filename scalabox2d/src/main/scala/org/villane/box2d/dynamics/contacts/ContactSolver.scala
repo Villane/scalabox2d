@@ -33,14 +33,15 @@ class ContactSolver(contacts: Seq[Contact]) {
         assert (manifold.points.length > 0, "Manifold has length 0")
         val normal = manifold.normal
 
-        val c = new ContactConstraint
-        c.body1 = b1
-        c.body2 = b2
-        c.manifold = manifold
-        c.normal = normal
-        c.points = new Array[ContactConstraintPoint](manifold.points.length)
-        c.friction = friction
-        c.restitution = restitution
+        val c = new ContactConstraint(
+          new Array[ContactConstraintPoint](manifold.points.length),
+          normal,
+          manifold,
+          b1,
+          b2,
+          friction,
+          restitution
+        )
 
         var k = 0
         while (k < c.points.length) {
@@ -101,7 +102,7 @@ class ContactSolver(contacts: Seq[Contact]) {
 
           val buffer = w2 × ccp.r2 - w1 × ccp.r1 + v2 - v1
           val vRel = c.normal ∙ buffer
-          
+
           if (vRel < -Settings.velocityThreshold) {
             ccp.velocityBias += -c.restitution * vRel
           }

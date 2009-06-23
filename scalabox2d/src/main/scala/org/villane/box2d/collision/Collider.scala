@@ -37,12 +37,6 @@ object Collider {
           s2.getClass.getSimpleName + ")")
   }
 
-  /**
-   * Collide two shapes for which a collider exists, in the same bg system.
-   */
-  def collide(shape1: Shape, shape2: Shape): Option[Manifold] =
-    collide(shape1, Transform2.Identity, shape2, Transform2.Identity)
-
 }
 
 /**
@@ -57,11 +51,5 @@ trait Collider[S1 <: Shape, S2 <: Shape] {
    */
   def collide(shape1: S1, t1: Transform2,
               shape2: S2, t2: Transform2): Option[Manifold]
-
-  /**
-   * Collide two shapes with coordinates in the same background system.
-   */
-  def collide(shape1: S1, shape2: S2): Option[Manifold] =
-    collide(shape1, Transform2.Identity, shape2, Transform2.Identity)
 
 }

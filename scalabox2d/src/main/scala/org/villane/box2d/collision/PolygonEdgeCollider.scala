@@ -120,7 +120,7 @@ object PolygonEdgeCollider extends Collider[Polygon, Edge] {
           }
         }
 
-        val id = ContactID(Features(0, separationIndex, Features.NullFeature, false))
+        val id = ContactID(0, separationIndex, ContactID.NullFeature, false)
         val normal = xf1.rot * normals(separationIndex)
         val (p1, p2) = if (separationV1)
           (v1Local, edge.v1)
@@ -137,7 +137,7 @@ object PolygonEdgeCollider extends Collider[Polygon, Edge] {
 
     // Check whether we only need one contact point.
     if (enterEndIndex == exitStartIndex) {
-      val id = ContactID(Features(0, enterEndIndex, Features.NullFeature, false))
+      val id = ContactID(0, enterEndIndex, ContactID.NullFeature, false)
       val p1 = vertices(enterEndIndex)
       val p2 = xf1 * p1
       val points = new Array[ManifoldPoint](1)
@@ -164,7 +164,7 @@ object PolygonEdgeCollider extends Collider[Polygon, Edge] {
 	dirProj2 = dirLocal dot (vertices(exitStartIndex) - v1Local)
 
     val points = new Array[ManifoldPoint](2)
-    val id1 = ContactID(Features(0, enterEndIndex, Features.NullFeature, false))
+    val id1 = ContactID(0, enterEndIndex, ContactID.NullFeature, false)
 
     val edgeLen = edge.length
     if (dirProj1 > edgeLen) {
@@ -180,7 +180,7 @@ object PolygonEdgeCollider extends Collider[Polygon, Edge] {
       points(0) = ManifoldPoint(p1, p2, enterSepN, id1)
     }
 
-    val id2 = ContactID(Features(0, exitStartIndex, Features.NullFeature, false))
+    val id2 = ContactID(0, exitStartIndex, ContactID.NullFeature, false)
 
     if (dirProj2 < 0.0f) {
       val ratio = (-dirProj1) / (dirProj2 - dirProj1)

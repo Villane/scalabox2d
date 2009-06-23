@@ -253,13 +253,14 @@ class Island(val bodyCapacity: Int,
 
           // TOI constraint results are not stored, so get
           // the result from the constraint.
-          val id = new ContactID(point.id.features)
           val cr = new ContactResult(f1, f2,
                                      pos, manifold.normal,
-                                     ccp.normalImpulse, ccp.tangentImpulse, id)
+                                     ccp.normalImpulse, ccp.tangentImpulse,
+                                     point.id)
           listener.result(cr)
         }
       }
     }
   }
+
 }

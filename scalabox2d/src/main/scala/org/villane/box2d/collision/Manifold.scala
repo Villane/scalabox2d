@@ -6,13 +6,31 @@ import vecmath.Vector2
 case class Manifold(
   /** The points of contact. */
   points: Seq[ManifoldPoint],
-  /**
-   * The shared unit normal vector.
-   * This is mutable because it may need to be reversed in the last phase of creating a contact.
-   * But this definitely should not be changed post contact creation.
-   * TODO might want to think of something to make this immutable.
-   */
-  var normal: Vector2
+  /** The shared unit normal vector. */
+  normal: Vector2
 ) {
   assert(points.length > 0, "Can't create a manifold without points!")
+}
+
+/**
+ * A manifold point is a contact point belonging to a contact
+ * manifold. It holds details related to the geometry and dynamics
+ * of the contact points.
+ * The point is stored in local coordinates because CCD
+ * requires sub-stepping in which the separation is stale.
+ */
+case class ManifoldPoint(
+  /** Local position of the contact point in body1 */
+  localPoint1: Vector2,
+  /** Local position of the contact point in body2 */
+  localPoint2: Vector2,
+  /** The separation of the shapes along the normal vector */
+  separation: Float,
+  /** Uniquely identifies a contact point between two shapes */
+  id: ContactID
+) {
+  /** The non-penetration force */
+  var normalImpulse = 0f
+  /** The friction force */
+  var tangentImpulse = 0f
 }

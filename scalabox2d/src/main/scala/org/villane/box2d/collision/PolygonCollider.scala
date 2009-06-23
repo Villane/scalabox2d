@@ -93,7 +93,7 @@ object PolygonCollider extends Collider[Polygon, Polygon] {
           xfA ** cp2.v,
           xfB ** cp2.v,
           separation,
-          cp2.id withFlip flip
+          if (flip == cp2.id.flip) cp2.id else cp2.id withFlip flip
         )
       }
     }
@@ -300,9 +300,9 @@ object PolygonCollider extends Collider[Polygon, Polygon] {
 
     List(
       ClipVertex(xf2 * vertices2(i1),
-                 ContactID(Features(edge1, i1, 0, false))),
+                 ContactID(edge1, i1, 0, false)),
       ClipVertex(xf2 * vertices2(i2),
-                 ContactID(Features(edge1, i2, 1, false)))
+                 ContactID(edge1, i2, 1, false))
     )
   }
 
