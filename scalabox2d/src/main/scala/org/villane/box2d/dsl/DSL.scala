@@ -112,6 +112,7 @@ class BodyBuilder(b: BodyDef) {
 
 class FixtureBuilder(s: FixtureDef) {
   def userData(userData: AnyRef) = { s.userData = userData; this }
+  def material(material: Material) = { s.apply(material); this }
   def friction(friction: Float) = { s.friction = friction; this }
   def restitution(restitution: Float) = { s.restitution = restitution; this }
   def density(density: Float) = { s.density = density; this }

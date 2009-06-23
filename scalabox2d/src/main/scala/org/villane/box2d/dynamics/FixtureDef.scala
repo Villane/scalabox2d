@@ -24,4 +24,12 @@ case class FixtureDef(var shapeDef: ShapeDef) {
 
   /** Use this to store application specific fixture data. */
   var userData: AnyRef = null
+
+  /** Apply the given material to this fixture definition. */
+  def apply(m: Material) = {
+    friction = m.friction
+    density = m.density
+    restitution = m.restitution
+  }
+
 }
