@@ -19,10 +19,8 @@ trait Controller {
 trait SensorManagedBodies extends Controller {
   var sensor: Body = null
   def bodies: Set[Body] = Set() ++ 
-    sensor.contactList filter {
-      // Filter edges with no actual contacts
-      _.contact.manifolds.size > 0
-    } map { _.other }
+    // Filter edges with no actual contacts
+    sensor.contactList filter { !_.contact.manifolds.isEmpty } map { _.other }
 }
 
 trait SelfManagedBodies extends Controller {

@@ -19,12 +19,11 @@ class PlanetGravityController extends Controller with SensorManagedBodies {
     val d = sensor.worldCenter - body.worldCenter
     val r2 = d.lengthSquared
     if (r2 >= Settings.Epsilon) {
-      val f = if (invSqr && sensor.isDynamic)
-        G / r2 / sqrt(r2) * body.mass * sensor.mass * d
-      else if (sensor.isDynamic)
-        G / r2 * body.mass * sensor.mass * 10 * d
+      val sm = if (sensor.isDynamic) sensor.mass else 1f
+      val f = if (invSqr)
+        G / r2 / sqrt(r2) * body.mass * sm * d
       else
-        G / r2 * body.mass * d
+        G / r2 * body.mass * sm * d
       body.applyForce(f, body.worldCenter)
     }
   }
