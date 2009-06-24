@@ -597,6 +597,7 @@ abstract class AbstractExample(parent: TestbedMain) {
 	 */
     class ConcreteDestructionListener extends DestructionListener {
     	def sayGoodbye(fixture: Fixture) { }
+    	def sayGoodbye(controller: controllers.Controller) { }
     	def sayGoodbye(joint: Joint) {
     		if (test.m_mouseJoint == joint) {
     			test.m_mouseJoint = null;
