@@ -2,6 +2,7 @@ package org.villane.box2d.dynamics
 
 import shapes.Shape
 import joints.Joint
+import controllers.Controller
 
 /**
  * Joints and shapes are destroyed when their associated
@@ -20,4 +21,10 @@ trait DestructionListener {
    * to the destruction of its parent body.
    */
   def sayGoodbye(fixture: Fixture)
+
+  /**
+   * Called when any controller is about to be destroyed due
+   * to the destruction of its parent body.
+   */
+  def sayGoodbye(controller: Controller)
 }

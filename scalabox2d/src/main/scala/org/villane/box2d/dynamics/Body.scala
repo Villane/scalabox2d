@@ -5,6 +5,7 @@ import vecmath._
 import vecmath.Preamble._
 import contacts._
 import joints._
+import controllers._
 
 object BodyFlags {
   val frozen = 0x0002
@@ -39,7 +40,13 @@ final class Body(bd: BodyDef, val world: World) {
 
   var contactList: List[ContactEdge] = Nil
   var jointList: List[JointEdge] = Nil
-  
+
+  // The body will be removed from these controllers when it is destroyed
+  private[dynamics] val managingControllers =
+    collection.mutable.Set[Controller with SelfManagedBodies]()
+  // These controllers will be removed from the world with the body
+  private[dynamics] val dependentControllers = collection.mutable.Set[Controller]()
+
   private[this] var _transform = Transform2(bd.pos, Matrix22.rotation(bd.angle))
   def pos = _transform.pos
   /** The swept motion for CCD */

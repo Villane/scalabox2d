@@ -80,19 +80,24 @@ class World(val aabb: AABB, var gravity: Vector2, doSleep: Boolean) {
 
     // Delete the attached joints.
     for (jn <- b.jointList) {
-      if (destructionListener != null) {
-        destructionListener.sayGoodbye(jn.joint)
-      }
+      if (destructionListener != null) destructionListener.sayGoodbye(jn.joint)
       destroyJoint(jn.joint)
     }
 
     // Delete the attached shapes. This destroys broad-phase
     // proxies and pairs, leading to the destruction of contacts.
     for (f <- b.fixtures) {
-      if (destructionListener != null) {
-        destructionListener.sayGoodbye(f)
-      }
+      if (destructionListener != null) destructionListener.sayGoodbye(f)
       f.destroyProxy(broadPhase)
+    }
+
+    // Remove the body from controllers
+    for (c <- b.managingControllers) c.removeBody(b)
+
+    // Remove dependent controllers from the world
+    for (c <- b.dependentControllers) {
+      if (destructionListener != null) destructionListener.sayGoodbye(c)
+      removeController(c)
     }
 
     bodyList -= b
@@ -167,7 +172,15 @@ class World(val aabb: AABB, var gravity: Vector2, doSleep: Boolean) {
   }
 
   def addController(c: Controller) = controllers += c
-  def removeController(c: Controller) = controllers -= c
+
+  def removeController(c: Controller) = {
+    c match {
+      case ctrl: SelfManagedBodies =>
+        for (b <- ctrl.bodies) b.managingControllers -= ctrl
+      case _ =>
+    }
+    controllers -= c
+  }
 
   /**
    * Take a time step. This performs collision detection, integration,
@@ -186,15 +199,11 @@ class World(val aabb: AABB, var gravity: Vector2, doSleep: Boolean) {
     // Update contacts.
     contactManager.collide()
 
-    // Integrate velocities, solve velocity constraints, and integrate positions.}
-    if (step.dt > 0f) {
-      solve(step)
-    }
+    // Integrate velocities, solve velocity constraints, and integrate positions.
+    if (step.dt > 0f) solve(step)
 
     // Handle TOI events.
-    if (continuousPhysics && step.dt > 0f) {
-      solveTOI(step)
-    }
+    if (continuousPhysics && step.dt > 0f) solveTOI(step)
 
     if (step.dt > 0f) invDt0 = step.invDt
     lock = false
