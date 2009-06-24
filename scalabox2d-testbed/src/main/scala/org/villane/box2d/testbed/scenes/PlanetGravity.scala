@@ -9,9 +9,18 @@ import controllers._
 
 object PlanetGravity extends TestbedScene {
 
+  var planet: Body = null
+  var player: Body = null
+
   def createScene(implicit world: dynamics.World) {
-    val planet = body {
+    planet = body {
       circle(5)
+    }
+
+    player = body {
+      pos(0f, 7f)
+      box(0.4f, 1.2f) density 1
+      massFromShapes
     }
 
     val satellite = body {

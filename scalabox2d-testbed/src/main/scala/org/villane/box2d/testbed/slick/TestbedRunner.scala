@@ -38,7 +38,7 @@ object TestbedRunner {
  * @author ewjordan
  *
  */
-class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with TestbedMain with FengWrapper {
+class SlickTestGame extends BasicGame("ScalaBox2D Testbed") with TestbedMain with FengWrapper {
 
   val debugDraw = new SlickDebugDraw(null,null)
   val targetFrameRate = 60
@@ -74,8 +74,9 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
     container.setTargetFrameRate(targetFrameRate)
     container.setShowFPS(false)
 
-    tests += SimpleTest(this, "Planet Gravity", scenes.PlanetGravity,
-                        (0, 0), 15)
+    /*tests += SimpleTest(this, "Planet Gravity", scenes.PlanetGravity,
+                        (0, 0), 15)*/
+    tests += new PlanetGravity(this)
     tests += SimpleTest(this, "Bridge", scenes.Bridge,
                         (0, 10), 20)
     tests += SimpleTest(this, "Continuous Collision Test", scenes.CCDTest,
@@ -98,8 +99,9 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
                         (0, 10), 15)
     tests += SimpleTest(this, "Varying Restitution", scenes.VaryingRestitution,
                         (0, 10), 15)
-    tests += SimpleTest(this, "Vertical Stack", scenes.VerticalStack,
-                        (0, 10), 15)
+    /*tests += SimpleTest(this, "Vertical Stack", scenes.VerticalStack,
+                        (0, 10), 15)*/
+    tests += new VerticalStack(this)
 
     currentTest = tests(currentTestIndex)
     currentTest.initialize
@@ -220,6 +222,7 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
 
     desk.fireKeyPressedEvent(EventHelper.mapKeyChar, EventHelper.mapEventKey)
     desk.fireKeyTypedEvent(EventHelper.mapKeyChar)
+    currentTest.keyPressed(keyCode)
   }
  
   override def keyReleased(keyCode: Int, key: Char) {
@@ -228,6 +231,7 @@ class SlickTestGame extends BasicGame("Slick/JBox2d Testbed (Scala)") with Testb
       shiftDown = false
     }
     desk.fireKeyReleasedEvent(EventHelper.mapKeyChar, EventHelper.mapEventKey)
+    currentTest.keyReleased(keyCode)
   }
 
   override def mouseWheelMoved(amount: Int) {

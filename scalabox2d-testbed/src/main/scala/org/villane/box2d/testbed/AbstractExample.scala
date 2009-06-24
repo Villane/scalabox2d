@@ -208,9 +208,8 @@ abstract class AbstractExample(parent: TestbedMain) {
    * When creating your own game, the most important thing to have
    * in your step method is the m_world.step() call.
    */
-  def step() {
-
-    preStep();
+  def step {
+    preStep
     mouseWorld = drawHandler.screenToWorld(mouseScreen)
 
     var timeStep = if (settings.hz > 0.0f) 1.0f / settings.hz else 0.0f
@@ -251,7 +250,7 @@ abstract class AbstractExample(parent: TestbedMain) {
     }
 
     pmouseScreen = (mouseScreen);
-    postStep();
+    postStep
 
     //Should reset newKeyDown after postStep in case it needs to be used there
     for (i <- 0 until newKeyDown.length) {
@@ -260,10 +259,10 @@ abstract class AbstractExample(parent: TestbedMain) {
   }
 
   /** Stub for overloading in examples - called before physics step. */
-  def preStep() {}
+  def preStep {}
 
   /** Stub for overloading in examples - called after physics step. */
-  def postStep() {}
+  def postStep {}
 
   def render {
     mouseWorld = drawHandler.screenToWorld(mouseScreen)

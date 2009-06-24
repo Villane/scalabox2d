@@ -1,24 +1,28 @@
 package org.villane.box2d.testbed.tests
 
+import vecmath._
+import vecmath.Preamble._
+
 class VerticalStack(_parent: TestbedMain) extends AbstractExample(_parent) {
   var firstTime = true
   val name = "Vertical Stack"
   override val getExampleInstructions = "Press , to shoot sideways bullet\n"
 
   override def postStep() {
-    /*if (newKeyDown[',']) {
-      launchBomb(new Vec2(-40.0f,parent.random(1.0f,10.0f)),new Vec2(200.0f,parent.random(-5.0f,5.0f)));
-    }*/
+    if (newKeyDown(0x33)) {
+      val rnd = new scala.util.Random
+      launchBomb((-20.0f, 1f + rnd.nextFloat * 9),
+                 (750.0f, rnd.nextFloat * 10 - 5))
+    }
   }
 
-
-  def create() {
+  def create = {
     if (firstTime) {
-      setCamera(0f, 10f, 10f)
+      setCamera(0f, 10f, 15f)
       firstTime = false
     }
 
-    scenes.VerticalStack.createScene
+    scenes.VerticalStack.create
   }
 
 }
