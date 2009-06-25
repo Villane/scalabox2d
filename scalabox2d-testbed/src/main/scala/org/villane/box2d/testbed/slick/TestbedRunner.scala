@@ -93,6 +93,8 @@ class SlickTestGame extends BasicGame("ScalaBox2D Testbed") with TestbedMain wit
                         (0, 10), 15)
     tests += SimpleTest(this, "Overhang", scenes.Overhang,
                         (0, 10), 15)
+    tests += SimpleTest(this, "Pistons", scenes.Pistons,
+                        (0, 25), 12)
     tests += SimpleTest(this, "Pyramid Stress Test", scenes.Pyramid,
                         (0, 10), 15)
     tests += SimpleTest(this, "Varying Friction", scenes.VaryingFriction,
